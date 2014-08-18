@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    tweets = db.tweets.find({"x_sentiment": {"$exists": False}}).limit(120)
+    tweets = db.tweets.find({"x_sentiment": {"$exists": False}, "lang": {"$eq": "es"}, "x_coordinates": {"$ne": None}}).limit(120)
     #tweets = db.tweets.find({"$and": [{'x_coordinates': {"$exists": True}}, {'x_coordinates': {"$ne": None}}, {'lang': {'$eq': 'es'}}]}).limit(120)
     return render_template('rate_tweets.html', tweets=tweets)
 
