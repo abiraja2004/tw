@@ -21,6 +21,7 @@ db = mongoclient['test']
 
 r = 0
 gr = None
+k = 0
 for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
     coordinates = f['coordinates']
     origin = "coordinates"
@@ -33,7 +34,7 @@ for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
       if not loc:
 	  loc = f['user']['location']
 	  origin = "user.location"
-      if gr: print gr['requests'],
+      if gr: print k, gr['requests'],
       print loc, " -> ",
       if loc and isinstance(loc, basestring):
 	cached = db.places.find_one({'text': loc.strip().lower()})
@@ -75,6 +76,7 @@ for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
 	  
 	  
       if coordinates:
+	  k += 1
 	  if calculated_location: print calculated_location['address'],
 	  print coordinates, " (from %s) -%s-" % (origin, calculated_location['cache'])
 	  db.tweets.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "point", "coordinates": coordinates}, "x_coordinates_origin": origin}})
