@@ -16,6 +16,12 @@ def home():
     #tweets = db.tweets.find({"$and": [{'x_coordinates': {"$exists": True}}, {'x_coordinates': {"$ne": None}}, {'lang': {'$eq': 'es'}}]}).limit(120)
     return render_template('rate_tweets.html', tweets=tweets)
 
+@app.route("/showtweet2", methods=['GET'])
+def showtweet():
+    tweet = db.my_first_test.find_one({"_id": ObjectId(request.args['id'])})
+    tweet['_id'] = str(tweet['_id'])
+    return flask.jsonify(**tweet)
+
 @app.route("/rate", methods=['POST'])
 def rate():
     print request.form['id'], request.form['sent']
