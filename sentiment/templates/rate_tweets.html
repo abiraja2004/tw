@@ -63,7 +63,7 @@ function rate(id, sent)
 <body>
 {% for tweet in tweets %}
 <div class="tweet" id ="{{tweet["_id"]}}">
-<a href="/showtweet?id={{tweet['_id']}}">
+<a href="/showtweet2?id={{tweet['_id']}}">
   <p class="text">@{{tweet['user']['screen_name']}} - {{tweet['created_at']}}</p>
   <p class="text">{{tweet['x_sentiment']}} {{tweet['text']}}</p>
   <span class="button positive" onclick="javascript: rate('{{tweet["_id"]}}', '+');">POSITIVO</span>
