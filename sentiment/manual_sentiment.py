@@ -32,7 +32,7 @@ def explore():
     if lang: cond['interaction.twitter.lang2'] = lang
     print cond
     tweets = datasift.my_first_test.find(cond).skip((page-1)*cnt).limit(30)
-    return render_template('explore_tweets.html', tweets=tweets, page=page)
+    return render_template('explore_tweets.html', tweets=tweets, page=page, lang=lang)
 
 @app.route("/showtweet", methods=['GET'])
 def showtweet():

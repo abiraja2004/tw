@@ -10,8 +10,13 @@ border: 1px solid black;
 <body>
 <form action="/explore" method="GET">
 BUSCAR <input type="text" name="search"/>
-{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}">Anterior</a>{% endif %}
-<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}">Siguiente</a>
+{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}&lang={{lang}}">Anterior</a>{% endif %}
+<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang={{lang}}">Siguiente</a>
+{% if lang != "en" %}
+  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=en">En Ingles</a>
+{% else %}
+  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=en">En Español</a>
+{% endif %}
 </form>
 <table border=1>
   <thead>
@@ -51,6 +56,6 @@ BUSCAR <input type="text" name="search"/>
   {% endfor %}
 </table>
 </body>
-{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}">Anterior</a>{% endif %}
-<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}">Siguiente</a>
+{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}&lang={{lang}}">Anterior</a>{% endif %}
+<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang={{lang}}">Siguiente</a>
 </html>
