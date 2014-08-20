@@ -15,7 +15,7 @@ BUSCAR <input type="text" name="search"/>
 {% if lang != "en" %}
   <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=en">En Ingles</a>
 {% else %}
-  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=en">En Español</a>
+  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=es">En Español</a>
 {% endif %}
 </form>
 <table border=1>
