@@ -1,0 +1,56 @@
+<html>
+
+<style>
+table {
+border-collapse: collapse;
+border: 1px solid black;
+
+}
+</style>
+<body>
+<form action="/explore" method="GET">
+BUSCAR <input type="text" name="search"/>
+{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}">Anterior</a>{% endif %}
+<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}">Siguiente</a>
+</form>
+<table border=1>
+  <thead>
+    <tr>
+      <th>Sent</th>
+      <th>Entidades</th>
+      <th>Topics</th>
+      <th>Texto</th>
+    </tr>
+  </thread>
+  {% for fulltweet in  tweets %}
+    {% set text = fulltweet['interaction']['interaction']['content'] %}
+    {% set tweet = fulltweet['interaction']['twitter'] %}
+    {% set salience = fulltweet['interaction']['salience'] %}
+    <tr height="70px">
+      <td>
+      {% if salience %}
+      {{salience['content']['sentiment']}}
+      {% endif %}
+      </td>
+      <td>
+      {% if salience %}
+      {% for e in salience['content']['entities'] %}
+	{{e['name']}}({{e['type']}})
+      {% endfor  %}
+      {% endif %}      
+      </td>
+      <td>
+      {% if salience %}
+      {% for t in salience['content']['topics'] %}
+	{{t['name']}}
+      {% endfor  %}
+      {% endif %}
+      </td>
+      <td><a href="/showtweet?id={{fulltweet['_id']}}">{{text}}</a></td>
+    </tr>
+  {% endfor %}
+</table>
+</body>
+{% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}">Anterior</a>{% endif %}
+<a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}">Siguiente</a>
+</html>
