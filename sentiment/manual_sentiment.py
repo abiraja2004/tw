@@ -1,4 +1,4 @@
-  from pymongo import MongoClient
+from pymongo import MongoClient
 from bson import ObjectId
 mongoclient = MongoClient("127.0.0.1")
 db = mongoclient['test']
