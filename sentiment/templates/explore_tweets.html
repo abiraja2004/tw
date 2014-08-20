@@ -13,9 +13,9 @@ BUSCAR <input type="text" name="search"/>
 {% if page > 1 %}<a href="/explore?search={{request.args.get("search","")}}&page={{page-1}}&lang={{lang}}">Anterior</a>{% endif %}
 <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang={{lang}}">Siguiente</a>
 {% if lang != "en" %}
-  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=en">En Ingles</a>
+  <a href="/explore?search={{request.args.get("search","")}}&page={{page}}&lang=en">En Ingles</a>
 {% else %}
-  <a href="/explore?search={{request.args.get("search","")}}&page={{page+1}}&lang=es">En Español</a>
+  <a href="/explore?search={{request.args.get("search","")}}&page={{page}}&lang=es">En Español</a>
 {% endif %}
 </form>
 <table border=1>
