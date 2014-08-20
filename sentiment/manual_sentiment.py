@@ -18,7 +18,7 @@ def home():
 
 @app.route("/showtweet2", methods=['GET'])
 def showtweet2():
-    tweet = db.my_first_test.find_one({"_id": ObjectId(request.args['id'])})
+    tweet = db.tweets.find_one({"_id": ObjectId(request.args['id'])})
     tweet['_id'] = str(tweet['_id'])
     return flask.jsonify(**tweet)
 
