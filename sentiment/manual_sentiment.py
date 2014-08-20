@@ -1,6 +1,6 @@
-from pymongo import MongoClient
+  from pymongo import MongoClient
 from bson import ObjectId
-mongoclient = MongoClient("prodedelmundial.com.ar")
+mongoclient = MongoClient("127.0.0.1")
 db = mongoclient['test']
 datasift = mongoclient['datasiftmongodb']
 from flask import Flask, render_template, request
