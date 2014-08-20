@@ -26,8 +26,11 @@ def explore():
     page = int(request.args.get("page", "1"))
     if page < 1: page = 1
     search = request.args.get("search", "")
+    lang = request.args.get("lang", "")
     cond = {}
     if search: cond = {"$text": {"$search": search}}
+    if lang: cond['lang2'] = lang
+    print cond
     tweets = datasift.my_first_test.find(cond).skip((page-1)*cnt).limit(30)
     return render_template('explore_tweets.html', tweets=tweets, page=page)
 
