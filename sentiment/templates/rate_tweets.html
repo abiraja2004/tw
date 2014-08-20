@@ -63,14 +63,14 @@ function rate(id, sent)
 <body>
 {% for tweet in tweets %}
 <div class="tweet" id ="{{tweet["_id"]}}">
-<a href="/showtweet2?id={{tweet['_id']}}">
   <p class="text">@{{tweet['user']['screen_name']}} - {{tweet['created_at']}}</p>
-  <p class="text">{{tweet['x_sentiment']}} {{tweet['text']}}</p>
+  <a href="/showtweet2?id={{tweet['_id']}}">
+    <p class="text">{{tweet['x_sentiment']}} {{tweet['text']}}</p>
+  </a>
   <span class="button positive" onclick="javascript: rate('{{tweet["_id"]}}', '+');">POSITIVO</span>
   <span class="button negative" onclick="javascript: rate('{{tweet["_id"]}}', '-');">NEGATIVO</span>
   <span class="button neutral" onclick="javascript: rate('{{tweet["_id"]}}', '=');">NEUTRO</span>
   <span class="button dontknow" onclick="javascript: rate('{{tweet["_id"]}}', '?');">No se sabe</span>
-</a>
 </div>
 {% endfor %}
 </body>
