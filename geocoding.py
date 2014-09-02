@@ -1,4 +1,5 @@
 from geopy.geocoders import *
+import re
 import time
 import cPickle
 import datetime
@@ -17,13 +18,13 @@ geolocator = GoogleV3() #OK
 #geolocator = GeocodeFarm("b0d5ca4124e2285d917b640976d3a1af354185e9") # OK
 #geolocator = MapQuest("Fmjtd%7Cluur25ur29%2C20%3Do5-9w75q4") # OK? por ahora no
 
-db = mongoclient['test']
-
+#db = mongoclient['test']
+db = mongoclient['unilever']
 r = 0
 gr = None
 k = 0
 w = 0
-for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
+for f in db.tweets.find({'x_coordinates': {"$exists": False}, "text": re.compile("(ades|del valle|jumex|veet|nair|america|vale)", re.I)}):
     coordinates = f['coordinates']
     origin = "coordinates"
     calculated_location = None
@@ -52,9 +53,9 @@ for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
 	      gr['requests'] = 0
 	      gr['date'] = datetime.date.today()
 	    r += 1
-	    if r > 9: 
+	    if r > 8: 
 		print "Waiting 1 sec..."
-		time.sleep(1)
+		time.sleep(1.1)
 		r = 0	      
 	    geo_calculated_location = geolocator.geocode(loc)
 	    if geo_calculated_location:
@@ -82,7 +83,7 @@ for f in db.tweets.find({'x_coordinates': {"$exists": False}}):
 	  k += 1
 	  if calculated_location: print calculated_location['address'],
 	  print coordinates, " (from %s) -%s-" % (origin, calculated_location['cache'])
-	  db.tweets.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "point", "coordinates": coordinates}, "x_coordinates_origin": origin}})
+	  db.tweets.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "Point", "coordinates": coordinates}, "x_coordinates_origin": origin}})
       else:
 	  print "not found"
 	  db.tweets.update({"_id": f["_id"]}, {"$set": {"x_coordinates": None, "x_coordinates_origin": None}})
