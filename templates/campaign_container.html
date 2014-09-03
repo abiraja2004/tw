@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <title>Administrar Cuentas y Campañas</title>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="/styles/styles.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script src="/js/manage.js"></script>
+    </head>
+<script>
+$(function(){
+    $(".button").button();
+    $(".accordion").accordion( { heightStyle: "content"} );
+    $(".tabs").tabs();
+})
+</script>
+
+<body>
+<input type="hidden" id="account_id" value="{{account['_id']}}"/>
+{% include 'campaign.html' %}
+</body>
+</html>

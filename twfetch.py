@@ -36,11 +36,13 @@ def getWordsToTrack():
 		for cid, campaign in acc['campaigns'].items():
 			for bid, brand in campaign['brands'].items():
 				s.add(brand['name'])
-				for kw in [kw.strip() for kw in brand['synonyms'].split(",") if kw.strip()]:
-						s.add(kw)	
+				if brand.get('synonyms','').strip():
+					for kw in [kw.strip() for kw in brand['synonyms'].split(",") if kw.strip()]:
+							s.add(kw)	
 	return s
 	
-	
+stream = None
+
 class TweetStreamer(TwythonStreamer):
 	TWITTER_ADDRESS = "@TestProdeBr2014"
 	CONSUMER_KEY = "1qxRMuTzu2I7BP7ozekfRw"
@@ -57,7 +59,7 @@ class TweetStreamer(TwythonStreamer):
 
 	
 	def on_success(self, data):
-		#print data
+		print "received:", data['text']
 		self.tweets.append(data)
 
 	def on_error(self, status_code, data):
@@ -80,10 +82,12 @@ class TweetStreamer(TwythonStreamer):
 
 	def finish(self):
 		print "finishing streamer thread..."      
+		global stream
 		stream.disconnect()
 		self.stop = True
+		stream = None
 	
-stream = None
+
 class MyThread(threading.Thread):
 	keywords = []
 	running = False
@@ -112,7 +116,7 @@ class KeywordMonitor(threading.Thread):
 		t = datetime.now() - timedelta(hours=99)
 		keywords = None
 		while not self.stop:
-			if datetime.now()-t > timedelta(seconds=5):
+			if datetime.now()-t > timedelta(seconds=120):
 				print "checking keywords..."
 				t = datetime.now()
 				k2 = getWordsToTrack()
@@ -123,7 +127,10 @@ class KeywordMonitor(threading.Thread):
 					keywords = k2
 					MyThread.keywords = keywords
 					MyThread().start()
+					print "Tracking:", keywords
 				time.sleep(1)
+			else:
+				time.sleep(30)
 
 	def finish(self):
 		print "finishing keyword monitor thread..."      
@@ -133,8 +140,8 @@ class KeywordMonitor(threading.Thread):
 try:
 	kwmonitor = KeywordMonitor()
 	kwmonitor.start()
-	while not stream: time.sleep(0.2)         	
 	while True:
+		while not stream: time.sleep(0.2)         			
 		for t in stream:
 			print t["text"]
 			print

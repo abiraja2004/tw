@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <title>Administrar Cuentas y Campañas</title>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="/styles/styles.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script src="/js/manage.js"></script>
+    </head>
+
+<body>
+<input type="hidden" id="account_id" value="{{account['_id']}}"/>
+<p>
+    <strong>Nombre de la Cuenta</strong><br />
+    <input type="text" name="account_name" value="{{account['name']}}"/>
+</p>
+<strong>Campa&ntilde;as:</strong><br />
+<div id="newCampaignButton" class="button" onclick="addCampaign();">Nueva Campa&ntilde;a</div>
+
+<div id="{{account['_id']}}_campaigns_container" class="accordion">
+{% for campaign_id, campaign in account['campaigns'].items() %}
+    {% include 'campaign.html' %}
+{% endfor %}
+</div>
+</body>
+</html>
+
+<div style="display: none">
+<div id="campaign_model">
+<div>
+	<h3><input type="text" name="campaign_name" value="" onchange="updateCampaignName('##campaign_id##', $(this).val());"/><div class="button remove" style="float: right" onclick="removeCampaign('##campaign_id##'); return false;">Eliminar</div></h3>
+	<div id="campaign_##campaign_id##">
+		<div id="addBrand" class="button" onclick="addBrand('##campaign_id##');">Agregar Marca</div>  
+		<div id="##campaign_id##_brands_container" class="accordion" >
+		</div>
+	</div>
+</div>
+</div>
+
+<div id="brand_model">
+<div>
+	<h3><input type="text" name="brand_name" value="" onchange="updateBrand('##campaign_id##', '##brand_id##','name', $(this).val() );"/><div class="button remove" style="float: right" onclick="removeBrand('##campaign_id##', '##brand_id##'); return false;">Eliminar</div></h3>
+	<div id="brand_##brand_id##">
+		<div class="accordion">
+			<h3>Sinonimos o nombres alternativos de la marca</h3>
+			<div>
+				<input type="text" class="phrase" value="" onchange="updateBrand('##campaign_id##', '##brand_id##','synonyms', $(this).val() );"/> 
+			</div>
+			<h3>Reglas de identificacion</h3>
+			<div>
+				<div id="##brand_id##_identification_rules_container">
+					<div class="brand_id_rule" last="true"><input type="text" class="phrase" value="" onchange="checkLastItemChanged(this);"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+				</div>
+				<div class="button" onclick="updateBrandIdRules('##campaign_id##', '##brand_id##');">UPDATE</div>                            
+			</div>
+			<h3>Palabras clave de la marca</h3>
+			<div>
+				<div>
+					<input campaign_id="##campaign_id##" brand_id="##brand_id##" class="autocomplete keywordset_selector" type="text"/>
+					<div id="##brand_id##_keywordset_container" class="keywordsets">
+					</div>
+				</div>
+				<div id="##brand_id##_keyword_container">
+					<div class="brand_keyword" last="true"><input type="text" class="word" value="" onchange="checkLastItemChanged(this);"/> - <input type="number" class="value" value=""/> <div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+				</div>
+				<div class="button" onclick="updateBrandKeywords('##campaign_id##', '##brand_id##');">UPDATE</div>
+			</div>
+		</div><br/>
+		<div id="addProduct" class="button" onclick="addProduct('##campaign_id##', '##brand_id##');">Agregar Producto</div><br>
+		<div class="accordion" id="##brand_id##_products_container">
+		</div>
+	</div>
+</div>
+</div>
+
+<div id="product_model">
+<div>
+	<h3>Producto <input type="text" name="product_name" value="" onchange="updateProduct('##campaign_id##', '##brand_id##', '##product_id##', 'name', $(this).val() );"/><div class="button remove" style="float:right" onclick="removeProduct('##campaign_id##', '##brand_id##', '##product_id##');return false;">Eliminar</div></h3>
+	<div class="accordion"   id="product_##product_id##" >
+		<h3>Sinonimos o nombres alternativos del producto</h3>
+		<div>
+			<input type="text" class="phrase" value="" onchange="updateProduct('##campaign_id##', '##brand_id##', '##product_id##', 'synonyms', $(this).val() );"/> 
+		</div>                        
+		<h3>Reglas de identificacion</h3>
+		<div>
+			<input type="checkbox" class="button" id="use_brand_rules_##product_id##" onchange="updateProduct('##campaign_id##', '##brand_id##','##product_id##', 'use_brand_id_rules', $(this).val());" ><label for="use_brand_rules_##product_id##">Usar reglas de la marca</label>
+			<div id="##product_id##_identification_rules_container">
+				<div class="product_id_rule" last="true"><input type="text" class="phrase" value="" onchange="checkLastItemChanged(this);"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+			</div>
+			<div class="button" onclick="updateProductIdRules('##campaign_id##', '##brand_id##', '##product_id##' );">UPDATE</div>                            
+		</div>
+		<h3>Palabras clave del producto</h3>
+		<div>
+			<div>
+				<input campaign_id="##campaign_id##" brand_id="##brand_id##" product_id="##product_id##" class="autocomplete keywordset_selector" type="text"/>
+				<div id="##product_id##_keywordset_container" class="keywordsets">
+				</div>
+			</div>                            
+			<div id="##product_id##_keyword_container">
+				<div class="product_keyword" last="true"><input type="text" class="word" value="" onchange="checkLastItemChanged(this);"/> - <input type="number" class="value" value=""/> <div class="button remove" onclick="$(this).parent().remove();" >ELIMINAR</div></div> 
+			</div>
+			<div class="button" onclick="updateProductKeywords('##campaign_id##', '##brand_id##', '##product_id##' );">UPDATE</div>
+		</div>
+	</div>
+</div>
+</div>
+
+</div>

@@ -1,0 +1,96 @@
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style>
+.button 
+{
+border: 1px solid black;
+border-radius: 3px;
+padding: 5px;
+}
+.positive
+{
+background: green;
+color: white;
+}
+.negative
+{
+background: red;
+}
+
+.neutral
+{
+background: gray;
+}
+
+.dontknow
+{
+background: yellow;
+}
+
+.notrelevant
+{
+background: white
+}
+.tweet 
+{
+margin-bottom: 15px;
+border: 1px solid black;
+border-radius: 3px;
+padding: 8px;
+}
+
+.tweet .text
+{
+margin-top: 0px;
+}
+</style>
+</head>
+<script>
+function rate(id, sent)
+{
+  $.ajax({
+      url : "/rate",
+      type: "POST",
+      data : {'id': id, 'sent': sent},
+      success: function(data, textStatus, jqXHR)
+      {
+	  $("#"+id).fadeOut();
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {
+  
+      }
+  });
+}
+</script>
+<body>
+{% for tweet in tweets %}
+<div class="tweet" id ="{{tweet["_id"]}}">
+  <p class="text">@{{tweet['user']['screen_name']}} - {{tweet['created_at']}}</p>
+  <a href="/showtweet2?id={{tweet['_id']}}">
+    <p class="text">{{tweet['x_sentiment']}} {{tweet['text']}}</p>
+  </a>
+  <!--p class="text">{{tweet['x_sentiment']}} {{tweet['x_highlighted_text']|safe}}</p-->
+  <div>
+  {% if 'x_coordinates' in tweet %}
+    <div>Coordenadas: {{tweet['x_coordinates']['coordinates']}}</div>
+  {% endif %}
+  {% for match in tweet['x_extracted_info'] %}
+    <br>
+    <div>MARCA: {{match.brand}}</div>
+    <div>PRODUCTO: {{match.product}}</div>
+    <div>CONFIANZA: {{match.confidence}}</div>
+    <div>Regla: {{match.rule}}</div>
+  {% endfor %}
+  </div>
+  <br><br>
+  <span class="button positive" onclick="javascript: rate('{{tweet["_id"]}}', '+');">POSITIVO</span>
+  <span class="button negative" onclick="javascript: rate('{{tweet["_id"]}}', '-');">NEGATIVO</span>
+  <span class="button neutral" onclick="javascript: rate('{{tweet["_id"]}}', '=');">NEUTRO</span>
+  <span class="button dontknow" onclick="javascript: rate('{{tweet["_id"]}}', '?');">No se sabe</span>
+  <span class="button notrelevant" onclick="javascript: rate('{{tweet["_id"]}}', '/');">Contenido no relevante</span>
+</div>
+{% endfor %}
+</body>
+</html>

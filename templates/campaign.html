@@ -1,0 +1,86 @@
+<h3><input type="text" name="campaign_name" value="{{campaign['name']}}" onchange="updateCampaignName('{{campaign_id}}', $(this).val());"/><div class="button remove" style="float: right" onclick="removeCampaign('{{campaign_id}}'); return false;">Eliminar</div></h3>
+<div id="campaign_{{campaign_id}}">
+    <div id="addBrand" class="button" onclick="addBrand('{{campaign_id}}');">Agregar Marca</div>  
+    <div id="{{campaign_id}}_brands_container" class="accordion" >
+        {% for brand_id, brand in campaign['brands'].items() %}    
+            <h3><input type="text" name="brand_name" value="{{brand['name']}}" onchange="updateBrand('{{campaign_id}}', '{{brand_id}}','name', $(this).val() );"/><div class="button remove" style="float: right" onclick="removeBrand('{{campaign_id}}', '{{brand_id}}'); return false;">Eliminar</div></h3>
+            <div id="brand_{{brand_id}}">
+                <div class="accordion">
+                    <h3>Sinonimos o nombres alternativos de la marca</h3>
+                    <div>
+                        <input type="text" class="phrase" value="{{brand['synonyms']}}" onchange="updateBrand('{{campaign_id}}', '{{brand_id}}','synonyms', $(this).val() );"/> 
+                    </div>
+                    <h3>Reglas de identificacion</h3>
+                    <div>
+                        <div id="{{brand_id}}_identification_rules_container">
+                            {% for rule_phrase in brand['identification_rules'] %}
+                            <div class="brand_id_rule"><input type="text" class="phrase" value="{{rule_phrase}}"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+								{% endfor %}
+                            <div class="brand_id_rule" last="true"><input type="text" class="phrase" value="" onchange="checkLastItemChanged(this);"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                        </div>
+                        <div class="button" onclick="updateBrandIdRules('{{campaign_id}}', '{{brand_id}}');">UPDATE</div>                            
+                    </div>
+                    <h3>Palabras clave de la marca</h3>
+                    <div>
+                        <div>
+                            <input campaign_id="{{campaign_id}}" brand_id="{{brand_id}}" class="autocomplete keywordset_selector" type="text"/>
+                            <div id="{{brand_id}}_keywordset_container" class="keywordsets">
+                                {% for kwset in brand['keyword_sets'] %}
+                                    <div class="keywordset"><div id="{{kwset['_id']}}" label="{{kwset['name']}}" class='button word'>{{kwset['name']}}</div>- <input type="number" class="value" value="{{kwset['value']}}"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div id="{{brand_id}}_keyword_container">
+                            {% for kw in brand['keywords'] %}
+                            <div class="brand_keyword"><input type="text" class="word" value="{{kw[0]}}"/> - <input type="number" class="value" value="{{kw[1]}}"/> <div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                            {% endfor %}
+                            <div class="brand_keyword" last="true"><input type="text" class="word" value="" onchange="checkLastItemChanged(this);"/> - <input type="number" class="value" value=""/> <div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                        </div>
+                        <div class="button" onclick="updateBrandKeywords('{{campaign_id}}', '{{brand_id}}');">UPDATE</div>
+                    </div>
+                </div><br>
+                <div id="addProduct" class="button" onclick="addProduct('{{campaign_id}}', '{{brand_id}}');">Agregar Producto</div><br>
+                <div class="accordion" id="{{brand_id}}_products_container">
+                    {% for product_id, product in brand['products'].items() %}
+                        <h3>Producto <input type="text" name="product_name" value="{{product['name']}}" onchange="updateProduct('{{campaign_id}}', '{{brand_id}}', '{{product_id}}', 'name', $(this).val() );"/><div class="button remove" style="float:right" onclick="removeProduct('{{campaign_id}}', '{{brand_id}}', '{{product_id}}');return false;">Eliminar</div></h3>
+                        <div class="accordion" id="product_{{product_id}}">
+                            <h3>Sinonimos o nombres alternativos del producto</h3>
+                            <div>
+                                <input type="text" class="phrase" value="{{product['synonyms']}}" onchange="updateProduct('{{campaign_id}}', '{{brand_id}}', '{{product_id}}', 'synonyms', $(this).val() );"/> 
+                            </div>                        
+                            <h3>Reglas de identificacion</h3>
+                            <div>
+                                <input type="checkbox" class="button" id="use_brand_rules_{{product_id}}" onchange="updateProduct('{{campaign_id}}', '{{brand_id}}','{{product_id}}', 'use_brand_id_rules', $(this).val());" {{ {True: 'checked'}.get(product['use_brand_id_rules'], '') }}><label for="use_brand_rules_{{product_id}}">Usar reglas de la marca</label>
+                                <div id="{{product_id}}_identification_rules_container">
+                                    {% for rule_phrase in product['identification_rules'] %}
+                                    <div class="product_id_rule"><input type="text" class="phrase" value="{{rule_phrase}}"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                                    {% endfor %}
+                                    <div class="product_id_rule" last="true"><input type="text" class="phrase" value="" onchange="checkLastItemChanged(this);"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                                </div>
+                                <div class="button" onclick="updateProductIdRules('{{campaign_id}}', '{{brand_id}}', '{{product_id}}' );">UPDATE</div>                            
+                            </div>
+                            <h3>Palabras clave del producto</h3>
+                            <div>
+                                <div>
+                                    <input campaign_id="{{campaign_id}}" brand_id="{{brand_id}}" product_id="{{product_id}}" class="autocomplete keywordset_selector" type="text"/>
+                                    <div id="{{product_id}}_keywordset_container" class="keywordsets">
+                                        {% for kwset in product['keyword_sets'] %}
+                                            <div class="keywordset"><div id="{{kwset['_id']}}" label="{{kwset['name']}}" class='button word'>{{kwset['name']}}</div>- <input type="number" class="value" value="{{kwset['value']}}"/><div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>                            
+                                <div id="{{product_id}}_keyword_container">
+                                    {% for pk in product['keywords'] %}
+                                    <div class="product_keyword"><input type="text" class="word" value="{{pk[0]}}"/> - <input type="number" class="value" value="{{pk[1]}}"/> <div class="button remove" onclick="$(this).parent().remove()">ELIMINAR</div></div> 
+                                    {% endfor %}
+                                    <div class="product_keyword" last="true"><input type="text" class="word" value="" onchange="checkLastItemChanged(this);"/> - <input type="number" class="value" value=""/> <div class="button remove" onclick="$(this).parent().remove();" >ELIMINAR</div></div> 
+                                </div>
+                                <div class="button" onclick="updateProductKeywords('{{campaign_id}}', '{{brand_id}}', '{{product_id}}' );">UPDATE</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
