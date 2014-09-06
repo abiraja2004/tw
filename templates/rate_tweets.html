@@ -78,6 +78,8 @@ function rate(id, sent)
   {% endif %}
   {% for match in tweet['x_extracted_info'] %}
     <br>
+    <div>CUENTA: {{match.account_name}}</div>
+    <div>CAMPAÑA: {{match.campaign_name}}</div>
     <div>MARCA: {{match.brand}}</div>
     <div>PRODUCTO: {{match.product}}</div>
     <div>CONFIANZA: {{match.confidence}}</div>

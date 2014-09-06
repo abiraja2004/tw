@@ -54,7 +54,7 @@ def root():
     tpp = 120
     page = int(request.args.get('page',"1"))-1
     #dbtweets = db.tweets.find({ "retweeted_status": {"$exists": False}, "text": re.compile("(\\bades\\b)", re.I), "x_coordinates": { "$nearSphere": { "$geometry": { "type": "Point", "coordinates": [-99.1521845,19.3200988]}, "$maxDistance": 500000}}}).skip(page*tpp).limit(120)
-    dbtweets = db.tweets.find({ "retweeted_status": {"$exists": False}}).skip(page*tpp).limit(120) 
+    dbtweets = db.tweets.find({ "retweeted_status": {"$exists": False}}).sort("x_created_at", -1).skip(page*tpp).limit(120) 
     #tweets = db.tweets.find({"$and": [{'x_coordinates': {"$exists": True}}, {'x_coordinates': {"$ne": None}}, {'lang': {'$eq': 'es'}}]}).limit(120)
     tweets = []
     bcs = getBrandClassifiers()
