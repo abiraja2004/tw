@@ -8,7 +8,7 @@ for t in q['statuses']:
   print t
 """
 
-import tweetstream
+#import tweetstream
 import time
 import threading
 from twython import TwythonStreamer
