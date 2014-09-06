@@ -2,9 +2,19 @@ import os
 from pymongo import MongoClient
 from bson import ObjectId
 from brandclassifier import *
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--auth', action="store_true", default=False)
+args = parser.parse_args()
+dbuser = "monitor"
+dbpasswd = "monitor678"
 mclient = MongoClient()
 db = mclient['unilever']
+if args.auth:
+    db.authenticate(dbuser, dbpasswd)
 monitor = mclient['monitor']
+if args.auth:
+    monitor.authenticate(dbuser, dbpasswd)
 from flask import Flask, render_template, request
 import flask 
 import json

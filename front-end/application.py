@@ -7,9 +7,19 @@ import flask
 import json
 from datetime import datetime, timedelta
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--auth', action="store_true", default=False)
+args = parser.parse_args()
+dbuser = "monitor"
+dbpasswd = "monitor678"
 mclient = MongoClient()
 tweetdb = mclient['unilever']
+if args.auth:
+    tweetdb.authenticate(dbuser, dbpasswd)
 accountdb = mclient['monitor']
+if args.auth:
+    accountdb.authenticate(dbuser, dbpasswd)
 
 
 app = Flask(__name__, template_folder='html')

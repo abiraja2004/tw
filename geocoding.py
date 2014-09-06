@@ -7,7 +7,6 @@ import geopy.geocoders
 #print dir(geopy.geocoders)
 from pprint import pprint
 from pymongo import MongoClient
-mongoclient = MongoClient()
 #geolocator = Nominatim() #OK
 geolocator = GoogleV3() #OK
 #geolocator = OpenMapQuest() # OK
@@ -19,7 +18,22 @@ geolocator = GoogleV3() #OK
 #geolocator = MapQuest("Fmjtd%7Cluur25ur29%2C20%3Do5-9w75q4") # OK? por ahora no
 
 #db = mongoclient['test']
-db = mongoclient['unilever']
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--auth', action="store_true", default=False)
+args = parser.parse_args()
+dbuser = "monitor"
+dbpasswd = "monitor678"
+mclient = MongoClient()
+db = mclient['unilever']
+if args.auth:
+    db.authenticate(dbuser, dbpasswd)
+monitor = mclient['monitor']
+if args.auth:
+    monitor.authenticate(dbuser, dbpasswd)
+
+
 r = 0
 gr = None
 k = 0

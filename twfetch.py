@@ -15,10 +15,21 @@ from twython import TwythonStreamer
 from pymongo import MongoClient
 from datetime import datetime,  timedelta
 from rulesmanager import getBrandClassifiers
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--auth', action="store_true", default=False)
+args = parser.parse_args()
+dbuser = "monitor"
+dbpasswd = "monitor678"
+mclient = MongoClient()
+db = mclient['unilever']
+if args.auth:
+    db.authenticate(dbuser, dbpasswd)
+monitor = mclient['monitor']
+if args.auth:
+    monitor.authenticate(dbuser, dbpasswd)
 
-mongoclient = MongoClient("127.0.0.1")
-db = mongoclient['unilever']
-monitor = mongoclient['monitor']
+
 #db.authenticate("pablo", "1234")
 
 """
