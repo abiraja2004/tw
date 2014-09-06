@@ -4,6 +4,18 @@ import re
 mclient = MongoClient()
 monitor = mclient['monitor']
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--auth', action="store_true", default=False)
+args = parser.parse_args()
+dbuser = "monitor"
+dbpasswd = "monitor678"
+mclient = MongoClient()
+monitor = mclient['monitor']
+if args.auth:
+    monitor.authenticate(dbuser, dbpasswd)
+
+
 class Rule(object):
     
     def __init__(self, type):
@@ -150,10 +162,3 @@ def getBrandClassifiers():
     return res
 
 
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--regenerate_rules", nargs='?')
-    args = parser.parse_args()
-    if "regenerate_rules" in args:
-        regenerateRules()
