@@ -171,7 +171,10 @@ try:
                 print db.tweets.insert(t)
             print            
             
-            print t["text"], t['x_created_at']
+            try:
+                print t["text"], t['x_created_at']
+            except:
+                pass
 
       
 except KeyboardInterrupt, e:
