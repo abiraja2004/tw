@@ -71,7 +71,10 @@ class TweetStreamer(TwythonStreamer):
 
     
     def on_success(self, data):
-        print "received:", data['text']
+        try:
+            print "received:", data['text']
+        except:
+            pass
         self.tweets.append(data)
 
     def on_error(self, status_code, data):

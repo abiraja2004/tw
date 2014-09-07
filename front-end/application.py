@@ -41,27 +41,14 @@ def home():
             t['x_extracted_info'] = pms
         if pms or request.args.get('onlymatches', 'false') != "true":
             tweets.append(t)
-    return render_template('index.html', content_template="dashboard.html", tweets=tweets, account=account)            
-    return render_template('fullpage.html', content_template="dashboard.html", tweets=tweets, account=account)
+    return render_template('index.html', content_template="dashboard.html", js="dashboard.js", tweets=tweets, account=account)            
+    #return render_template('fullpage.html', content_template="dashboard.html", js="dashboard.j", tweets=tweets, account=account)
 
-@app.route('/campaigns')
+@app.route('/campaign')
 def campaigns():
     account = accountdb.accounts.find_one({"name":"Prueba"})
-    tpp = 120
-    page = int(request.args.get('page',"1"))-1
-    dbtweets = tweetdb.tweets.find({ "retweeted_status": {"$exists": False}}).skip(page*tpp).limit(120) 
-    tweets = []
-    bcs = getBrandClassifiers()
-    for t in dbtweets:
-        pms = []
-        for bc in bcs:
-            pms.extend(bc.extract(t['text']))
-        if pms:
-            pms.sort(key=lambda x: x.confidence, reverse=True)                
-            t['x_extracted_info'] = pms
-        if pms or request.args.get('onlymatches', 'false') != "true":
-            tweets.append(t)
-    return render_template('fullpage.html', content_template="pages/campaigns.html", tweets=tweets, account=account)
+    campaign_id = page = request.args.get('campaign_id',)
+    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign=account['campaigns'][campaign_id])            
 
 
 @app.route('/<path:filename>')
@@ -115,7 +102,14 @@ def tweets_count():
         start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
         timerange = []
-        delta = timedelta(hours = 1)
+        params = {}
+        if group_by == "day":
+            params = {"days": 1}
+        elif group_by == "hour":
+            params = {"hours": 1}
+        elif group_by == "week":
+            params = {"weeks": 1}
+        delta = timedelta(**params)
         d = start
         while d <= end:
             timerange.append(d.strftime("%Y-%m-%dT%H:00:00Z"))
