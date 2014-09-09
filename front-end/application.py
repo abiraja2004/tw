@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, Blueprint
 from rulesmanager import getBrandClassifiers
 import flask 
 import json
+import re
 from datetime import datetime, timedelta
 
 import argparse
@@ -136,6 +137,22 @@ def tweets_count():
     return flask.Response(dumps(res),  mimetype='application/json')
     #return flask.jsonify({"results": res})    
     #return flask.Response(json.dumps(res),  mimetype='application/json')
+
+@app.route("/api/keywordset/prefetch", methods=['GET'])
+def prefetch_keywordset():
+    res = []
+    resultset = accountdb.keywordset.find({}).limit(100)
+    for r in resultset:
+        res.append({"value": r['name'], "id": str(r['_id']), 'label': r['name'] })
+    return flask.Response(json.dumps(res),  mimetype='application/json')
+
+@app.route("/api/keywordset/search", methods=['GET'])
+def search_keywordset():
+    res = []
+    resultset = accountdb.keywordset.find({"name": re.compile(request.args['term'], re.I|re.U)}).limit(100)
+    for r in resultset:
+        res.append({"value": r['name'], "id": str(r['_id']) })
+    return flask.Response(json.dumps(res),  mimetype='application/json')
 
 
 if __name__ == "__main__":

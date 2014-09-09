@@ -1,3 +1,30 @@
+{% macro getSliderClass(first, bfirst=False, pfirst=False) -%}
+{% set res = "slider" %}
+{% if bfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if pfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if first %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{{res}}
+{%- endmacro %}
+
+{% macro getTypeaheadClass(first, bfirst=False, pfirst=False) -%}
+{% set res = "typeahead" %}
+{% if bfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if pfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if first %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{{res}}
+{%- endmacro %}
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -14,166 +41,215 @@
 <!-- Main content -->
 <section class="content">
     <div class="row">
-        <div class="col-md-12">
-            {% for brand_id, brand in campaign.brands.items() %}
-            <div class="box box-solid brand">
-                <div class="panel box box-success">
+        <div class="col-md-12 brands_section_container">
+            <div class="box box-solid">
+                <div class="panel box box-info">        
                     <div class="box-header">
-                        <h2 class="box-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#{{brand_id}}">{{brand['name']}}</a>
-                        </h2>
+                        <h2 class="box-title">Marcas</h2>
                         <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-success btn-sm" onclick="removeBrand(this); return false;"><i class="fa fa-trash-o"></i></button>
-                            <button class="btn btn-success btn-sm" onclick="alert(1); return false"><i class="fa fa-save"></i></button>
-                        </div>
-                    </div>  
-                </div>
-                <div id="{{brand_id}}" class="panel-collapse collapse in">
-                    <div class="box-body">
-                        <form role="form">
-                            <!-- text input -->
-                            <div class="form-group">
-                                <label>Sinónimos</label>
-                                <input type="text" class="form-control" placeholder="Sinónimos separados por comas..." value="{{brand['synonyms']}}"/>
-                            </div>
-                            <div class="form-group">
-                                <label>Reglas de Identificación</label>
-                                <div id="{{brand_id}}_id_rules_container" class="brand_id_rules_container">
-                                    {% for idrule in brand['identification_rules'] %}
-                                    <div><input type="text" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="{{idrule}}"/></div>
-                                    {% endfor %}
-                                    <div last="true"><input type="text" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="" onchange="checkLastItemChanged(this);"/></div>
-                                </div>
-                            </div>                        
-                            <div class="form-group">
-                                <label>Grupos de palabras clave de la marca</label>
-                                <div id="{{brand_id}}_keyword_sets_container" class="brand_keyword_sets_container">
-                                    {% for kwset in brand['keyword_sets'] %}
-                                    <div>
-                                        <table width="100%">
-                                            <tr><td width="30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kwset['name']}}" /></td>
-                                            <td width="40%"><input type="text" value="" class="slider form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                        </table>
-                                    </div>
-                                    {% endfor %}
-                                    <div last="true">
-                                        <table width="100%">
-                                            <tr><td width="30%"><input type="text" class="form-control" placeholder="palabra clave..." value="" onchange="checkLastItemChanged(this);"/></td>
-                                            <td width="40%"><input type="text" value="" class="slider form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                        </table>
-                                    </div>  
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Palabras clave individuales de la marca</label>
-                                <div id="{{brand_id}}_keyword_sets_container" class="brand_keyword_sets_container">
-                                    {% for kw, value in brand['keywords'] %}
-                                    <div>
-                                        <table width="100%">
-                                            <tr><td width="30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kw}}" /></td>
-                                            <td width="40%"><input type="text" value="" class="slider form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{value}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                        </table>
-                                    </div>
-                                    {% endfor %}
-                                    <div last="true">
-                                        <table width="100%">
-                                            <tr><td width="30%"><input type="text" class="form-control" placeholder="palabra clave..." value="" onchange="checkLastItemChanged(this);"/></td>
-                                            <td width="40%"><input type="text" value="" class="slider form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                        </table>
-                                    </div>                                    
-                                </div>
-                            </div>
-                            
-                            <div class="box box-solid products_section_container">
-                                <div class="box-header product_header">
-                                    <h3 class="box-title">Productos</h3>
-                                    <div class="box-tools pull-right">
-                                        <button type="button" class="btn btn-primary btn-sm" id="newproduct_{{brand_id}}" onclick="addProduct(this); return false;"><i class="fa fa-plus"></i></button>
-                                    </div>
-                                </div><!-- /.box-header -->
-                                <div class="box-body">
-                                    <div class="box-group products_container" id="accordion">
-                                    {% do brand['products'].update({'new_product': {'name': 'Nuevo Producto', 'model_product': True}}) %}
-                                    {% for product_id, product in brand['products'].items() %}
-                                        {% set slider_class = 'slider' %}
-                                        {% if product.get('model_product', False) %} {% set slider_class = 'pre_slider' %} {% endif %}
-                                        <div class="panel box box-primary product" {% if product.get('model_product', False) %} style="display:none;" product_model="true" {% endif %}>
-                                            <div class="box-header">
-                                                <h4 class="box-title">
-                                                    <a data-toggle="collapse" data-parent="#accordion" href="#{{product_id}}">
-                                                        {{product['name']}}
-                                                    </a>
-                                                </h4>
-                                                <div class="box-tools pull-right">
-                                                    <button class="btn btn-primary btn-sm" onclick="removeProduct(this); return false"><i class="fa fa-trash-o"></i></button>
-                                                </div>
-                                            </div>
-                                            <div id="{{product_id}}" class="panel-collapse collapse in">
-                                                <div class="box-body">
-                                                    <div class="form-group">
-                                                        <label>Sinónimos</label>
-                                                        <input type="text" class="form-control" placeholder="Sinónimos separados por comas..." value="{{product['synonyms']}}"/>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Reglas de Identificación</label>
-                                                        <div class="product_id_rules_container">
-                                                            {% for idrule in product['identification_rules'] %}
-                                                            <div><input type="text" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="{{idrule}}"/></div>
-                                                            {% endfor %}
-                                                            <div last="true"><input type="text" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="" onchange="checkLastItemChanged(this);"/></div>
-                                                        </div>
-                                                    </div>                        
-                                                    <div class="form-group">
-                                                        <label>Grupos de palabras clave de la marca</label>
-                                                        <div class="product_keyword_sets">
-                                                            {% for kwset in product['keyword_sets'] %}
-                                                            <div>
-                                                                <table style="width:100%">
-                                                                    <tr><td style="width:30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kwset['name']}}" /></td>
-                                                                    <td style="width:40%"><input style="width:100%" type="text" value="" class="{{slider_class}} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                                                </table>
-                                                            </div>
-                                                            {% endfor %}
-                                                            <div last="true">
-                                                                <table style="width:100%">
-                                                                    <tr><td style="width:30%"><input type="text" class="form-control" placeholder="palabra clave..." value=""  onchange="checkLastItemChanged(this);"/></td>
-                                                                    <td style="width:40%"><input style="width:100%" type="text" value="" class="{{slider_class}} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label>Palabras clave individuales de la marca</label>
-                                                        <div class="product_keywords">
-                                                            {% for kw, value in product['keywords'] %}
-                                                            <div>
-                                                                <table style="width:100%">
-                                                                    <tr><td width="30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kw}}" /></td>
-                                                                    <td width="40%"><input style="width:100%" type="text" value="" class="{{slider_class}} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{value}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                                                </table>
-                                                            </div>
-                                                            {% endfor %}
-                                                            <div last="true">
-                                                                <table style="width:100%">
-                                                                    <tr><td style="width:30%"><input type="text" class="form-control" placeholder="palabra clave..." value="" onchange="checkLastItemChanged(this);"/></td>
-                                                                    <td style="width:40%"><input style="width: 100%;" type="text" value="" class="{{slider_class}} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td></tr>
-                                                                </table>
-                                                            </div>                                                        
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}                                    
-                                    </div>
-                                </div><!-- /.box-body -->
-                            </div><!-- /.box -->
-                            
-                        </form>
+                            <button type="button" class="btn btn-success btn-sm" id="buttonabc" onclick="addBrand(this); return false;"><i class="fa fa-plus"></i> Agregar Marca</button>
+                            <button class="btn btn-info btn-sm" onclick="saveCampaign(); return false"><i class="fa fa-save"></i></button>
+                        </div>                
                     </div>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
-            {% endfor %}
+                </div>
+            </div>
+            <div class="brands_container">
+                {% set bfirst = True %}
+                {% for brand_id, brand in [('new_brand', {'name': 'Nueva Marca', 'products': {}})] + campaign.brands.items() %}
+                <div class="box box-solid brand removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
+                    <div class="panel box box-success">
+                        <div class="box-header">
+                            <h2 class="box-title">
+                                <a class="brand_title" data-toggle="collapse" data-parent="#accordion" href="#{{brand_id}}"><span fn="bname">{{brand['name']}}</span></a>
+                            </h2>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>
+                            </div>
+                        </div>  
+                    </div>
+                    <div id="{{brand_id}}" class="panel-collapse collapse brand_container">
+                        <div class="box-body">
+                            <form role="form">
+                                <!-- text input -->
+                                <div class="form-group">
+                                    <label>Sinónimos</label>
+                                    <input type="text" fn="bsynonyms" class="form-control" placeholder="Sinónimos separados por comas..." value="{{brand['synonyms']}}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Reglas de Identificación</label>
+                                    <div id="{{brand_id}}_id_rules_container" class="brand_id_rules_container">
+                                        {% if not 'identification_rules' in brand %} {% do brand.update({'identification_rules': []}) %} {% endif %}
+                                        {% set first = True %}
+                                        {% for idrule in [''] + brand['identification_rules'] + [''] %}
+                                        <div class="removible_component" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>                                    
+                                            <table style="width:600px">
+                                                <tr>
+                                                    <td style="width: 30%"><input type="text" fn="brule" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="{{idrule}}" onchange="checkLastItemChanged(this);"/></td>
+                                                    <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                </tr>
+                                           </table>
+                                        </div>
+                                        {% set first = False %}
+                                        {% endfor %}
+                                    </div>
+                                </div>                        
+                                <div class="form-group">
+                                    <label>Grupos de palabras clave de la marca</label>
+                                    <div id="{{brand_id}}_keyword_sets_container" class="brand_keyword_sets_container">
+                                        {% if not 'keyword_sets' in brand %} {% do brand.update({'keyword_sets': []}) %} {% endif %}
+                                        {% do brand['keyword_sets'].insert(0, {'name':'','value':5}) %}
+                                        {% do brand['keyword_sets'].append( {'name':'','value':5}) %}
+                                        {% set first = True %}
+                                        {% for kwset in brand['keyword_sets'] %}
+                                        <div class="removible_component" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>
+                                            <table style="width:600px" fn="bkwset">
+                                                <tr>
+                                                    <td style="width: 30%"><input type="text" class="{{ getTypeaheadClass(first, bfirst) }} form-control" fn="bkws" placeholder="palabra clave..." value="{{kwset['name']}}" onchange="checkLastItemChanged(this);"/></td>
+                                                    <td style="width: 60%"><input type="text" value="" class="{{ getSliderClass(first, bfirst) }} form-control" fn="value" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
+                                                    <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        {% set first = False %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Palabras clave individuales de la marca</label>                                    
+                                    <div id="{{brand_id}}_keywords_container" class="brand_keywords_container">
+                                        {% if not 'keywords' in brand %} {% do brand.update({'keywords': []}) %} {% endif %}
+                                        {% do brand['keywords'].insert(0, ['',5]) %}
+                                        {% do brand['keywords'].append(['',5]) %}
+                                        {% set first = True %}
+                                        {% for kw, value in brand['keywords'] %}
+                                        <div class="removible_component" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>
+                                            <table style="width: 600px">
+                                                <tr>
+                                                    <td style="width: 30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kw}}" onchange="checkLastItemChanged(this);"/></td>
+                                                    <td style="width: 60%"><input type="text" value="" class="{{ getSliderClass(first, bfirst) }} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{value}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
+                                                    <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        {% set first = False %}                                        
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="box box-solid products_section_container">
+                                    <div class="box-header product_header">
+                                        <h3 class="box-title">Productos</h3>
+                                        <div class="box-tools pull-right">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="addProduct(this); return false;"><i class="fa fa-plus"></i></button>
+                                        </div>
+                                    </div><!-- /.box-header -->
+                                    <div class="box-body">
+                                        <div class="box-group products_container" id="accordion">
+                                        {% set pfirst = True %}
+                                        {% for product_id, product in [('new_product', {'name': 'Nuevo Producto'})] + brand['products'].items() %}
+                                            <div class="panel box box-primary product removible_component" {{ {True: 'style="display:none;"', False: ''}[pfirst] |safe}}>
+                                                <div class="box-header">
+                                                    <h4 class="box-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" class="product_title" href="#{{product_id}}">
+                                                            {{product['name']}}
+                                                        </a>
+                                                    </h4>
+                                                    <div class="box-tools pull-right">
+                                                        <button class="btn btn-primary btn-sm" onclick="removeComponent(this); return false"><i class="fa fa-trash-o"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div id="{{product_id}}" class="panel-collapse collapse product_container">
+                                                    <div class="box-body">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    <label>Nombre</label>
+                                                                    <input type="text" class="form-control" placeholder="nombre del producto..." value="{{product['name']}}" onchange="$(this).closest('.product').find('.product_title').html($(this).val());" />
+                                                                </div>          
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div class="form-group">
+                                                                    <label>Sinónimos</label>
+                                                                    <input type="text" class="form-control" placeholder="Sinónimos separados por comas..." value="{{product['synonyms']}}"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Reglas de Identificación</label>
+                                                            <div class="product_id_rules_container">
+                                                                {% if not 'identification_rules' in product %} {% do product.update({'identification_rules': []}) %} {% endif %}
+                                                                {% set first = True %}
+                                                                {% for idrule in [''] + product['identification_rules'] + [''] %}
+                                                                <div class="removible_component" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>                                    
+                                                                    <table style="width:600px">
+                                                                        <tr>
+                                                                            <td style="width: 30%"><input type="text" fn="prule" class="form-control" placeholder="utilizar [M] para marca y [P] para producto..." value="{{idrule}}" onchange="checkLastItemChanged(this);"/></td>
+                                                                            <td style="width: 10%"><button type="button" class="btn btn-primary btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                                {% set first = False %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>                        
+                                                        <div class="form-group">
+                                                            <label>Grupos de palabras clave del producto</label>
+                                                            <div class="product_keyword_sets">
+                                                                {% if not 'keyword_sets' in product %} {% do product.update({'keyword_sets': []}) %} {% endif %}
+                                                                {% do product['keyword_sets'].insert(0, {'name':'','value':5}) %}
+                                                                {% do product['keyword_sets'].append( {'name':'','value':5}) %}
+                                                                {% set first = True %}
+                                                                {% for kwset in product['keyword_sets'] %}
+                                                                <div {{ {True: 'style="display:none;"', False: ''}[first] |safe }}>
+                                                                    <table style="width:600px">
+                                                                        <tr>
+                                                                            <td style="width:30%"><input type="text" class="{{ getTypeaheadClass(first, pfirst, bfirst) }} form-control" placeholder="palabra clave..." value="{{kwset['name']}}" onchange="checkLastItemChanged(this);" /></td>
+                                                                            <td style="width:60%"><input type="text" value="" class="{{ getSliderClass(first, pfirst, bfirst) }} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
+                                                                            <td style="width: 10%"><button type="button" class="btn btn-primary btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                                {% set first = False %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Palabras clave individuales del producto</label>
+                                                            <div class="product_keywords">
+                                                                {% if not 'keywords' in product %} {% do product.update({'keywords': []}) %} {% endif %}
+                                                                {% do product['keywords'].insert(0, ['',5]) %}
+                                                                {% do product['keywords'].append(['',5]) %}
+                                                                {% set first = True %}                                                            
+                                                                {% for kw, value in product['keywords'] %}
+                                                                <div {{ {True: 'style="display:none;"', False: ''}[first] |safe }}>
+                                                                    <table style="width:600px">
+                                                                        <tr>
+                                                                            <td style="width:30%"><input type="text" class="form-control" placeholder="palabra clave..." value="{{kw}}" onchange="checkLastItemChanged(this);"/></td>
+                                                                            <td style="width:60%"><input type="text" value="" class="{{ getSliderClass(first, pfirst, bfirst) }} form-control" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{value}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
+                                                                            <td style="width: 10%"><button type="button" class="btn btn-primary btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                                {% set first = False %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% set pfirst = False %}
+                                        {% endfor %}                                    
+                                        </div>
+                                    </div><!-- /.box-body -->
+                                </div><!-- /.box -->
+                                
+                            </form>
+                        </div>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+                {% set bfirst = False %}
+                {% endfor %}
+            </div>
         </div><!-- ./col -->
     </div>
 </section><!-- /.content -->
