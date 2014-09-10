@@ -45,7 +45,7 @@ def home():
         if pms or request.args.get('onlymatches', 'false') != "true":
             tweets.append(t)    
     template = "index.html"
-    dashtemplate = "dashboard_html"
+    dashtemplate = "dashboard.html"
     if request.path == "/app":
         template = "app.html"
         dashtemplate = "dashboard_app.html"
