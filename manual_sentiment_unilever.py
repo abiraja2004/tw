@@ -184,7 +184,7 @@ def processKeywordSets(kw):
     if not kw: return []
     tups = kw.split("|")
     v = [w.split("%") for w in tups]
-    v = [{"_id": ObjectId(vv[0].strip()), "name": vv[1].strip(), "value": int(vv[2].strip())} for vv in v]
+    v = [{"_id": vv[0].strip(), "name": vv[1].strip(), "value": int(vv[2].strip())} for vv in v]
     return v
 
 def processIdRules(kw):

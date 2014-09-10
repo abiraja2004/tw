@@ -1,5 +1,5 @@
 var keywordsets_blookhound=null;
-
+var deb_var = null;
 $(document).ready(function () {   
     $('.slider').slider()
     $('.slider').css("width", "100%");
@@ -11,11 +11,10 @@ keywordsets_blookhound = new Bloodhound({
   prefetch: '/api/keywordset/prefetch',
   remote: '/api/keywordset/search?term=%QUERY'
 });
- 
-// kicks off the loading/processing of `local` and `prefetch`
-keywordsets_blookhound.initialize();
 
-    setupTypeahead($('.typeahead'));
+keywordsets_blookhound.initialize();
+setupTypeahead($('.typeahead'));
+
 });
 
 function dateRangeChanged()
@@ -61,7 +60,9 @@ function checkLastItemChanged(input)
 function addProduct(btn)
 {
     products_container = $(btn).closest(".products_section_container").find(".products_container");
+    deb_var = products_container;
     pt = $(products_container.children()[0]).clone();
+    //deb_var = pt;
     //pt = products_container.find("[product_model=true]").clone();
     products_container.append(pt);    
     pt.css("display", "block");
@@ -85,6 +86,7 @@ function removeComponent(tag)
 
 function removeComponentExceptLast(tag)
 {
+    alert(tag);
     if (!$(tag).closest(".removible_component").is(":last-child"))
     {
         $(tag).closest(".removible_component").remove();
@@ -119,30 +121,108 @@ function removeBrand(tag)
 function saveCampaign()
 {
     brands = $(".brand");
-    campaign = {'brands': {}}
-    for (var i = 0; i<brands.length; i++)
+    campaign = {}
+    campaign['name'] = $('[fn=cname]').val();;
+    campaign['brands'] = {}
+    for (var i = 1; i<brands.length; i++)
     {
         tagbrand = $(brands[i]);
-        if (tagbrand.attr("brand_model") == "true") continue;
         brand = {};
+        brand_id = tagbrand.find("[fn=b_id]").attr('id');
         brand['name'] = tagbrand.find("[fn=bname]").html();
         brand['synonyms'] = tagbrand.find("[fn=bsynonyms]").val();
-        brand['rules'] = []
+        brand['identification_rules'] = []
         tags = tagbrand.find("[fn=brule]");
-        for (j=0;j<tags.length;j++)
+        for (j=1;j<tags.length;j++)
         {
-            if ($(tags[j]).val() != "") brand['rules'].push($(tags[j]).val());
+            if ($(tags[j]).val() != "") brand['identification_rules'].push($(tags[j]).val());
         }
         brand['keyword_sets'] = []
         tags = tagbrand.find("[fn=bkwset]");
-        for (j=0;j<tags.length;j++)
+        for (j=1;j<tags.length;j++)
         {
-            if ($(tags[j]).find("[fn=bkws]").val() != "") 
+            tags2 = tags[j];
+            if ($(tags2).find("[fn=word]").typeahead('val') != "") 
             {   
-                brand['keyword_sets'].push([$(tags[j]).find("[fn=bkws]").val(), $(tags[j]).find("[fn=value]").data('slider').getValue()]);
+                d = {}
+                d['name'] = $(tags2).find("[fn=word]").typeahead('val');
+                d['value'] = $(tags2).find("[fn=value]").data('slider').getValue();
+                d['_id'] = $(tags2).find("[fn=_id]").val();
+                brand['keyword_sets'].push(d);
             }
         }
-        campaign['brands'][brand['name']] = brand;
+        brand['keywords'] = []
+        tags = tagbrand.find("[fn=bkw]");
+        for (j=1;j<tags.length;j++)
+        {
+            tags2 = tags[j];
+            if ($(tags2).find("[fn=word]").val() != "") 
+            {   
+                brand['keywords'].push([$(tags2).find("[fn=word]").val(), $(tags2).find("[fn=value]").data('slider').getValue()]);
+            }
+        }        
+        
+        brand['products'] = {};
+        products = tagbrand.find(".product");
+        for (k=1;k<products.length;k++)
+        {
+            tagproduct = $(products[k]);
+            product = {}
+            product_id = tagproduct.find("[fn=p_id]").attr('id');
+            product['name'] = tagproduct.find("[fn=pname]").html();
+            product['synonyms'] = tagproduct.find("[fn=psynonyms]").val();
+            product['use_brand_id_rules'] = tagproduct.find("[fn=puse_brand_id_rules]").is(':checked');
+            product['identification_rules'] = []
+            
+            tags = tagproduct.find("[fn=prule]");
+            for (m=1;m<tags.length;m++)
+            {
+                if ($(tags[m]).val() != "") product['identification_rules'].push($(tags[m]).val());
+            }
+            product['keyword_sets'] = []
+            tags = tagproduct.find("[fn=pkwset]");
+            for (m=1;m<tags.length;m++)
+            {
+                tags2 = tags[m];
+                if ($(tags2).find("[fn=word]").typeahead('val') != "") 
+                {   
+                    d = {}
+                    d['name'] = $(tags2).find("[fn=word]").typeahead('val');
+                    d['value'] = $(tags2).find("[fn=value]").data('slider').getValue();
+                    d['_id'] = $(tags2).find("[fn=_id]").val();
+                    product['keyword_sets'].push(d);
+                }
+            }
+            product['keywords'] = []
+            tags = tagproduct.find("[fn=pkw]");
+            for (m=1;m<tags.length;m++)
+            {
+                tags2 = tags[m];
+                if ($(tags2).find("[fn=word]").val() != "") 
+                {   
+                    product['keywords'].push([$(tags2).find("[fn=word]").val(), $(tags2).find("[fn=value]").data('slider').getValue()]);
+                }
+            }              
+            brand['products'][product_id] = product;
+        }
+        
+        campaign['brands'][brand_id] = brand;
     }
-    return campaign;
+    data = {}
+    data['campaign'] = campaign;
+    data['campaign_id'] = $('[fn=c_id]').val();;
+    data['account_id'] = $('[fn=a_id]').val();
+    
+    $.ajax({
+            url: "/api/account/campaign/save", 
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(data), 
+            type: "POST",
+            processData: false,
+        }).done(function (response) {
+            alert("Campaña grabada")
+        });   
+    
+    return data;
 }

@@ -26,7 +26,9 @@ if args.auth:
 app = Flask(__name__, template_folder='html')
 
 @app.route('/')
+@app.route('/app')
 def home():
+    print dir(request)
     account = accountdb.accounts.find_one({"name":"Prueba"})
     tpp = 120
     page = int(request.args.get('page',"1"))-1
@@ -41,15 +43,19 @@ def home():
             pms.sort(key=lambda x: x.confidence, reverse=True)                
             t['x_extracted_info'] = pms
         if pms or request.args.get('onlymatches', 'false') != "true":
-            tweets.append(t)
-    return render_template('index.html', content_template="dashboard.html", js="dashboard.js", tweets=tweets, account=account)            
-    #return render_template('fullpage.html', content_template="dashboard.html", js="dashboard.j", tweets=tweets, account=account)
+            tweets.append(t)    
+    template = "index.html"
+    dashtemplate = "dashboard_html"
+    if request.path == "/app":
+        template = "app.html"
+        dashtemplate = "dashboard_app.html"
+    return render_template(template, content_template=dashtemplate, js="dashboard.js", tweets=tweets, account=account)            
 
 @app.route('/campaign')
 def campaigns():
     account = accountdb.accounts.find_one({"name":"Prueba"})
-    campaign_id = page = request.args.get('campaign_id',)
-    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign=account['campaigns'][campaign_id])            
+    campaign_id = request.args.get('campaign_id')
+    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
 
 
 @app.route('/<path:filename>')
@@ -154,6 +160,19 @@ def search_keywordset():
         res.append({"value": r['name'], "id": str(r['_id']) })
     return flask.Response(json.dumps(res),  mimetype='application/json')
 
+@app.route("/api/account/campaign/save", methods=['POST'])
+def save_campaign():
+    data = request.get_json()
+    campaign = data['campaign']
+    campaign['name'] = campaign['name'] + "+"
+    
+    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    
+    account['campaigns'][str(ObjectId())] = campaign
+    accountdb.accounts.save(account)
+    print
+    
+    return flask.Response(json.dumps({}),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.debug = True
