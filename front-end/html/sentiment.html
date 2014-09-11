@@ -50,7 +50,7 @@
                                     <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
                                     %%user.screen_name%%
                                 </a>
-                                %%text%%
+                                %%text%% <small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
                             </p>
                             <div class="box-tools pull-right">                        
                                 <div class="btn-group" data-toggle="btn-toggle">
@@ -76,7 +76,7 @@
             <div class="box box-info">
                 <div class="box-header">
                     <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Marca</h3>
+                    <h3 class="box-title">Tweets por Sentiment</h3>
                     <div class="box-tools pull-right">                        
                         <div class="btn-group" id="tweet_count_group_by" data-toggle="btn-toggle">
                             <button group_by="hour" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Hora</button>

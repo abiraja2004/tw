@@ -54,7 +54,7 @@ def sentiment():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
-    return render_template('app.html', content_template="sentiment.html", js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+    return render_template('app.html', content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
 @app.route('/<path:filename>')
 def send_js(filename):
@@ -89,18 +89,18 @@ def tweets_list():
     page = int(request.args.get('page',"1"))-1
     tweets_per_page = int(request.args.get('tpp',"20"))
     campaign_id = request.args.get("campaign_id", "")
-    print start, end, page, tweets_per_page
+    include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = []
     if start and end and campaign_id:
         collection_name = "tweets_%s" % campaign_id
         print collection_name
         start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
-        dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
+        docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
+        if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
+        dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
         res.extend(dbtweets)
     return flask.Response(dumps(res),  mimetype='application/json')
-    #return flask.jsonify({"results": res})    
-    #return flask.Response(json.dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
 def tweets_tag_sentiment():
@@ -121,8 +121,9 @@ def tweets_count():
     group_by = request.args.get("group_by", "day")
     account = request.args.get("account_id", "")
     campaign_id = request.args.get("campaign_id", "")
+    group_dimension = request.args.get("group_dimension", "")
     res = {'timerange': []}
-    if start and end and campaign_id:
+    if start and end and campaign_id and group_dimension:
         collection_name = "tweets_%s" % campaign_id
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
         end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
@@ -144,20 +145,31 @@ def tweets_count():
             timerange.append(d.strftime("%Y-%m-%dT%H:00:00Z"))
             d = d + delta
         res['timerange'] = timerange
-        res['brands'] = {}
+        res['dimensions'] = {}
         print timerange, campaign_id
         dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
         for tweet in dbtweets:
-            pms = tweet.get('x_extracted_info', [])
-            if pms:
-                pm = pms[0]
-                if not pm['brand'] in res['brands']: res['brands'][pm['brand']] = {}
-                d = tweet['x_created_at']
-                key = d.strftime(timeformat)
-                if not key in res['brands'][pm['brand']]:
-                    res['brands'][pm['brand']][key] = 1
-                else:
-                    res['brands'][pm['brand']][key] += 1   
+            if group_dimension == "brand":
+                pms = tweet.get('x_extracted_info', [])
+                if pms:
+                    pm = pms[0]
+                    if not pm['brand'] in res['dimensions']: res['dimensions'][pm['brand']] = {}
+                    d = tweet['x_created_at']
+                    key = d.strftime(timeformat)
+                    if not key in res['dimensions'][pm['brand']]:
+                        res['dimensions'][pm['brand']][key] = 1
+                    else:
+                        res['dimensions'][pm['brand']][key] += 1   
+            elif group_dimension == "sentiment":
+                if 'x_sentiment' in tweet:
+                    if not tweet['x_sentiment'] in res['dimensions']: res['dimensions'][tweet['x_sentiment']] = {}
+                    d = tweet['x_created_at']
+                    key = d.strftime(timeformat)
+                    if not key in res['dimensions'][tweet['x_sentiment']]:
+                        res['dimensions'][tweet['x_sentiment']][key] = 1
+                    else:
+                        res['dimensions'][tweet['x_sentiment']][key] += 1   
+                
     return flask.Response(dumps(res),  mimetype='application/json')
     #return flask.jsonify({"results": res})    
     #return flask.Response(json.dumps(res),  mimetype='application/json')
