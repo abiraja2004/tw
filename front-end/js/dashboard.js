@@ -43,15 +43,21 @@ function updateTweetBox(tweets)
     tweetbox = $("#tweet-box");
     tweetbox.html("");    
     sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
+    colors = {'+': 'green', '-':'red', '=':'yellow', '?': 'gray'}
     for (var i=0;i<tweets.length;i++)
     {
         tweet = tweets[i];
         sent = '';
-        if ('x_sentiment' in tweet) sent = sents[tweet['x_sentiment']];
+        color= 'white';
+        if ('x_sentiment' in tweet) 
+        {
+            sent = sents[tweet['x_sentiment']];
+            color = colors[tweet['x_sentiment']];
+        }
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid']).replace("%%user.profile_image_url_https%%", tweet['user']['profile_image_url_https'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
-                    .replace("%%text%%", tweet['text']).replace("%%sentiment%%", sent));    
+                    .replace("%%text%%", tweet['text']).replace("%%sentiment%%", sent).replace("%%sentiment_color%%", color));    
         tweetbox.append(tweettag);
     }
     
