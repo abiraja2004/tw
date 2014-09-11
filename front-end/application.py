@@ -33,7 +33,7 @@ def home():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
-        campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id
+        campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id   
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     template = "index.html"
     dashtemplate = "dashboard.html"
