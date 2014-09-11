@@ -164,11 +164,11 @@ def search_keywordset():
 def save_campaign():
     data = request.get_json()
     campaign = data['campaign']
-    campaign['name'] = campaign['name'] + "+"
+    campaign['name'] = campaign['name']
     
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     
-    account['campaigns'][str(ObjectId())] = campaign
+    account['campaigns'][data['campaign_id']] = campaign
     accountdb.accounts.save(account)
     print
     
