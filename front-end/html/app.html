@@ -71,7 +71,7 @@
                     </div>
                     <!-- search form -->
                                     <div class="form-group">
-                                        <label>Date range:</label>
+                                        <label>Periodo:</label>
                                         <div class="input-group">
                                             <div class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
@@ -83,14 +83,14 @@
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
                         <li class="active">
-                            <a href="index.html">
+                            <a href="/app?account_id={{account['_id']}}&campaign_id={{campaign_id}}">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-bar-chart-o"></i>
-                                <span>Campaigns</span>
+                                <span>Campañas</span>
                                 <i class="fa fa-angle-left pull-right"></i>
                             </a>
                             <ul class="treeview-menu">
@@ -99,12 +99,19 @@
                                 {% endfor %}
                             </ul>                            
                         </li>                                                
-                       <!--li class="active">
-                            <a href="index.html">
-                                <i class="fa fa-heart"></i> <span>Sentiment</span>
+                         <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-heart"></i>
+                                <span>Sentiment</span>
+                                <i class="fa fa-angle-left pull-right"></i>
                             </a>
-                        </li-->                        
-                    </ul>
+                            <ul class="treeview-menu">
+                                {% for campaign_id, campaign in account['campaigns'].items() %}
+                                <li><a href="/sentiment?campaign_id={{campaign_id}}"><i class="fa fa-heart"></i> {{campaign['name']}}</a></li>
+                                {% endfor %}
+                            </ul>                            
+                        </li>                                                
+                   </ul>
                 </section>
                 <!-- /.sidebar -->
             </aside>

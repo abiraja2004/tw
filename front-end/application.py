@@ -47,8 +47,14 @@ def campaigns():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
-    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+    return render_template('app.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
+@app.route('/sentiment')
+def sentiment():
+    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    campaign_id = request.args.get('campaign_id')
+    return render_template('app.html', content_template="sentiment.html", js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
 @app.route('/<path:filename>')
 def send_js(filename):
@@ -95,6 +101,18 @@ def tweets_list():
     return flask.Response(dumps(res),  mimetype='application/json')
     #return flask.jsonify({"results": res})    
     #return flask.Response(json.dumps(res),  mimetype='application/json')
+
+@app.route('/api/tweets/tag/sentiment', methods=['POST'])
+def tweets_tag_sentiment():
+    sent = request.form["sentiment"]
+    tweet_id = request.form["tweet_id"]
+    campaign_id = request.form["campaign_id"]
+    res = []
+    if sent and tweet_id and campaign_id:
+        collection_name = "tweets_%s" % campaign_id
+        accountdb[collection_name].update({"_id": ObjectId(tweet_id)}, {"$set": {"x_sentiment": sent}}); 
+        return "OK"
+    return "ERROR"
 
 @app.route('/api/tweets/count')
 def tweets_count():

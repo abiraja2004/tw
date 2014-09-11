@@ -39,29 +39,38 @@ function fetchTweets(account_id, campaign_id)
 
 function updateTweetBox(tweets)
 {
-    html = ''+
-    '<div class="item">' +
-        '<img src="%%user.profile_image_url_https%%" alt="user image" class="online"/>' +
-        '<p class="message">' +
-            '<a href="#" class="name">' +
-                '<small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>' +
-                '%%user.screen_name%%' +
-            '</a>' + 
-            '%%text%%' +
-        '</p>' +
-    '</div>';
+    html = $('#tweet_model').html();
     tweetbox = $("#tweet-box");
     tweetbox.html("");    
+    sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
     for (var i=0;i<tweets.length;i++)
     {
         tweet = tweets[i];
-        tweettag = $(html.replace("%%user.profile_image_url_https%%", tweet['user']['profile_image_url_https'])
+        sent = '';
+        if ('x_sentiment' in tweet) sent = sents[tweet['x_sentiment']];
+        tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid']).replace("%%user.profile_image_url_https%%", tweet['user']['profile_image_url_https'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
-                    .replace("%%text%%", tweet['text']))
+                    .replace("%%text%%", tweet['text']).replace("%%sentiment%%", sent));    
         tweetbox.append(tweettag);
     }
     
+}
+
+
+function tagSentiment(btn, sent)
+{
+    tweettag = $(btn).closest(".tweet")
+    tweet_id = tweettag.attr("tweet_id");
+    account_id = $('[fn=a_id]').val();;
+    campaign_id = $('[fn=c_id]').val();
+    $.ajax({
+        url: "/api/tweets/tag/sentiment", 
+        data: {'tweet_id': tweet_id, 'sentiment': sent, "account_id": account_id, 'campaign_id': campaign_id}, 
+        type: "POST",
+    }).done(function (data) { 
+        tweettag.hide('slow');
+    });    
 }
 
 function fetchTweetsCount()
