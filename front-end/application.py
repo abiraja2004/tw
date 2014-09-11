@@ -44,8 +44,8 @@ def home():
 
 @app.route('/campaign')
 def campaigns():
-    account_name = request.args.get("account_name", "Prueba")
-    account = accountdb.accounts.find_one({"name":account_name})
+    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
     return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
