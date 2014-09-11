@@ -1,3 +1,6 @@
+var deb_var=null;
+var deb_var2=null;
+
 $(function () {   
     $('#tweet-box').slimScroll({
         height: '500px'
@@ -12,9 +15,10 @@ $(function () {
 
 function dateRangeChanged()
 {
-    account = '1';
-    campaign = '2'
-    fetchTweets(account, campaign);
+    account_id = $('[fn=a_id]').val();;
+    campaign_id = $('[fn=c_id]').val();
+    
+    fetchTweets(account_id, campaign_id);
     fetchTweetsCount()
 }
 
@@ -65,10 +69,11 @@ function fetchTweetsCount()
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
-
+    account_id = $('[fn=a_id]').val();;
+    campaign_id = $('[fn=c_id]').val();
     $.ajax({
         url: "/api/tweets/count", 
-        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by}, 
+        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, "account_id": account_id, 'campaign_id': campaign_id}, 
         type: "GET",
     }).done(function (data) { 
         updateTweetCountLineChart(data)
@@ -78,6 +83,7 @@ function fetchTweetsCount()
 
 function updateTweetCountLineChart(data)
 {
+    deb_var2 = data;
     $('#line-chart').off();
     $('#line-chart').empty();
     
@@ -94,6 +100,7 @@ function updateTweetCountLineChart(data)
         series.push(item);
     }
     brands = []
+    deb_var = series;
     for (brand in data['brands']) brands.push(brand)
     // LINE CHART
     var line = new Morris.Line({

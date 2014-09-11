@@ -27,35 +27,27 @@ app = Flask(__name__, template_folder='html')
 
 @app.route('/')
 @app.route('/app')
+@app.route('/sivale')
 def home():
-    print dir(request)
-    account = accountdb.accounts.find_one({"name":"Prueba"})
-    tpp = 120
-    page = int(request.args.get('page',"1"))-1
-    dbtweets = tweetdb.tweets.find({ "retweeted_status": {"$exists": False}}).sort("x_created_at", DESCENDING).skip(page*tpp).limit(40) 
-    tweets = []
-    bcs = getBrandClassifiers()
-    for t in dbtweets:
-        pms = []
-        for bc in bcs:
-            pms.extend(bc.extract(t['text']))
-        if pms:
-            pms.sort(key=lambda x: x.confidence, reverse=True)                
-            t['x_extracted_info'] = pms
-        if pms or request.args.get('onlymatches', 'false') != "true":
-            tweets.append(t)    
+    account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
+    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    if request.path == "/sivale":
+        account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
+        campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id
+    account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     template = "index.html"
     dashtemplate = "dashboard.html"
-    if request.path == "/app":
+    if request.path == "/app" or request.path == "/sivale":
         template = "app.html"
         dashtemplate = "dashboard_app.html"
-    return render_template(template, content_template=dashtemplate, js="dashboard.js", tweets=tweets, account=account)            
+    return render_template(template, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
 
 @app.route('/campaign')
 def campaigns():
-    account = accountdb.accounts.find_one({"name":"Prueba"})
+    account_name = request.args.get("account_name", "Prueba")
+    account = accountdb.accounts.find_one({"name":account_name})
     campaign_id = request.args.get('campaign_id')
-    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
+    return render_template('index.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
 
 @app.route('/<path:filename>')
@@ -90,12 +82,15 @@ def tweets_list():
     end = request.args.get("end", "")
     page = int(request.args.get('page',"1"))-1
     tweets_per_page = int(request.args.get('tpp',"20"))
+    campaign_id = request.args.get("campaign_id", "")
     print start, end, page, tweets_per_page
     res = []
-    if start and end:
+    if start and end and campaign_id:
+        collection_name = "tweets_%s" % campaign_id
+        print collection_name
         start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
-        dbtweets = tweetdb.tweets.find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
+        dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
         res.extend(dbtweets)
     return flask.Response(dumps(res),  mimetype='application/json')
     #return flask.jsonify({"results": res})    
@@ -106,20 +101,25 @@ def tweets_count():
     start = request.args.get("start", "")
     end = request.args.get("end", "")
     group_by = request.args.get("group_by", "day")
-    account = request.args.get("account", "")
+    account = request.args.get("account_id", "")
     campaign_id = request.args.get("campaign_id", "")
     res = {'timerange': []}
-    if start and end:
-        start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
-        end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+    if start and end and campaign_id:
+        collection_name = "tweets_%s" % campaign_id
+        start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
+        end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
         timerange = []
         params = {}
+        timeformat = ""
         if group_by == "day":
             params = {"days": 1}
+            timeformat = "%Y-%m-%dT00:00:00Z"
         elif group_by == "hour":
             params = {"hours": 1}
+            timeformat = "%Y-%m-%dT%H:00:00Z"
         elif group_by == "week":
             params = {"weeks": 1}
+            timeformat = "%Y-%m-%dT00:00:00Z"
         delta = timedelta(**params)
         d = start
         while d <= end:
@@ -128,14 +128,14 @@ def tweets_count():
         res['timerange'] = timerange
         res['brands'] = {}
         print timerange, campaign_id
-        dbtweets = tweetdb.tweets.find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
+        dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
         for tweet in dbtweets:
             pms = tweet.get('x_extracted_info', [])
             if pms:
                 pm = pms[0]
                 if not pm['brand'] in res['brands']: res['brands'][pm['brand']] = {}
                 d = tweet['x_created_at']
-                key = d.strftime("%Y-%m-%dT%H:00:00Z")
+                key = d.strftime(timeformat)
                 if not key in res['brands'][pm['brand']]:
                     res['brands'][pm['brand']][key] = 1
                 else:

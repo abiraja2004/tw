@@ -110,11 +110,11 @@ def getProductRules(product):
     pr.use_brand_id_rules = product.get("use_brand_id_rules", False)
     return pr
 
-def getBrandRules(brand, campaign, account):
+def getBrandRules(brand, campaign_id, campaign, account):
     br = Rule("Brand")
     br.account_id = str(account.get('_id',''))
     br.account_name = account.get('name','')
-    br.campaign_id = str(campaign.get('_id',''))
+    br.campaign_id = campaign_id
     br.campaign_name = campaign.get('name','')
     br.name = brand.get("name", "")
     br.synonyms = brand.get('synonyms', '')
@@ -125,17 +125,17 @@ def getBrandRules(brand, campaign, account):
         br.children.append(getProductRules(prod))
     return br
 
-def getCampaignRules(campaign, account):
+def getCampaignRules(campaign_id, campaign, account):
     rules = []
     for brand_id, brand in campaign['brands'].items():
-        rules.append(getBrandRules(brand, campaign, account))
+        rules.append(getBrandRules(brand, campaign_id, campaign, account))
     return rules
 
 
 def getAccountRules(account):
     rules = []
     for camp_id, camp in account['campaigns'].items():
-        rules.extend(getCampaignRules(camp, account))
+        rules.extend(getCampaignRules(camp_id, camp, account))
     return rules
 
 def regenerateRules():
@@ -162,3 +162,12 @@ def getBrandClassifiers():
     return res
 
 
+if __name__ == "__main__":
+    bcs = getBrandClassifiers()
+    for bc in bcs:
+        print bc.name, bc.brand_regexps
+        pms = bc.extract('quiero sivale ahoraaa')
+        if pms: 
+            print pms[0].confidence
+            print "|" + pms[0].campaign_id + "|"
+    

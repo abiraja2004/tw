@@ -95,12 +95,12 @@ def root():
 
 @app.route("/account")
 def account():
-    account = monitor.accounts.find_one({"name":"Prueba"})
+    account = monitor.accounts.find_one({"name":"SiVale"})
     return render_template('manage.html', account = account)
 
 @app.route("/account/campaign")
 def account_campaign():
-    account = monitor.accounts.find_one({"name":"Prueba"})
+    account = monitor.accounts.find_one({"name":"SiVale"})
     campaign_id = request.args['campaign_id']
     campaign = account['campaigns'][campaign_id]
     return render_template('campaign_container.html', account = account, campaign_id = campaign_id, campaign = campaign)

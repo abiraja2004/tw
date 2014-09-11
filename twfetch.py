@@ -121,6 +121,7 @@ class MyThread(threading.Thread):
 #        (follow="138814032", track=["CFKArgentina", "cristina", "cris"])
 #(track=['scioli','massa','cfk','solanas','@cfkargentina','@danielscioli','@SergioMassa'])
 
+bcs = None
 class KeywordMonitor(threading.Thread):
 
     def __init__(self):
@@ -128,6 +129,7 @@ class KeywordMonitor(threading.Thread):
         self.stop = False
 
     def run(self):
+        global bcs
         t = datetime.now() - timedelta(hours=99)
         keywords = None
         while not self.stop:
@@ -139,10 +141,15 @@ class KeywordMonitor(threading.Thread):
                     print "keyword changes found... restarting fetcher"
                     if stream: stream.finish()
                     while MyThread.running: time.sleep(1)
+                    bcs = getBrandClassifiers()
                     keywords = k2
                     MyThread.keywords = keywords
                     MyThread().start()
                     print "Tracking:", keywords
+                    try:
+                        open("tracking_words.txt", "wb").write(str(keywords))
+                    except:
+                        pass
                 time.sleep(1)
             else:
                 time.sleep(30)
@@ -167,8 +174,13 @@ try:
             if pms:
                 pms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_info'] = pms
-                print "INSERTING!!!!"
-                print db.tweets.insert(t)
+                campaign_ids = set()
+                for pm in pms:
+                    campaign_ids.add(pm['campaign_id'])
+                for cid in campaign_ids:
+                    collection_name = "tweets_%s" % cid                    
+                    print "INSERTING into %s" % collection_name
+                    print monitor[collection_name].insert(t)
             print            
             
             try:
