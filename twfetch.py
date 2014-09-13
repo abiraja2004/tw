@@ -90,7 +90,7 @@ class TweetStreamer(TwythonStreamer):
     def next(self):
         if self.stop: raise StopIteration
         while not self.tweets: 
-            print "waiting..."
+            print "%s, waiting..." % datetime.now()
             time.sleep(0.5)
         t = self.tweets.pop(0)
         return t
