@@ -131,6 +131,7 @@ function saveCampaign()
         brand_id = tagbrand.find("[fn=b_id]").attr('id');
         brand['name'] = tagbrand.find("[fn=bname]").html();
         brand['synonyms'] = tagbrand.find("[fn=bsynonyms]").val();
+        brand['own_brand'] = (tagbrand.find("[fn=bown_brand]:checked").val() != 'false');
         brand['identification_rules'] = []
         tags = tagbrand.find("[fn=brule]");
         for (j=1;j<tags.length;j++)

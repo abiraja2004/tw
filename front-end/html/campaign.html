@@ -81,6 +81,20 @@
                                     <input type="text" fn="bsynonyms" class="form-control" placeholder="Sinónimos separados por comas..." value="{{brand['synonyms']}}"/>
                                 </div>
                                 <div class="form-group">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="{{brand_id}}_own_brand" id="" value="true" fn="bown_brand" {{checked(brand['own_brand'])}}>
+                                            Marca propia
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" id="" name="{{brand_id}}_own_brand" value="false" fn="bown_brand" {{checked(not brand['own_brand'])}}>
+                                            Marca de la competencia
+                                        </label>
+                                    </div>  
+                                </div>
+                                <div class="form-group">
                                     <label>Reglas de Identificación</label>
                                     <div id="{{brand_id}}_id_rules_container" class="brand_id_rules_container">
                                         {% if not 'identification_rules' in brand %} {% do brand.update({'identification_rules': []}) %} {% endif %}
