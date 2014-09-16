@@ -28,16 +28,20 @@ app = Flask(__name__, template_folder='html')
 @app.route('/')
 @app.route('/app')
 @app.route('/sivale')
+@app.route('/gm')
 def home():
     account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
         campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id   
+    elif request.path == "/gm":
+        account_id = "54189900d06625fc47e54b76" #general motors
+        campaign_id = "54189b93d06625fc47e54b78" 
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     template = "index.html"
     dashtemplate = "dashboard.html"
-    if request.path == "/app" or request.path == "/sivale":
+    if request.path == "/app" or request.path == "/sivale" or request.path == "/gm":
         template = "app.html"
         dashtemplate = "dashboard_app.html"
     return render_template(template, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
