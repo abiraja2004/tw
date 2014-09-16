@@ -90,7 +90,7 @@ def tweets_list():
     tweets_per_page = int(request.args.get('tpp',"20"))
     campaign_id = request.args.get("campaign_id", "")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
-    res = []
+    res = {"tweets": [], "mentions": 0}
     if start and end and campaign_id:
         collection_name = "tweets_%s" % campaign_id
         print collection_name
@@ -99,7 +99,7 @@ def tweets_list():
         docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
         if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
         dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
-        res.extend(dbtweets)
+        res['tweets'].extend(dbtweets)
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])

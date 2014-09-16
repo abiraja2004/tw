@@ -1,3 +1,4 @@
+var deb_var3 = null;
 tweets_count_group_by = 'day';
 
 function getDateRange()
@@ -16,14 +17,16 @@ function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
         url: "/api/tweets/list", 
         data: {"account_id": account_id, 'campaign_id': campaign_id, 'start': start, 'end': end, 'include_sentiment_tagged_tweets': include_sentiment_tagged_tweets}, 
         type: "GET",
-    }).done(function (tweets) { 
-        updateTweetBox(tweets)
+    }).done(function (response) { 
+        updateTweetBox(response)
     });
 }
 
 
-function updateTweetBox(tweets)
+function updateTweetBox(response)
 {
+    tweets = response['tweets'];
+    mentions = 0;
     html = $('#tweet_model').html();
     tweetbox = $("#tweet-box");
     tweetbox.html("");    
@@ -42,6 +45,10 @@ function updateTweetBox(tweets)
         brand = '';
         product = '';
         confidence = '';
+        if ('x_mentions_count' in tweet)
+        {
+            for (m in tweet['x_mentions_count']) mentions = mentions + tweet['x_mentions_count'][m];
+        }
         if ('x_extracted_info' in tweet && tweet['x_extracted_info'].length > 0)
         {
                 brand = tweet['x_extracted_info'][0]['brand'];
@@ -60,7 +67,7 @@ function updateTweetBox(tweets)
                     );    
         tweetbox.append(tweettag);
     }
-    
+    $('#mentions_indicator').html(''+mentions);
 }
 
 

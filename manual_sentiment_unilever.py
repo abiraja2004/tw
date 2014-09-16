@@ -77,7 +77,7 @@ def root():
         for bc in bcs:
             #print bc.extract(t['text'])
             pms.extend(bc.extract(t['text']))
-        if pms:
+        if pms or ('x_mentions_count' in t):
             ht = t['text']
             #pms.sort(key=lambda x: min({-1: 99999}.get(x.brand_matched_pos[0],x.brand_matched_pos[0]), {-1: 99999}.get(x.product_matched_pos[0],x.product_matched_pos[0])))
             pms.sort(key=lambda x: x.confidence, reverse=True)
@@ -89,7 +89,7 @@ def root():
                 
             t['x_extracted_info'] = pms
             t['x_highlighted_text'] = ht
-        if pms or request.args.get('onlymatches', 'false') != "true":
+        if ('x_mentions_count' in t) or pms or request.args.get('onlymatches', 'false') != "true":
             tweets.append(t)
     return render_template('rate_tweets.html', tweets=tweets)
 

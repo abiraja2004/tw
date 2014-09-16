@@ -118,6 +118,7 @@ def getBrandRules(brand, campaign_id, campaign, account):
     br.campaign_name = campaign.get('name','')
     br.name = brand.get("name", "")
     br.synonyms = brand.get('synonyms', '')
+    br.follow_accounts = brand.get('folllow_accounts', '')
     br.keywords = brand.get('keywords', [])
     br.keyword_sets = brand.get('keyword_sets', [])
     br.rules = brand.get('identification_rules', [])
