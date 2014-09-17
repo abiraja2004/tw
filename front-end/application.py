@@ -44,21 +44,24 @@ def home():
     if request.path == "/app" or request.path == "/sivale" or request.path == "/gm":
         template = "app.html"
         dashtemplate = "dashboard_app.html"
-    return render_template(template, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
+    custom_css= request.args.get("css", None)
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
 
 @app.route('/campaign')
 def campaigns():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
-    return render_template('app.html', content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+    custom_css= request.args.get("css", None)
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
 @app.route('/sentiment')
 def sentiment():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
-    return render_template('app.html', content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+    custom_css= request.args.get("css", None)
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
 @app.route('/<path:filename>')
 def send_js(filename):

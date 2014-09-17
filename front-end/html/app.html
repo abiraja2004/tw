@@ -25,7 +25,10 @@
         
         <link href="css/bootstrap-slider/slider.css" rel="stylesheet" type="text/css" />
         <link href="css/typeahead-bs3.css" rel="stylesheet" type="text/css" />
-
+        
+        {% if custom_css %}
+        <link href="{{custom_css}}" rel="stylesheet" type="text/css" />
+        {% endif %}
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
