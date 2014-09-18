@@ -175,7 +175,7 @@ class BrandClassifier(object):
             for clue in cluelist:
                 if isinstance(clue, tuple):
                     for w in clue[1:]:
-                        wdict[w] = clue[0]
+                        wdict[w.lower()] = clue[0]
                 else:
                     raise Exception("invalid clue: %s" % clue)
             if wdict:

@@ -1,1 +1,1 @@
-set([u'Veet', u'Ades', u'ClubAmerica', u'crujito', u'Aguilas', u'Knorr', u'crugito', u'adesss', u'Nair', u'knor', u'America', u'Crujitos', u'SiVale', u'Jumex'])
+set([u'Veet', u'Ades', u'ClubAmerica', u'crujito', u'Aguilas', u'Knorr', u'crugito', u'adesss', u'Nair', u'knor', u'America', u'GM', u'Crujitos', u'SiVale', u'Jumex'])
