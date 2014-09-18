@@ -63,6 +63,15 @@ def sentiment():
     custom_css= request.args.get("css", None)
     return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
+@app.route('/keywordsets')
+def keywordsets():
+    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    campaign_id = request.args.get('campaign_id')    
+    keywordsets = accountdb.keywordset.find({})
+    custom_css= request.args.get("css", None)
+    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+
 @app.route('/<path:filename>')
 def send_js(filename):
     return flask.send_from_directory('html', filename)

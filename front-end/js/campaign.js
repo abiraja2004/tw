@@ -31,17 +31,6 @@ function setupTypeahead(tags)
     }).on("typeahead:autocompleted", function () {checkLastItemChanged(this)});
 }
 
-function getNewId(func)
-{
- $.ajax({
-        url: "/api/objectid/new", 
-        data: {}, 
-        type: "GET",
-    }).done(function (new_id) {
-        func(new_id)
-    });
-}
-
 function checkLastItemChanged(input)
 {
     var div = $(input).parent().closest("div");
@@ -79,20 +68,6 @@ function addProduct(btn)
     });
 }
 
-function removeComponent(tag)
-{
-    $(tag).closest(".removible_component").remove();
-}
-
-function removeComponentExceptLast(tag)
-{
-    alert(tag);
-    if (!$(tag).closest(".removible_component").is(":last-child"))
-    {
-        $(tag).closest(".removible_component").remove();
-    }
-}
-
 function addBrand(tag)
 {
     brands_container = $(tag).closest(".brands_section_container").find(".brands_container");
@@ -111,11 +86,6 @@ function addBrand(tag)
         bt.find(".brand_container").attr('id', id);
         bt.find(".brand_title").attr('href', "#"+id);
     });
-}
-
-function removeBrand(tag)
-{
-    $(tag).closest(".brand").remove();
 }
 
 function saveCampaign()

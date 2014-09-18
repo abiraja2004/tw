@@ -7,6 +7,18 @@ function getDateRange()
     
 }
 
+function getNewId(func)
+{
+ $.ajax({
+        url: "/api/objectid/new", 
+        data: {}, 
+        type: "GET",
+    }).done(function (new_id) {
+        func(new_id)
+    });
+}
+
+
 function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
 {   
     startend = getDateRange();
@@ -126,4 +138,19 @@ function updateTweetCountLineChart(data, options)
     chartOptions['labels'] = labels;
     // LINE CHART
     var line = new Morris.Line(chartOptions);   
+}
+
+
+function removeComponent(tag)
+{
+    $(tag).closest(".removible_component").remove();
+}
+
+function removeComponentExceptLast(tag)
+{
+    alert(tag);
+    if (!$(tag).closest(".removible_component").is(":last-child"))
+    {
+        $(tag).closest(".removible_component").remove();
+    }
 }
