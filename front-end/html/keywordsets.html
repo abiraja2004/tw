@@ -1,0 +1,68 @@
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Grupos de Palabras
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Grupos de Palabras</li>
+    </ol>    
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-12 keywordsets_section_container">
+            <div class="box box-solid">
+                <div class="panel box box-info">        
+                    <div class="box-header">
+                        <h2 class="box-title">Grupos de Palabras</h2>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-success btn-sm"  onclick="addKeywordset(this); return false;"><i class="fa fa-plus"></i> Agregar Nuevo</button>
+                        </div>                
+                    </div>
+                </div>
+            </div>        
+            
+            <div class="keywordsets_container">
+                {% set bfirst = True %}
+                {% for kwset in [{'_id': None, 'name': 'Nuevo Grupo', 'keywords': [], 'keywordsets': []}] + keywordsets %}
+                <div class="box box-solid keywordset removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
+                    <div class="panel box box-success">
+                        <div class="box-header">
+                            <h2 class="box-title">
+                                <a class="keywordset_title" data-toggle="collapse" data-parent="#accordion" href="#{{kwset['_id']}}" fn="name">{{kwset['name']}}</a>
+                            </h2>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>
+                            </div>
+                        </div>  
+                    </div>
+                    
+                    <div id="{{kwset['_id']}}" fn="_id" class="panel-collapse collapse keywordset_container">
+                        <div class="box-body">
+                            <form role="form">
+                                <!-- text input -->
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Nombre</label>
+                                            <input type="text" class="form-control" placeholder="nombre del grupo..." value="{{kwset['name']}}" onchange="$(this).closest('.keywordset').find('.keywordset_title').html($(this).val());" />
+                                        </div>          
+                                    </div>
+                                
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+                {% set bfirst = false %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section><!-- /.content -->
