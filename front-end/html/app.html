@@ -1,3 +1,35 @@
+{% macro getSliderClass(first, bfirst=False, pfirst=False) -%}
+{% set res = "slider" %}
+{% if bfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if pfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if first %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{{res}}
+{%- endmacro %}
+
+{% macro getTypeaheadClass(first, bfirst=False, pfirst=False) -%}
+{% set res = "typeahead" %}
+{% if bfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if pfirst %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{% if first %}
+    {% set res = "pre_" + res %}
+{% endif %}
+{{res}}
+{%- endmacro %}
+
+{% macro checked(b) -%}
+{%if b %}checked{% endif %}
+{%- endmacro %}
+
 <!DOCTYPE html> 
 <html>
     <head>

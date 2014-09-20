@@ -37,7 +37,8 @@
                                 <a class="keywordset_title" data-toggle="collapse" data-parent="#accordion" href="#{{kwset['_id']}}" fn="name">{{kwset['name']}}</a>
                             </h2>
                             <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>
+                                <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>                                
+                                <button class="btn btn-info btn-sm" onclick="saveKeywordset(this); return false"><i class="fa fa-save"></i></button>
                             </div>
                         </div>  
                     </div>
@@ -50,11 +51,54 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Nombre</label>
-                                            <input type="text" class="form-control" placeholder="nombre del grupo..." value="{{kwset['name']}}" onchange="$(this).closest('.keywordset').find('.keywordset_title').html($(this).val());" />
+                                            <input type="text" fn="name" class="form-control" placeholder="nombre del grupo..." value="{{kwset['name']}}" onchange="$(this).closest('.keywordset').find('.keywordset_title').html($(this).val());" />
                                         </div>          
                                     </div>
-                                
                                 </div>
+
+                                <div class="form-group">
+                                    <label>Grupos de palabras clave</label>
+                                    <div id="{{kwset['_id']}}_keyword_sets_container" class="keywordset_keyword_sets_container">
+                                        {% if not 'keywordsets' in kwset %} {% do kwset.update({'keywordsets': []}) %} {% endif %}
+                                        {% do kwset['keywordsets'].insert(0, {'name':'', 'keywords':[], 'keywordsets': []}) %}
+                                        {% do kwset['keywordsets'].append( {'name':'', 'keywords':[], 'keywordsets': []} ) %}
+                                        {% set first = True %}
+                                        {% for childkwset in kwset['keywordsets'] %}
+                                        <div class="removible_component" fn="keywordset" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>
+                                            <table style="width:600px">
+                                                <tr>
+                                                    <td style="width: 30%">
+                                                        <input type="text" kwset_id="{{childkwset['_id']}}" class="{{ getTypeaheadClass(first, bfirst) }} form-control" fn="word" placeholder="palabra clave..." value="{{childkwset['name']}}" onchange="checkLastItemChanged(this);"/>
+                                                    </td>
+                                                    <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        {% set first = False %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Palabras clave individuales</label>                                    
+                                    <div id="{{kwset['_id']}}_keywords_container" class="keyworset_keywords_container">
+                                        {% if not 'keywords' in kwset %} {% do kwset.update({'keywords': []}) %} {% endif %}
+                                        {% do kwset['keywords'].insert(0, '') %}
+                                        {% do kwset['keywords'].append('') %}
+                                        {% set first = True %}
+                                        {% for kw in kwset['keywords'] %}
+                                        <div class="removible_component " fn="keyword" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>
+                                            <table style="width: 600px">
+                                                <tr>
+                                                    <td style="width: 30%"><input type="text" class="form-control" placeholder="palabra clave..." fn="word" value="{{kw}}" onchange="checkLastItemChanged(this);"/></td>
+                                                    <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        {% set first = False %}                                        
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
                             </form>
                         </div>
                     </div>

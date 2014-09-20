@@ -148,7 +148,6 @@ function removeComponent(tag)
 
 function removeComponentExceptLast(tag)
 {
-    alert(tag);
     if (!$(tag).closest(".removible_component").is(":last-child"))
     {
         $(tag).closest(".removible_component").remove();

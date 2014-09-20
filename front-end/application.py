@@ -210,7 +210,6 @@ def search_keywordset():
 def save_campaign():
     data = request.get_json()
     campaign = data['campaign']
-    campaign['name'] = campaign['name']
     
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     
@@ -220,6 +219,16 @@ def save_campaign():
     
     return flask.Response(json.dumps({}),  mimetype='application/json')
 
+@app.route("/api/account/keywordset/save", methods=['POST'])
+def save_keywordset():
+    data = request.get_json()
+    kwset = data['keywordset']
+    kwset['_id'] = ObjectId(data['keywordset_id'])
+    
+    accountdb.keywordset.save(kwset)
+    print
+    
+    return flask.Response(json.dumps({}),  mimetype='application/json')
 if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    

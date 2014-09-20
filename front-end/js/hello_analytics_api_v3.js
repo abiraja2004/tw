@@ -1,3 +1,5 @@
+var deb_var = null;
+var deb_var2 = null;
 // Execute this function when the 'Make API Call' button is clicked
 function makeApiCall() {
   console.log('Starting Request Process...');
@@ -17,9 +19,11 @@ function handleAccounts(results) {
   if (!results.code) {
     if (results && results.items && results.items.length) {
 
+      account = results.items[0]
       // Get the first Google Analytics account
-      var firstAccountId = results.items[0].id;
-
+      var firstAccountId = account.id;
+      console.log("accounts: " + results.items.length);
+      deb_var = account;
       // Query for Web Properties
       queryWebproperties(firstAccountId);
 
@@ -45,10 +49,13 @@ function handleWebproperties(results) {
     if (results && results.items && results.items.length) {
 
       // Get the first Google Analytics account
-      var firstAccountId = results.items[0].accountId;
-
+      var webprop = results.items[0];
+      var firstAccountId = webprop.accountId;
+      
+      console.log("wp:acc:length " + results.items.length);
+      deb_var2 = webprop;
       // Get the first Web Property ID
-      var firstWebpropertyId = results.items[0].id;
+      var firstWebpropertyId = webprop.id;
 
       // Query for Views (Profiles)
       queryProfiles(firstAccountId, firstWebpropertyId);
@@ -64,7 +71,7 @@ function handleWebproperties(results) {
 
 function queryProfiles(accountId, webpropertyId) {
   console.log('Querying Views (Profiles).');
-
+    console.log(accountId);
   // Get a list of all Views (Profiles) for the first Web Property of the first Account
   gapi.client.analytics.management.profiles.list({
       'accountId': accountId,
@@ -79,7 +86,7 @@ function handleProfiles(results) {
 
       // Get the first View (Profile) ID
       var firstProfileId = results.items[0].id;
-
+      console.log(firstProfileId);
       // Query the Core Reporting API
       queryCoreReportingApi(firstProfileId);
 
@@ -98,8 +105,8 @@ function queryCoreReportingApi(profileId) {
   // Use the Analytics Service Object to query the Core Reporting API
   gapi.client.analytics.data.ga.get({
     'ids': 'ga:' + profileId,
-    'start-date': '2012-03-03',
-    'end-date': '2012-03-03',
+    'start-date': '2011-07-01',
+    'end-date': '2014-09-30',
     'metrics': 'ga:sessions'
   }).execute(handleCoreReportingResults);
 }
@@ -118,6 +125,7 @@ function handleCoreReportingResults(results) {
 function printResults(results) {
   if (results.rows && results.rows.length) {
     console.log('View (Profile) Name: ', results.profileInfo.profileName);
+    deb_var = results;
     console.log('Total Sessions: ', results.rows[0][0]);
   } else {
     console.log('No results found');

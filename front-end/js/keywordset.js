@@ -17,6 +17,7 @@ keywordsets_blookhound = new Bloodhound({
 keywordsets_blookhound.initialize();
 setupTypeahead($('.typeahead'));
 
+
 });
 
 function dateRangeChanged()
@@ -30,7 +31,10 @@ function setupTypeahead(tags)
     name: 'keywordsets',
     displayKey: 'value',
     source: keywordsets_blookhound.ttAdapter()
-    }).on("typeahead:autocompleted", function () {checkLastItemChanged(this)});
+    }).on("typeahead:selected typeahead:autocompleted", function (e, datum) {
+        $(this).attr("kwset_id",datum.id);
+        checkLastItemChanged(this);
+    });
 }
 
 function checkLastItemChanged(input)
@@ -67,4 +71,54 @@ function addKeywordset(tag)
         bt.find(".keywordset_container").attr('id', id);
         bt.find(".keywordset_title").attr('href', "#"+id);
     });
+}
+
+
+
+function saveKeywordset(button)
+{
+    container = $(button).closest(".keywordset").find(".keywordset_container");
+    kwset = {};
+    deb_var2 = container;
+    kwset_id = container.attr('id');
+    kwset['name'] = container.find("[fn=name]").val();
+    kwset['keywordsets'] = []
+    tags = container.find("[fn=keywordset]");
+    for (j=1;j<tags.length;j++)
+    {
+        tags2 = tags[j];
+        if ($(tags2).find("[fn=word]").typeahead('val') != "") 
+        {   
+            d = {}
+            d['name'] = $(tags2).find("[fn=word]:not([kwset_id=''])").typeahead('val');
+            d['id'] = $(tags2).find("[fn=word]:not([kwset_id=''])").attr("kwset_id")
+            kwset['keywordsets'].push(d);
+        }
+    }
+    kwset['keywords'] = []
+    tags = container.find("[fn=keyword]");
+    for (j=1;j<tags.length;j++)
+    {
+
+        tags2 = tags[j];
+        if ($(tags2).find("[fn=word]").val() != "") 
+        {   
+            kwset['keywords'].push($(tags2).find("[fn=word]").val());
+        }
+    }        
+    data = {}
+    data['keywordset_id'] = kwset_id;
+    data['keywordset'] = kwset;
+    deb_var = kwset;
+    $.ajax({
+            url: "/api/account/keywordset/save", 
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(data), 
+            type: "POST",
+            processData: false,
+        }).done(function (response) {
+            alert("Grupo grabado")
+        });   
+    return data;
 }
