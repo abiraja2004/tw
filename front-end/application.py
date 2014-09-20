@@ -176,6 +176,19 @@ def tweets_count():
                         res['dimensions'][pm['brand']][key] = 1
                     else:
                         res['dimensions'][pm['brand']][key] += 1   
+            if group_dimension == "product":
+                pms = tweet.get('x_extracted_info', [])
+                if pms:
+                    pm = pms[0]
+                    if not pm['product']: continue                    
+                    p = pm['brand'] + "/" + pm['product']
+                    if not p in res['dimensions']: res['dimensions'][p] = {}
+                    d = tweet['x_created_at']
+                    key = d.strftime(timeformat)
+                    if not key in res['dimensions'][p]:
+                        res['dimensions'][p][key] = 1
+                    else:
+                        res['dimensions'][p][key] += 1   
             elif group_dimension == "sentiment":
                 if 'x_sentiment' in tweet:
                     if not tweet['x_sentiment'] in res['dimensions']: res['dimensions'][tweet['x_sentiment']] = {}

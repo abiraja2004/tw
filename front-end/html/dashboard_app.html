@@ -90,9 +90,27 @@
                     </div>                
                 </div>
                 <div class="box-body chart-responsive">
-                    <div class="chart" id="line-chart" style="height: 300px;"></div>
+                    <div class="chart" id="brand-chart" style="height: 300px;"></div>
                 </div><!-- /.box-body -->
             </div><!-- /.box -->
+            
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Tweets por Producto</h3>
+                    <div class="box-tools pull-right">                        
+                        <div class="btn-group" id="tweet_count_group_by" data-toggle="btn-toggle">
+                            <button group_by="hour" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Hora</button>
+                            <button group_by="day" type="button" class="btn btn-default btn-xs tweet_count_group_by active" data-toggle="on">Día</button>
+                            <button group_by="week" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Semana</button>
+                        </div>
+                    </div>                
+                </div>
+                <div class="box-body chart-responsive">
+                    <div class="chart" id="product-chart" style="height: 300px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+
         </section><!-- right col -->
     </div><!-- /.row (main row) -->
 

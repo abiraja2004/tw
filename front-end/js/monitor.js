@@ -95,16 +95,16 @@ function fetchTweetsCount(dimension, options)
         data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, 'group_dimension': dimension, "account_id": account_id, 'campaign_id': campaign_id}, 
         type: "GET",
     }).done(function (data) { 
-        updateTweetCountLineChart(data, options)
+        updateTweetCountLineChart(data, dimension, options)
     });
 }
 
 
-function updateTweetCountLineChart(data, options)
+function updateTweetCountLineChart(data, dimension, options)
 {
     deb_var2 = data;
-    $('#line-chart').off();
-    $('#line-chart').empty();
+    $('#'+dimension+'-chart').off();
+    $('#'+dimension+'-chart').empty();
     
     series = [];
     for (var i = 0;i<data['timerange'].length; i++)
@@ -112,29 +112,29 @@ function updateTweetCountLineChart(data, options)
         range = data['timerange'][i];
         item = {};
         item['y'] = range;
-        for (dimension in data['dimensions'])
+        for (dim in data['dimensions'])
         {
-            item[dimension] = data['dimensions'][dimension][range]
+            item[dim] = data['dimensions'][dim][range]
         }
         series.push(item);
     }
-    dimensions = []
+    dims = []
     deb_var = series;
-    for (dimension in data['dimensions']) dimensions.push(dimension)
+    for (dim in data['dimensions']) dims.push(dim)
     chartOptions = {
-        element: 'line-chart',
+        element: dimension+'-chart',
         resize: true,
         data: series,
         xkey: 'y',
         hideHover: 'true',
     }
-    labels = dimensions.slice(); //deep copy
+    labels = dims.slice(); //deep copy
     if (options != null)
     {
-        if ('labelsFunction' in options) labels = options['labelsFunction'](dimensions.slice());
-        if ('colorsFunction' in options) chartOptions['lineColors'] = options['colorsFunction'](dimensions.slice());
+        if ('labelsFunction' in options) labels = options['labelsFunction'](dims.slice());
+        if ('colorsFunction' in options) chartOptions['lineColors'] = options['colorsFunction'](dims.slice());
     }
-    chartOptions['ykeys'] = dimensions;
+    chartOptions['ykeys'] = dims;
     chartOptions['labels'] = labels;
     // LINE CHART
     var line = new Morris.Line(chartOptions);   

@@ -10,6 +10,7 @@ $(function () {
     $(".tweet_count_group_by").click(function (e) { 
         tweets_count_group_by = $(this).attr('group_by') 
         fetchTweetsCount('brand');
+        fetchTweetsCount('product');
     });
 });
 
@@ -19,7 +20,8 @@ function dateRangeChanged()
     campaign_id = $('[fn=c_id]').val();
     
     fetchTweets(account_id, campaign_id, true);
-    fetchTweetsCount('brand')
+    fetchTweetsCount('brand');
+    fetchTweetsCount('product');
 }
 
 
