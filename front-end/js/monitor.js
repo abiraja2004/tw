@@ -67,7 +67,7 @@ function updateTweetBox(response)
                 product = tweet['x_extracted_info'][0]['product'];
                 confidence = tweet['x_extracted_info'][0]['confidence'];
         }
-        tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid']).replace("%%user.profile_image_url_https%%", tweet['user']['profile_image_url_https'])
+        tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
                     .replace("%%text%%", tweet['text'])
@@ -76,7 +76,9 @@ function updateTweetBox(response)
                     .replace("%%brand%%", brand)
                     .replace("%%product%%", product)
                     .replace("%%confidence%%", confidence)
+                    .replace("%%user.profile_image_url_https%%", "src='"+tweet['user']['profile_image_url_https']+"'")                    
                     );    
+        
         tweetbox.append(tweettag);
     }
     $('#mentions_indicator').html(''+mentions);
