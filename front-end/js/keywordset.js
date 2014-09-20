@@ -91,7 +91,7 @@ function saveKeywordset(button)
         {   
             d = {}
             d['name'] = $(tags2).find("[fn=word]:not([kwset_id=''])").typeahead('val');
-            d['id'] = $(tags2).find("[fn=word]:not([kwset_id=''])").attr("kwset_id")
+            d['_id'] = $(tags2).find("[fn=word]:not([kwset_id=''])").attr("kwset_id")
             kwset['keywordsets'].push(d);
         }
     }

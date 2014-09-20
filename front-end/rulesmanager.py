@@ -37,7 +37,7 @@ class Rule(object):
         return self.__str__()
 
 def fetchKeywordset(kws_id):
-    kwset = monitor.keywordset.find_one({"_id": kws_id})
+    kwset = monitor.keywordset.find_one({"_id": ObjectId(kws_id)})
     if kwset:
         res = kwset['keywords']
         if res: return res
