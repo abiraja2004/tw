@@ -3,7 +3,7 @@ var deb_var2=null;
 
 $(function () {   
     $('#tweet-box').slimScroll({
-        height: '500px'
+        height: '705px'
     });
         
     tweets_count_group_by = "day";
