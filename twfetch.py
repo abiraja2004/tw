@@ -207,9 +207,8 @@ try:
                 pms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_info'] = pms
                 t['x_mentions_count'] = x_mentions_count
-                if tms:
-                    tms.sort(key=lambda x: x['confidence'], reverse=True)
-                    t['x_extracted_topics'] = tms
+                if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
+                t['x_extracted_topics'] = tms
                 
                 for pm in pms:
                     campaign_ids.add(pm['campaign_id'])
