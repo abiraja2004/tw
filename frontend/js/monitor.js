@@ -67,6 +67,17 @@ function updateTweetBox(response)
                 product = tweet['x_extracted_info'][0]['product'];
                 confidence = tweet['x_extracted_info'][0]['confidence'];
         }
+        topicshtml = "";
+        br = "<br>";
+        if ('x_extracted_topics' in tweet && tweet['x_extracted_topics'].length > 0)
+        {
+            for (var j=0;j<tweet['x_extracted_topics'].length; j++)
+            {
+                topic = tweet['x_extracted_topics'][j];
+                topicshtml = topicshtml + br + '<small class="badge pull-left bg-aqua">'+topic['topic_name'] + ' (' + topic['confidence'] + ')</small> ';
+                br = "";
+            }
+        }
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
@@ -77,6 +88,7 @@ function updateTweetBox(response)
                     .replace("%%product%%", product)
                     .replace("%%confidence%%", confidence)
                     .replace("%%user.profile_image_url_https%%", "src='"+tweet['user']['profile_image_url_https']+"'")                    
+                    .replace("%%topics%%", topicshtml)
                     );    
         
         tweetbox.append(tweettag);

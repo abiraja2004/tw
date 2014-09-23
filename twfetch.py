@@ -14,7 +14,7 @@ import threading
 from twython import TwythonStreamer
 from pymongo import MongoClient
 from datetime import datetime,  timedelta
-from rulesmanager import getBrandClassifiers
+from frontend.rulesmanager import getBrandClassifiers, getTopicClassifiers
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
@@ -134,6 +134,8 @@ class MyThread(threading.Thread):
 #(track=['scioli','massa','cfk','solanas','@cfkargentina','@danielscioli','@SergioMassa'])
 
 bcs = None
+tcs = None
+
 class KeywordMonitor(threading.Thread):
 
     def __init__(self):
@@ -152,6 +154,7 @@ class KeywordMonitor(threading.Thread):
                 k2 = getWordsToTrack()
                 a2 = getAccountsToTrack()
                 bcs = getBrandClassifiers()
+                tcs = getTopicClassifiers()
                 if k2 != keywords or a2 != accountsToTrack:
                     print "keyword or account changes found... restarting fetcher"
                     if stream: stream.finish()
@@ -179,6 +182,7 @@ class KeywordMonitor(threading.Thread):
         
 try:
     bcs = getBrandClassifiers()
+    tcs = getTopicClassifiers()
     kwmonitor = KeywordMonitor()
     kwmonitor.start()
     while True:
@@ -196,10 +200,17 @@ try:
                     x_mentions_count["@" + m['screen_name']] = 1
                     campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']])
             if pms or x_mentions_count:
+                tms = []
+                for tc in tcs:
+                    tm = tc.extract(t['text'])
+                    if tm: tms.append(tm.getDictionary())
                 pms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_info'] = pms
                 t['x_mentions_count'] = x_mentions_count
-
+                if tms:
+                    tms.sort(key=lambda x: x['confidence'], reverse=True)
+                    t['x_extracted_topics'] = tms
+                
                 for pm in pms:
                     campaign_ids.add(pm['campaign_id'])
                 for cid in campaign_ids:

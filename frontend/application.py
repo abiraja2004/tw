@@ -72,6 +72,15 @@ def keywordsets():
     custom_css= request.args.get("css", None)
     return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
 
+@app.route('/topics')
+def topics():
+    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    campaign_id = request.args.get('campaign_id')    
+    topics = accountdb.topic.find({})
+    custom_css= request.args.get("css", None)
+    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+
 @app.route('/<path:filename>')
 def send_js(filename):
     return flask.send_from_directory('html', filename)
@@ -237,11 +246,17 @@ def save_keywordset():
     data = request.get_json()
     kwset = data['keywordset']
     kwset['_id'] = ObjectId(data['keywordset_id'])
-    
     accountdb.keywordset.save(kwset)
-    print
-    
     return flask.Response(json.dumps({}),  mimetype='application/json')
+
+@app.route("/api/account/topic/save", methods=['POST'])
+def save_topic():
+    data = request.get_json()
+    topic= data['topic']
+    topic['_id'] = ObjectId(data['topic_id'])
+    accountdb.topic.save(topic)
+    return flask.Response(json.dumps({}),  mimetype='application/json')
+
 if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    

@@ -1,5 +1,7 @@
 from pymongo import MongoClient
+from bson import ObjectId
 from brandclassifier import BrandClassifier
+from topicclassifier import TopicClassifier
 import re
 mclient = MongoClient()
 monitor = mclient['monitor']
@@ -54,6 +56,15 @@ def genClassifierClues(keywords):
         res.append((int(k),) + tuple(v))
     return res
 
+def generateTopicClassifier(topicdoc):
+    tc = TopicClassifier()
+    tc.topic_name = topicdoc['name']
+    tc.topic_id = str(topicdoc['_id'])
+    tc.topic_confidence_clues = genClassifierClues(topicdoc['keywords'])
+    for kws in topicdoc['keywordsets']:
+        tc.topic_confidence_clues.append((kws['value'],) + tuple(fetchKeywordset(ObjectId(kws['_id']))))
+    return tc
+
 def generateBrandClassifier(br):
     bc = BrandClassifier()
     bc.account_id = br.account_id
@@ -79,9 +90,6 @@ def generateBrandClassifier(br):
                     bc.product_regexps[pr.name].append((re.compile(getProductRegexpFromRule(br, pr, pr_number, rule), re.I|re.U), rule))
         pr_number += 1
         bc.product_confidence_clues[pr.name] = genClassifierClues(pr.keywords)
-
-    
-    
     return bc
 
 def genEntityRegexp(entity_type, name, entity_number, synonyms):        
@@ -162,8 +170,15 @@ def getBrandClassifiers():
         res.append(generateBrandClassifier(r))
     return res
 
+def getTopicClassifiers():
+    topics = monitor.topic.find({})
+    res = []
+    for topicdoc in topics:
+        res.append(generateTopicClassifier(topicdoc))
+    return res
 
 if __name__ == "__main__":
+    """
     bcs = getBrandClassifiers()
     for bc in bcs:
         print bc.name, bc.brand_regexps
@@ -171,4 +186,10 @@ if __name__ == "__main__":
         if pms: 
             print pms[0].confidence
             print "|" + pms[0].campaign_id + "|"
-    
+    """
+    text = "estoy probando tc votos candidato, cancha hincha competir"
+    tcs = getTopicClassifiers()
+    print text
+    for tc in tcs:
+        print tc.topic_confidence_clues
+        print tc.topic_name, unicode(tc.extract(text))
