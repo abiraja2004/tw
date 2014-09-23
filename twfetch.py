@@ -101,7 +101,11 @@ class TweetStreamer(TwythonStreamer):
     def next(self):
         if self.stop: raise StopIteration
         while not self.tweets: 
-            print "%s, waiting..." % datetime.now()
+            w = 0
+            for tc in tcs:
+                for ww in tc.topic_confidence_clues:
+                    w += len(ww[1:])
+            print "%s, waiting... %s" % (datetime.now(), w)
             time.sleep(0.5)
         t = self.tweets.pop(0)
         return t
@@ -144,6 +148,7 @@ class KeywordMonitor(threading.Thread):
 
     def run(self):
         global bcs
+        global tcs
         t = datetime.now() - timedelta(hours=99)
         keywords = None
         accountsToTrack = None

@@ -187,9 +187,20 @@ if __name__ == "__main__":
             print pms[0].confidence
             print "|" + pms[0].campaign_id + "|"
     """
+    """
     text = "estoy probando tc votos candidato, cancha hincha competir"
     tcs = getTopicClassifiers()
     print text
     for tc in tcs:
         print tc.topic_confidence_clues
         print tc.topic_name, unicode(tc.extract(text))
+        
+    """
+    tcs = getTopicClassifiers()
+    w = 0
+    for tc in tcs:
+        for ww in tc.topic_confidence_clues:
+            print ww
+            print len(ww[1:])
+            w += len(ww[1:])
+    print w
