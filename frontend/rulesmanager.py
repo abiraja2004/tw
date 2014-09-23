@@ -40,9 +40,9 @@ class Rule(object):
 
 def fetchKeywordset(kws_id):    
     kwset = monitor.keywordset.find_one({"_id": kws_id})
-    print "KEYWORDSET %s FETCHED. " % kwset['name']
     res = []
     if kwset:
+        print "KEYWORDSET %s FETCHED. " % kwset['name']        
         res.extend(kwset['keywords'])
         for kws in kwset['keywordsets']:
             res.extend(fetchKeywordset(ObjectId(kws['_id'])))
