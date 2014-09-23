@@ -28,7 +28,10 @@ function setupTypeahead(tags)
     name: 'keywordsets',
     displayKey: 'value',
     source: keywordsets_blookhound.ttAdapter()
-    }).on("typeahead:autocompleted", function () {checkLastItemChanged(this)});
+    }).on("typeahead:selected typeahead:autocompleted", function (e, datum) {
+        $(this).attr("kwset_id",datum.id);
+        checkLastItemChanged(this)
+    });
 }
 
 function checkLastItemChanged(input)
@@ -117,9 +120,9 @@ function saveCampaign()
             if ($(tags2).find("[fn=word]").typeahead('val') != "") 
             {   
                 d = {}
-                d['name'] = $(tags2).find("[fn=word]").typeahead('val');
-                d['value'] = $(tags2).find("[fn=value]").data('slider').getValue();
-                d['_id'] = $(tags2).find("[fn=_id]").val();
+                d['name'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").typeahead('val');
+                d['value'] = $(tags2).find("[fn=value]:not([kwset_id='']):not([readonly])").data('slider').getValue();
+                d['_id'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").attr("kwset_id")
                 brand['keyword_sets'].push(d);
             }
         }
@@ -159,9 +162,9 @@ function saveCampaign()
                 if ($(tags2).find("[fn=word]").typeahead('val') != "") 
                 {   
                     d = {}
-                    d['name'] = $(tags2).find("[fn=word]").typeahead('val');
-                    d['value'] = $(tags2).find("[fn=value]").data('slider').getValue();
-                    d['_id'] = $(tags2).find("[fn=_id]").val();
+                    d['name'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").typeahead('val');
+                    d['value'] = $(tags2).find("[fn=value]:not([kwset_id='']):not([readonly])").data('slider').getValue();
+                    d['_id'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").attr("kwset_id")
                     product['keyword_sets'].push(d);
                 }
             }

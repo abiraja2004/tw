@@ -38,12 +38,15 @@ class Rule(object):
     def __repr__(self):
         return self.__str__()
 
-def fetchKeywordset(kws_id):
+def fetchKeywordset(kws_id):    
     kwset = monitor.keywordset.find_one({"_id": kws_id})
+    print "KEYWORDSET %s FETCHED. " % kwset['name']
+    res = []
     if kwset:
-        res = kwset['keywords']
-        if res: return res
-    return []
+        res.extend(kwset['keywords'])
+        for kws in kwset['keywordsets']:
+            res.extend(fetchKeywordset(ObjectId(kws['_id'])))
+    return res
     
 def genClassifierClues(keywords):
     d = {}
@@ -199,8 +202,5 @@ if __name__ == "__main__":
     tcs = getTopicClassifiers()
     w = 0
     for tc in tcs:
-        for ww in tc.topic_confidence_clues:
-            print ww
-            print len(ww[1:])
-            w += len(ww[1:])
-    print w
+        if tc.topic_name == "Deporte":
+            print tc.topic_confidence_clues

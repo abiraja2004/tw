@@ -101,11 +101,7 @@ class TweetStreamer(TwythonStreamer):
     def next(self):
         if self.stop: raise StopIteration
         while not self.tweets: 
-            w = 0
-            for tc in tcs:
-                for ww in tc.topic_confidence_clues:
-                    w += len(ww[1:])
-            print "%s, waiting... %s" % (datetime.now(), w)
+            print "%s, waiting..." % (datetime.now())
             time.sleep(0.5)
         t = self.tweets.pop(0)
         return t

@@ -90,9 +90,9 @@ function saveTopic(button)
         if ($(tags2).find("[fn=word]").typeahead('val') != "") 
         {   
             d = {}
-            d['name'] = $(tags2).find("[fn=word]:not([kwset_id=''])").typeahead('val');
-            d['value'] = $(tags2).find("[fn=value]:not([kwset_id=''])").data('slider').getValue();
-            d['_id'] = $(tags2).find("[fn=word]:not([kwset_id=''])").attr("kwset_id")
+            d['name'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").typeahead('val');
+            d['value'] = $(tags2).find("[fn=value]:not([kwset_id='']:not([readonly]))").data('slider').getValue();
+            d['_id'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").attr("kwset_id")
             topic['keywordsets'].push(d);
         }
     }

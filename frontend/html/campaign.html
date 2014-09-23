@@ -106,8 +106,7 @@
                                             <table style="width:600px" fn="bkwset">
                                                 <tr>
                                                     <td style="width: 30%">
-                                                        <input type="hidden" fn="_id" value="{{kwset['_id']}}"/>
-                                                        <input type="text" class="{{ getTypeaheadClass(first, bfirst) }} form-control" fn="word" placeholder="palabra clave..." value="{{kwset['name']}}" onchange="checkLastItemChanged(this);"/>
+                                                        <input type="text" kwset_id="{{kwset['_id']}}" class="{{ getTypeaheadClass(first, bfirst) }} form-control" fn="word" placeholder="palabra clave..." value="{{kwset['name']}}" onchange="checkLastItemChanged(this);"/>
                                                     </td>
                                                     <td style="width: 60%"><input type="text" value="" class="{{ getSliderClass(first, bfirst) }} form-control" fn="value" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
                                                     <td style="width: 10%"><button type="button" class="btn btn-success btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
@@ -208,8 +207,7 @@
                                                                     <table style="width:600px" fn="pkwset" >
                                                                         <tr>
                                                                             <td style="width:30%">
-                                                                                <input type="hidden" fn="_id" value="{{kwset['_id']}}"/>
-                                                                                <input type="text" class="{{ getTypeaheadClass(first, pfirst, bfirst) }} form-control" placeholder="palabra clave..." fn="word" value="{{kwset['name']}}" onchange="checkLastItemChanged(this);" />
+                                                                                <input type="text" kwset_id="{{kwset['_id']}}" class="{{ getTypeaheadClass(first, pfirst, bfirst) }} form-control" placeholder="palabra clave..." fn="word" value="{{kwset['name']}}" onchange="checkLastItemChanged(this);" />
                                                                             </td>
                                                                             <td style="width:60%"><input type="text" value="" class="{{ getSliderClass(first, pfirst, bfirst) }} form-control" data-slider-min="-100" fn="value" data-slider-max="100" data-slider-step="1" data-slider-value="{{kwset['value']}}" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" data-slider-id="red"></td>
                                                                             <td style="width: 10%"><button type="button" class="btn btn-primary btn-sm" onclick="removeComponentExceptLast(this); return false;"><i class="fa fa-trash-o"></i></button></td>
