@@ -229,7 +229,7 @@ except KeyboardInterrupt, e:
     pass
 except Exception, e:
     print e
-    #if kwmonitor: kwmonitor.finish()    
+    if kwmonitor: kwmonitor.finish()    
     if stream: stream.finish()
     raise
     pass
