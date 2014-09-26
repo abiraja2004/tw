@@ -79,9 +79,6 @@
             <a href="#" class="logo" style="line-height: 0px; padding: 0px;">
             {% if logo %}
                 <img src="/img/{{logo}}" height="50px" width="370px"/>
-                {% if False %}
-                    <img src="/img/{{logo2}}" height="50px" width="70px"/>
-                {% endif %}
             {% else %}
                 <img src="/img/logo.jpg" height="50px" width="370px"/>
             {% endif %}
@@ -101,6 +98,14 @@
                         <!-- Messages: style can be found in dropdown.less-->
 
                         <!-- Notifications: style can be found in dropdown.less -->
+                {% if logo2 %}
+
+                        <li class="dropdown user user-menu">
+                                                <img src="/img/{{logo2}}" height="50px" width="50px"/>
+                        </li>
+                    
+                {% endif %}
+                            
                     </ul>
                 </div>
             </nav>
