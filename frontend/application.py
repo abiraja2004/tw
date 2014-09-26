@@ -7,6 +7,11 @@ import flask
 import json
 import re
 from datetime import datetime, timedelta
+from oauth2client.client import OAuth2WebServerFlow, Credentials
+from apiclient.discovery import build
+import analytics_api
+import httplib2
+from base64 import b64encode, b64decode
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -25,6 +30,8 @@ if args.auth:
 
 app = Flask(__name__, template_folder='html')
 
+
+
 @app.route('/')
 @app.route('/app')
 @app.route('/sivale')
@@ -32,9 +39,13 @@ app = Flask(__name__, template_folder='html')
 def home():
     account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    logo = "logo.jpg"
+    logo2 = None
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
         campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id   
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
     elif request.path == "/gm":
         account_id = "54189900d06625fc47e54b76" #general motors
         campaign_id = "54189b93d06625fc47e54b78" 
@@ -45,7 +56,8 @@ def home():
         template = "app.html"
         dashtemplate = "dashboard_app.html"
     custom_css= request.args.get("css", None)
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])            
+    print logo
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2)            
 
 @app.route('/campaign')
 def campaigns():
@@ -53,7 +65,12 @@ def campaigns():
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
     custom_css= request.args.get("css", None)
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+    FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
+                           client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
+                           scope='https://www.googleapis.com/auth/analytics.readonly',
+                           redirect_uri='http://localhost:5001/oauth2callback')
+    analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], analytics_auth_url = analytics_auth_url)
 
 @app.route('/sentiment')
 def sentiment():
@@ -256,6 +273,47 @@ def save_topic():
     topic['_id'] = ObjectId(data['topic_id'])
     accountdb.topic.save(topic)
     return flask.Response(json.dumps({}),  mimetype='application/json')
+
+@app.route("/api/account/analytics/sessions", methods=['GET'])
+def analytics_sessions():
+    res = 0
+    data = request.args
+    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    start = request.args.get("start", "")
+    end = request.args.get("end", "")    
+    if start and end and "analytics" in account['campaigns'][data['campaign_id']]:
+        analytics_credentials = Credentials.new_from_json(account['campaigns'][data['campaign_id']]["analytics"]["credentials"])
+        http = httplib2.Http()
+        http = analytics_credentials.authorize(http)
+        service = build('analytics', 'v3', http=http)
+        profile_id = analytics_api.get_first_profile_id(service)
+        start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
+        end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")        
+        results = analytics_api.get_sessions(service, profile_id, start, end)
+        if 'rows' in results:
+            res = results.get('rows')[0][0]
+    return flask.Response(json.dumps({"res": res}),  mimetype='application/json')
+
+@app.route("/oauth2callback", methods=['GET'])
+def analytics_auth_callback():
+    if "code" in request.args:
+        cid, aid = b64decode(request.args["state"]).split(",")
+        
+        FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
+                           client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
+                           scope='https://www.googleapis.com/auth/analytics.readonly',
+                           redirect_uri='http://localhost:5001/oauth2callback')
+        credentials = FLOW.step2_exchange(request.args['code'])
+        accountdb.accounts.update({"_id": ObjectId(aid)}, {"$set": {"campaigns.%s.analytics" % cid: {"credentials": credentials.to_json()}}})        
+        print dir(credentials)
+        print credentials.to_json()
+        http = httplib2.Http()
+        http = credentials.authorize(http)
+        
+        service = build('analytics', 'v3', http=http)
+        profile_id = analytics_api.get_first_profile_id(service)
+        return profile_id
+    return "something went wrong"
 
 if __name__ == "__main__":
     app.debug = True
