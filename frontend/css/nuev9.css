@@ -1,0 +1,162 @@
+/*LEFT SIDE menu*/
+.skin-blue .left-side {
+background: #35363a;
+}
+.skin-blue .sidebar {
+border-bottom: 1px solid #35363a;
+}
+.skin-blue .sidebar > .sidebar-menu > li {
+border-top: 1px solid #35363a;
+border-bottom: 1px solid #414247;
+}
+/*banda rojabotones*/
+.skin-blue .sidebar > .sidebar-menu > li > a:hover, .skin-blue .sidebar > .sidebar-menu > li.active > a {
+color: #d6d6d6;
+background: #27272b;
+border-right: 4px solid #d12610
+}
+.skin-blue .sidebar a:hover {
+text-decoration: none;
+background: #666;
+}
+.skin-blue .sidebar > .sidebar-menu > li:first-of-type {
+border-top: 1px solid #35363a;
+}
+/*botones links sec*/
+.sidebar .sidebar-menu .treeview-menu > li {
+background: #35363a;
+}
+.skin-blue .treeview-menu > li.active > a, .skin-blue .treeview-menu > li > a:hover {
+color: #d6d6d6;
+}
+.sidebar a:hover {
+background: #414247;
+}
+/*texto botones*/
+.skin-blue .sidebar a {
+  color: #d4d4d5;
+}
+/*Primer filete de botonera*/
+.skin-blue .sidebar > .sidebar-menu > li:first-of-type > a {
+  border-top: 1px solid #35363a;
+}
+/*LOGO*/
+.skin-blue .logo:hover {
+background: #242527;
+/*border-bottom: 2px solid #65a6d8;*/
+}
+.skin-blue .logo {
+background: #242527;
+/*border-bottom: 2px solid #65a6d8;*/
+}
+/*FECHA*/
+label {
+font-weight: normal;
+color: #8f9094;
+}
+/*formulario filete*/
+.form-control {
+border: 1px solid #616265;
+}
+/*formulario icono*/
+.input-group-addon {
+background-color: #35363a;
+border: 1px solid #414247;
+color: #f0eaea;
+}
+.input-group .input-group-addon {
+background-color: #414247;
+}
+/*fecha formulario eleccion*/
+.daterangepicker .ranges li {
+background: #f5f5f5;
+border: 1px solid #f5f5f5;
+color: #939397;
+}
+/*calendario fecha elegida*/
+.daterangepicker td.active, .daterangepicker td.active:hover {
+background-color: #72777C;
+border-color: #72777C;
+color: #fff;
+}
+/*calendario semana elegida*/
+.daterangepicker td.in-range {
+background: #ECECEC;
+}
+/*bot azul form*/
+.daterangepicker .ranges li.active, .daterangepicker .ranges li:hover {
+background: #35363a;
+border: 1px solid #35363a;
+}
+/*boton verde apply*/
+.btn.btn-success:hover, .btn.btn-success:active, .btn.btn-success {
+background-color: #5cb85c;
+}
+.btn.btn-success:hover, .btn.btn-success:active, .btn.btn-success.hover {
+background-color: #449d44;
+}
+.btn.btn-success {
+background-color: #5cb85c;
+border-color: #449d44;
+}
+/*NAV BAR*/
+.skin-blue .navbar {
+background-color: #242527;
+/*border-bottom: 2px solid #65a6d8;*/
+}
+/* comentarios cajas*/
+.box .box-header {
+color: #575757;
+background: #eeeeee;
+}
+
+/*CUERPO CENTRAL*/
+
+/*Titulo grande h1*/
+.right-side > .content-header > h1 {
+color: #adacac;
+}
+/*Bajada titulo h1 chico*/
+.right-side > .content-header > h1 > small {
+color: #adacac;
+}
+/*TITULOS DE LAS CAJAS CENTRALES*/
+.box .box-header > .fa, .box .box-header > .glyphicon, .box .box-header > .ion, .box .box-header .box-title {
+font-size: 16px;
+}
+/*FILETES DE LOS FORMULARIOS CAJA CENT*/
+.form-control {
+border: 1px solid #D3D3D3;
+}
+/*cajas*/
+/*verde*/
+.box.box-success {
+border-top-color: #A8A8A8;
+}
+/*azul*/
+.box.box-info {
+border-top-color: #A8A8A8;
+}
+/*iconos fuccia de tweets*/
+.bg-fuchsia {
+background-color: #f3565d;
+}
+/*Campañas Agregar prod dentro de una campaña creada*/
+.btn.btn-primary {
+background-color: #45b6af;
+border-color: #329993;
+}
+.btn.btn-primary:hover, .btn.btn-primary:active, .btn.btn-primary.hover {
+background-color: #329993;
+}
+.box.box-primary {
+border-top-color: #45b6af;
+}
+/*boton diskette*/
+.btn.btn-info {
+background-color: #329993;
+border-color: #2d908a;
+}
+.btn.btn-info:hover, .btn.btn-info:active, .btn.btn-info.hover {
+background-color: #2d908a;
+}
