@@ -382,7 +382,7 @@ def analytics_auth_callback():
         FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
-                           redirect_uri='http://localhost:5001/oauth2callback')
+                           redirect_uri='http://%s:5001/oauth2callback' % server_domain)
         credentials = FLOW.step2_exchange(request.args['code'])
         accountdb.accounts.update({"_id": ObjectId(aid)}, {"$set": {"campaigns.%s.analytics" % cid: {"credentials": credentials.to_json(), "profiles": []}}})        
         print dir(credentials)
