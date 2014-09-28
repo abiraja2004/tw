@@ -95,8 +95,18 @@ function saveCampaign()
 {
     brands = $(".brand");
     campaign = {}
-    campaign['name'] = $('[fn=cname]').val();;
+    campaign['name'] = $('[fn=cname]').val();
+    campaign['active'] = $("[fn=cactive]").is(':checked');
     campaign['brands'] = {}
+    campaign['analytics'] = {}
+    campaign['analytics']['profiles'] = [];
+    profiles =  $("[fn=analytics_profile]");
+    for (var i = 0;i<profiles.length; i++)
+    {
+        profile = $(profiles[i]);
+        if (profile.is(':checked')) campaign['analytics']['profiles'].push(profile.attr('profile_id'));
+    }
+    
     for (var i = 1; i<brands.length; i++)
     {
         tagbrand = $(brands[i]);

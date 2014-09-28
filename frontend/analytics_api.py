@@ -37,6 +37,23 @@ def main(argv):
            'the application to re-authorize')
 
 
+def get_all_profiles(service):
+  # Get a list of all Google Analytics accounts for this user
+  accounts = service.management().accounts().list().execute()
+  res = []
+  for account in accounts.get('items'):
+    account_id = account.get('id')
+    # Get a list of all the Web Properties for the account
+    webproperties = service.management().webproperties().list(accountId=account_id).execute()
+
+    for webproperty in webproperties.get('items'):
+      webproperty_id = webproperty.get('id')
+
+      # Get a list of all Views (Profiles) for the Web Property of the Account
+      profiles = service.management().profiles().list(accountId=account_id,webPropertyId=webproperty_id).execute()
+      res.extend(profiles.get('items'))
+  return res
+
 def get_first_profile_id(service):
   # Get a list of all Google Analytics accounts for this user
   accounts = service.management().accounts().list().execute()

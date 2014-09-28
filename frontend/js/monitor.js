@@ -38,7 +38,7 @@ function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
 function updateTweetBox(response)
 {
     tweets = response['tweets'];
-    mentions = 0;
+    //mentions = 0;
     html = $('#tweet_model').html();
     tweetbox = $("#tweet-box");
     tweetbox.html("");    
@@ -57,10 +57,10 @@ function updateTweetBox(response)
         brand = '';
         product = '';
         confidence = '';
-        if ('x_mentions_count' in tweet)
-        {
-            for (m in tweet['x_mentions_count']) mentions = mentions + tweet['x_mentions_count'][m];
-        }
+        //if ('x_mentions_count' in tweet)
+        //{
+        //    for (m in tweet['x_mentions_count']) mentions = mentions + tweet['x_mentions_count'][m];
+        //}
         if ('x_extracted_info' in tweet && tweet['x_extracted_info'].length > 0)
         {
                 brand = tweet['x_extracted_info'][0]['brand'];
@@ -93,7 +93,7 @@ function updateTweetBox(response)
         
         tweetbox.append(tweettag);
     }
-    $('#mentions_indicator').html(''+mentions);
+    //$('#mentions_indicator').html(''+mentions);
 }
 
 
@@ -119,7 +119,7 @@ function updateTweetCountLineChart(data, dimension, options)
     deb_var2 = data;
     $('#'+dimension+'-chart').off();
     $('#'+dimension+'-chart').empty();
-    
+    if ($.isEmptyObject(data['dimensions'])) return;
     series = [];
     for (var i = 0;i<data['timerange'].length; i++)
     {

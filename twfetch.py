@@ -46,6 +46,7 @@ def getWordsToTrack():
     s = set()
     for acc in accounts:
         for cid, campaign in acc['campaigns'].items():
+            if not 'active' in campaign or not campaign['active']: continue
             for bid, brand in campaign['brands'].items():
                 s.add(brand['name'])
                 if brand.get('synonyms','').strip():
@@ -58,6 +59,7 @@ def getAccountsToTrack():
     s = dict()
     for acc in accounts:
         for cid, campaign in acc['campaigns'].items():
+            if not 'active' in campaign or not campaign['active']: continue
             for bid, brand in campaign['brands'].items():
                 if brand.get('follow_accounts','').strip():
                     for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
@@ -208,6 +210,7 @@ try:
                 pms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_info'] = pms
                 t['x_mentions_count'] = x_mentions_count
+                print "mentions count: " + str(x_mentions_count)
                 if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_topics'] = tms
                 
