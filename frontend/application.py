@@ -22,8 +22,17 @@ dbuser = "monitor"
 dbpasswd = "monitor678"
 mclient = MongoClient()
 tweetdb = mclient['unilever']
+
+
+SERVER_LOCAL=0
+SERVER_REMOTE=1
+server_mode = SERVER_LOCAL
+server_domain = "localhost"
 if args.auth:
     tweetdb.authenticate(dbuser, dbpasswd)
+    server_mode = SERVER_REMOTE
+    server_domain = "www.nuev9.com"
+    
 accountdb = mclient['monitor']
 if args.auth:
     accountdb.authenticate(dbuser, dbpasswd)
@@ -31,7 +40,11 @@ if args.auth:
 
 app = Flask(__name__, template_folder='html')
 
+def onRemoteServer():
+    return server_mode == SERVER_REMOTE
 
+def onLocalServer():
+    return server_mode == SERVER_LOCAL
 
 @app.route('/')
 @app.route('/app')
@@ -68,7 +81,7 @@ def campaigns():
     FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
-                           redirect_uri='http://localhost:5001/oauth2callback')    
+                           redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
     analytics_credentials = None
     analytics_profiles = []
     analytics_access =False
