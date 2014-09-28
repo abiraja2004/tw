@@ -106,7 +106,9 @@ def campaigns():
                 pass
     analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
     print FLOW.revoke_uri
-    analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
+    analytics_revoke_url = ""
+    if analytics_credentials:
+        analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
     return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url)
 
 @app.route('/sentiment')
