@@ -200,11 +200,11 @@ def tweets_count():
     start = request.args.get("start", "")
     end = request.args.get("end", "")
     group_by = request.args.get("group_by", "day")
-    account = request.args.get("account_id", "")
+    account_id = request.args.get("account_id", "")
     campaign_id = request.args.get("campaign_id", "")
-    group_dimension = request.args.get("group_dimension", "")
     res = {'timerange': []}
-    if start and end and campaign_id and group_dimension:
+    if start and end and campaign_id:
+        accs = getCampaignFollowAccounts(account_id, campaign_id)
         collection_name = "tweets_%s" % campaign_id
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
         end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
@@ -226,47 +226,64 @@ def tweets_count():
             timerange.append(d.strftime("%Y-%m-%dT%H:00:00Z"))
             d = d + delta
         res['timerange'] = timerange
-        res['dimensions'] = {}
-        print timerange, campaign_id
         dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
+        res['brand'] = {}
+        res['product'] = {}
+        res['sentiment'] = {}
+        res['stats'] = {}
+        res['stats']['own_tweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        res['stats']['own_tweets']['retweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        res['stats']['own_tweets']['favorites'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        res['stats']['total_tweets'] = 0
+        res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         for tweet in dbtweets:
-            if group_dimension == "brand":
-                pms = tweet.get('x_extracted_info', [])
-                if pms:
-                    pm = pms[0]
-                    if not pm['brand'] in res['dimensions']: res['dimensions'][pm['brand']] = {}
-                    d = tweet['x_created_at']
-                    key = d.strftime(timeformat)
-                    if not key in res['dimensions'][pm['brand']]:
-                        res['dimensions'][pm['brand']][key] = 1
-                    else:
-                        res['dimensions'][pm['brand']][key] += 1   
-            if group_dimension == "product":
-                pms = tweet.get('x_extracted_info', [])
-                if pms:
-                    pm = pms[0]
-                    if not pm['product']: continue                    
+            pms = tweet.get('x_extracted_info', [])
+            if pms:
+                pm = pms[0]
+                if not pm['brand'] in res['brand']: res['brand'][pm['brand']] = {}
+                d = tweet['x_created_at']
+                key = d.strftime(timeformat)
+                if not key in res['brand'][pm['brand']]:
+                    res['brand'][pm['brand']][key] = 1
+                else:
+                    res['brand'][pm['brand']][key] += 1   
+                if pm['product']: 
                     p = pm['brand'] + "/" + pm['product']
-                    if not p in res['dimensions']: res['dimensions'][p] = {}
+                    if not p in res['product']: res['product'][p] = {}
                     d = tweet['x_created_at']
                     key = d.strftime(timeformat)
-                    if not key in res['dimensions'][p]:
-                        res['dimensions'][p][key] = 1
+                    if not key in res['product'][p]:
+                        res['product'][p][key] = 1
                     else:
-                        res['dimensions'][p][key] += 1   
-            elif group_dimension == "sentiment":
-                if 'x_sentiment' in tweet:
-                    if not tweet['x_sentiment'] in res['dimensions']: res['dimensions'][tweet['x_sentiment']] = {}
-                    d = tweet['x_created_at']
-                    key = d.strftime(timeformat)
-                    if not key in res['dimensions'][tweet['x_sentiment']]:
-                        res['dimensions'][tweet['x_sentiment']][key] = 1
-                    else:
-                        res['dimensions'][tweet['x_sentiment']][key] += 1   
-                
+                        res['product'][p][key] += 1   
+            if 'x_sentiment' in tweet:
+                if not tweet['x_sentiment'] in res['sentiment']: res['sentiment'][tweet['x_sentiment']] = {"total": 0}
+                d = tweet['x_created_at']
+                key = d.strftime(timeformat)
+                res['sentiment'][tweet['x_sentiment']]['total'] += 1
+                if not key in res['sentiment'][tweet['x_sentiment']]:
+                    res['sentiment'][tweet['x_sentiment']][key] = 1
+                else:
+                    res['sentiment'][tweet['x_sentiment']][key] += 1                   
+            res['stats']['total_tweets'] += 1                    
+            if 'x_mentions_count' in tweet:
+                for k,v in tweet['x_mentions_count'].items():
+                    if k in accs:
+                        res['stats']['mentions']['total'] += 1
+                        res['stats']['mentions']['accounts'][k] += 1
+            if 'user' in tweet and 'screen_name' in tweet['user']:
+                if ('@' + tweet['user']['screen_name']) in accs:
+                    res['stats']['own_tweets']['total'] += 1
+                    res['stats']['own_tweets']['accounts']['@' + tweet['user']['screen_name']] += 1
+                    if 'retweet_count' in tweet:
+                        res['stats']['own_tweets']['retweets']['total'] += int(tweet['retweet_count']) + 10
+                        res['stats']['own_tweets']['retweets']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['retweet_count']) + 10
+                    if 'favorite_count' in tweet:
+                        res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count']) + 20
+                        res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count']) + 20
+            
     return flask.Response(dumps(res),  mimetype='application/json')
-    #return flask.jsonify({"results": res})    
-    #return flask.Response(json.dumps(res),  mimetype='application/json')
+
 
 @app.route("/api/keywordset/prefetch", methods=['GET'])
 def prefetch_keywordset():

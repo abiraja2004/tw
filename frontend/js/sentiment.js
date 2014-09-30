@@ -9,7 +9,8 @@ $(function () {
     tweets_count_group_by = "day";
     $(".tweet_count_group_by").click(function (e) { 
         tweets_count_group_by = $(this).attr('group_by') 
-        fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})
+        //fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})
+        fetchTweetsCount([[updateTweetCountLineChart, ['sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors}]]]);
     });
 });
 
@@ -19,7 +20,8 @@ function dateRangeChanged()
     campaign_id = $('[fn=c_id]').val();
     
     fetchTweets(account_id, campaign_id, false);
-    fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})
+    fetchTweetsCount([[updateTweetCountLineChart, ['sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors}]]]);
+    //fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})
 }
 
 function tagSentiment(btn, sent)

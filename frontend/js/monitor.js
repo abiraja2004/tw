@@ -97,7 +97,7 @@ function updateTweetBox(response)
 }
 
 
-function fetchTweetsCount(dimension, options)
+function fetchTweetsCount(callbacks)
 {
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
@@ -106,35 +106,47 @@ function fetchTweetsCount(dimension, options)
     campaign_id = $('[fn=c_id]').val();
     $.ajax({
         url: "/api/tweets/count", 
-        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, 'group_dimension': dimension, "account_id": account_id, 'campaign_id': campaign_id}, 
+        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, "account_id": account_id, 'campaign_id': campaign_id}, 
         type: "GET",
     }).done(function (data) { 
-        updateTweetCountLineChart(data, dimension, options)
+        for (var i=0; i<callbacks.length;i++)
+        {
+            cb = callbacks[i];
+            if (cb.length == 1)
+            {
+                cb[0](data);
+            }
+            else
+            {
+                cb[0](data, cb[1])
+            }
+        }
     });
 }
 
 
-function updateTweetCountLineChart(data, dimension, options)
+function updateTweetCountLineChart(data, args)
 {
-    deb_var2 = data;
+    dimension = args[0];
+    options = args[1];
     $('#'+dimension+'-chart').off();
     $('#'+dimension+'-chart').empty();
-    if ($.isEmptyObject(data['dimensions'])) return;
+    if ($.isEmptyObject(data[dimension])) return;
     series = [];
     for (var i = 0;i<data['timerange'].length; i++)
     {
         range = data['timerange'][i];
         item = {};
         item['y'] = range;
-        for (dim in data['dimensions'])
+        for (dim in data[dimension])
         {
-            item[dim] = data['dimensions'][dim][range]
+            item[dim] = data[dimension][dim][range]
         }
         series.push(item);
     }
     dims = []
     deb_var = series;
-    for (dim in data['dimensions']) dims.push(dim)
+    for (dim in data[dimension]) dims.push(dim)
     chartOptions = {
         element: dimension+'-chart',
         resize: true,
@@ -152,6 +164,38 @@ function updateTweetCountLineChart(data, dimension, options)
     chartOptions['labels'] = labels;
     // LINE CHART
     var line = new Morris.Line(chartOptions);   
+}
+
+function updateTweetCountPieChart(data, args)
+{
+    deb_var2 = data;
+    dimension = args[0];
+    options = args[1];   
+    
+    d = []
+    colors = []
+    if (options == null)
+    {
+        for (dim in data[dimension]) d.push({'label': dim, 'value': data[dimension][dim]['total']})
+    }
+    else
+    {
+        for (dim in data[dimension]) 
+        {
+            d.push({'label': options[dim][0], 'value': data[dimension][dim]['total']});
+            colors.push(options[dim][1]);
+        }
+    }
+    
+    deb_var2 = d;
+    
+    var donut = new Morris.Donut({
+        element: dimension+'-chart',
+        resize: true,
+        colors: colors,
+        data: d,
+        hideHover: 'auto'
+    });    
 }
 
 
