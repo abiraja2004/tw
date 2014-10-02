@@ -147,7 +147,7 @@ def getCampaignRules(campaign_id, campaign, account):
 def getAccountRules(account):
     rules = []
     for camp_id, camp in account['campaigns'].items():
-        if camp['active']:
+        if 'active' in camp and camp['active']:
             rules.extend(getCampaignRules(camp_id, camp, account))
     return rules
 
