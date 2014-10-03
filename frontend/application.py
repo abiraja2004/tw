@@ -1,4 +1,5 @@
 #encoding: utf-8
+from twython import Twython
 from pymongo import MongoClient, DESCENDING
 from bson import ObjectId
 from bson.json_util import dumps
@@ -71,7 +72,16 @@ def home():
         dashtemplate = "dashboard_app.html"
     custom_css= request.args.get("css", None)
     print logo
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2)            
+    has_products = False
+    own_brands_list = []
+    for bid, brand in account['campaigns'][campaign_id]['brands'].items():
+        if brand['own_brand']: own_brands_list.append(brand['name'])
+        if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
+            has_products = True
+            break
+    
+    
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 @app.route('/campaign')
 def campaigns():
@@ -170,6 +180,7 @@ def tweets_list():
     page = int(request.args.get('page',"1"))-1
     tweets_per_page = int(request.args.get('tpp',"20"))
     campaign_id = request.args.get("campaign_id", "")
+    brands_to_include = request.args.get("brands_to_include", "")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"tweets": [], "mentions": 0}
     if start and end and campaign_id:
@@ -180,7 +191,13 @@ def tweets_list():
         docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
         if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
         dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
-        res['tweets'].extend(dbtweets)
+        if not brands_to_include:
+            res['tweets'].extend(dbtweets)
+        else:
+            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
+            for t in dbtweets:
+                if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
+                    res['tweets'].append(t)
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
@@ -277,10 +294,10 @@ def tweets_count():
                     res['stats']['own_tweets']['accounts']['@' + tweet['user']['screen_name']] += 1
                     if 'retweet_count' in tweet:
                         res['stats']['own_tweets']['retweets']['total'] += int(tweet['retweet_count']) + 10
-                        res['stats']['own_tweets']['retweets']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['retweet_count']) + 10
+                        res['stats']['own_tweets']['retweets']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['retweet_count'])
                     if 'favorite_count' in tweet:
                         res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count']) + 20
-                        res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count']) + 20
+                        res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count'])
             
     return flask.Response(dumps(res),  mimetype='application/json')
 
@@ -301,6 +318,18 @@ def search_keywordset():
         res.append({"value": r['name'], "id": str(r['_id']) })
     return flask.Response(json.dumps(res),  mimetype='application/json')
 
+def getAccountsToTrack():
+    accounts = monitor.accounts.find({})
+    s = dict()
+    for acc in accounts:
+        for cid, campaign in acc['campaigns'].items():
+            if not 'active' in campaign or not campaign['active']: continue
+            for bid, brand in campaign['brands'].items():
+                if brand.get('follow_accounts','').strip():
+                    for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
+                            s[kw] = cid
+    return s
+
 @app.route("/api/account/campaign/save", methods=['POST'])
 def save_campaign():
     data = request.get_json()
@@ -313,6 +342,15 @@ def save_campaign():
         credentials = oldcamp['analytics']['credentials']
     campaign['analytics']['credentials'] = credentials
     account['campaigns'][data['campaign_id']] = campaign
+    
+    #traigo los ids de las cuentas a seguir
+    t = Twython("1qxRMuTzu2I7BP7ozekfRw", "whQFHN8rqR78L6su6U32G6TPT7e7W2vCouR4inMfM", "2305874377-TTmvLjLuP8aq8q2bT7GPJsOjG9n6uYLAA0tvsYU", "iy4SYpkHK26Zyfr9RhYSGOLVtd9eMNF6Ebl2p552gF4vL")    
+    for bid, brand in campaign['brands'].items():
+        follow_ids = []
+        if brand.get('follow_accounts','').strip():
+            for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
+                    follow_ids.append(t.lookup_user(screen_name=kw[1:])[0]['id_str'])
+        campaign['brands'][bid]['follow_account_ids'] = ','.join(follow_ids)
     accountdb.accounts.save(account)
     print
     
@@ -342,7 +380,7 @@ def analytics_sessions():
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     start = request.args.get("start", "")
     end = request.args.get("end", "")    
-    if start and end and "analytics" in account['campaigns'][data['campaign_id']] and 'profiles' in account['campaigns'][data['campaign_id']]['analytics']:
+    if start and end and "analytics" in account['campaigns'][data['campaign_id']] and 'profiles' in account['campaigns'][data['campaign_id']]['analytics'] and 'credentials' in account['campaigns'][data['campaign_id']]["analytics"] and account['campaigns'][data['campaign_id']]["analytics"]["credentials"]:
         profile_ids = account['campaigns'][data['campaign_id']]['analytics']['profiles']
         analytics_credentials = Credentials.new_from_json(account['campaigns'][data['campaign_id']]["analytics"]["credentials"])
         if analytics_credentials.access_token_expired: error = "Access Token Expired"

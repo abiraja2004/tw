@@ -11,11 +11,12 @@ for t in q['statuses']:
 #import tweetstream
 import time
 import threading
-from twython import TwythonStreamer
+from twython import TwythonStreamer, Twython
 from pymongo import MongoClient
 from datetime import datetime,  timedelta
 from frontend.rulesmanager import getBrandClassifiers, getTopicClassifiers
 import argparse
+from frontend.brandclassifier import ProductMatch
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 args = parser.parse_args()
@@ -57,14 +58,18 @@ def getWordsToTrack():
 def getAccountsToTrack():
     accounts = monitor.accounts.find({})
     s = dict()
+    i = dict()
     for acc in accounts:
         for cid, campaign in acc['campaigns'].items():
             if not 'active' in campaign or not campaign['active']: continue
             for bid, brand in campaign['brands'].items():
                 if brand.get('follow_accounts','').strip():
                     for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
-                            s[kw] = cid
-    return s
+                            s[kw] = {"cid": cid, "bid": bid, "brand": brand['name']}
+                if brand.get('follow_account_ids','').strip():
+                    for kw in [kw.strip() for kw in brand['follow_account_ids'].split(",") if kw.strip()]:
+                            i[kw] = {"cid": cid, "bid": bid, "brand": brand['name']}
+    return s,i
 
 stream = None
 
@@ -91,7 +96,7 @@ class TweetStreamer(TwythonStreamer):
         self.tweets.append(data)
 
     def on_error(self, status_code, data):
-        print "error:", status_code
+        print "error:", status_code, data
 
         # Want to stop trying to get data because of the error?
         # Uncomment the next line!
@@ -119,6 +124,7 @@ class TweetStreamer(TwythonStreamer):
 class MyThread(threading.Thread):
     keywords = []
     accountsToTrack = []
+    accountsToTrackIds = []
     running = False
     
     def run(self):
@@ -128,8 +134,8 @@ class MyThread(threading.Thread):
         #k = stream.statuses.filter(follow="138814032,31133330,117185027", track=["CFKArgentina", "cristina", "cris", "kirchner", "scioli", "massa"], language="es")
         #kwords = ['unilever', 'dove', 'knorr', 'maizena', 'ala', 'skip', 'lux', 'ades', 'ponds', "pond's", 'rexona', "hellman's", "axe", "cif", "savora", "impulse", "vivere", "suave", "hellen curtis", "lipton" ,"lifebuoy", "drive", "sedal", "comfort", "clear", "vasenol", "vim"] #argentina
         #kwords = ['unilever', "ades", "pond's", "ponds", "st. ives", "ives", "knorr", "dove", "axe", "tresemme", u"tresemmé", "sedal", "hellman's", "cif" , "iberia", "rexona", "maizena", "vo5", "clear", "nexxus", "vasenol", "lipton", "not butter", "ben & jerry's", "jerry's", "slim-fast", "slimfast", "del valle", "jumex", 'veet', 'nair', 'america','sivale','sivalesi','crujitos'] #"holanda (helado)", "primavera (margarina)" #mexico
-        if MyThread.keywords or MyThread.accountsToTrack:
-            k = stream.statuses.filter(track=list(MyThread.keywords) + list(MyThread.accountsToTrack), language="es")
+        if MyThread.keywords or MyThread.accountsToTrack or MyThread.accountsToTrackIds:
+            k = stream.statuses.filter(follow=list(MyThread.accountsToTrackIds), track=list(MyThread.keywords) + list(MyThread.accountsToTrack), language="es")
         MyThread.running = False
         
 #        (follow="138814032", track=["CFKArgentina", "cristina", "cris"])
@@ -155,17 +161,19 @@ class KeywordMonitor(threading.Thread):
                 print "checking keywords and accounts to track..."
                 t = datetime.now()
                 k2 = getWordsToTrack()
-                a2 = getAccountsToTrack()
+                a2, i2 = getAccountsToTrack()
                 bcs = getBrandClassifiers()
                 tcs = getTopicClassifiers()
-                if k2 != keywords or a2 != accountsToTrack:
+                if k2 != keywords or a2 != accountsToTrack or i2 != accountsToTrackIds:
                     print "keyword or account changes found... restarting fetcher"
                     if stream: stream.finish()
                     while MyThread.running: time.sleep(1)
                     keywords = k2
                     accountsToTrack = a2
+                    accountsToTrackIds = i2
                     MyThread.keywords = keywords
                     MyThread.accountsToTrack = accountsToTrack
+                    MyThread.accountsToTrackIds = accountsToTrackIds
                     MyThread().start()
                     try:
                         print "Tracking:", keywords
@@ -184,6 +192,11 @@ class KeywordMonitor(threading.Thread):
         
         
 try:
+
+    #t = Twython("1qxRMuTzu2I7BP7ozekfRw", "whQFHN8rqR78L6su6U32G6TPT7e7W2vCouR4inMfM", "2305874377-TTmvLjLuP8aq8q2bT7GPJsOjG9n6uYLAA0tvsYU", "iy4SYpkHK26Zyfr9RhYSGOLVtd9eMNF6Ebl2p552gF4vL")    
+    #user_id = t.lookup_user(screen_name='pablobesada')[0]['id_str']
+    #print user_id
+    #exit(0)
     bcs = getBrandClassifiers()
     tcs = getTopicClassifiers()
     kwmonitor = KeywordMonitor()
@@ -201,8 +214,22 @@ try:
             for m in t['entities']['user_mentions']:
                 if ("@" + m["screen_name"]) in MyThread.accountsToTrack: 
                     x_mentions_count["@" + m['screen_name']] = 1
-                    campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']])
-            if pms or x_mentions_count:
+                    campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']]['cid'])
+                    pm = ProductMatch()
+                    pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['name']
+                    pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
+                    pm.confidence = 5
+                    pms.append(pm.getDictionary())
+            if 'user' in t and 'id_str' in t['user']:
+                if t['user']['id_str'] in MyThread.accountsToTrackIds:
+                    campaign_ids.add(MyThread.accountsToTrackIds[t['user']['id_str']]['cid'])
+                    pm = ProductMatch()
+                    pm.brand = MyThread.accountsToTrackIds[t['user']['id_str']]['brand']
+                    pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
+                    pm.confidence = 5
+                    pms.append(pm.getDictionary())
+                    
+            if pms or x_mentions_count or campaign_ids:
                 tms = []
                 for tc in tcs:
                     tm = tc.extract(t['text'])

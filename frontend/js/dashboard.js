@@ -16,6 +16,16 @@ $(function () {
 
     });
     
+    $(".brands_to_include").click(function (e) { 
+        brands_to_include = $(this).attr('brands_to_include') 
+    fetchTweets(account_id, campaign_id, true);
+    fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
+                     [updateTweetCountLineChart, ['product']], 
+                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
+                     [updateIndicators]]);
+
+    });    
+    
 });
 
 function dateRangeChanged()

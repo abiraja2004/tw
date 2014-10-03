@@ -1,1 +1,1 @@
-set([u'prueba nuev9', u'nuev9'])
+set([u'prueba nuev9', u'nuev9', u'Compet', u'Sodexo', u'compet', u'SiVale', u'sodexo'])

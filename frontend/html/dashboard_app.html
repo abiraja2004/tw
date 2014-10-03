@@ -1,4 +1,3 @@
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
@@ -121,6 +120,27 @@
         </div><!-- ./col -->
     </div><!-- /.row -->
 
+    <div class="row">
+        <div class="col-lg-12 col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <div class="box-tools pull-right">                        
+                        <div class="btn-group" id="tweet_count_group_by" data-toggle="btn-toggle">
+                            <button group_by="hour" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Hora</button>
+                            <button group_by="day" type="button" class="btn btn-default btn-xs tweet_count_group_by active" data-toggle="on">Día</button>
+                            <button group_by="week" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Semana</button>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <div class="btn-group" id="brands_to_include" data-toggle="btn-toggle">
+                            <button brands_to_include="" type="button" class="btn btn-default btn-xs brands_to_include active" data-toggle="on">Todos</button>
+                            <button brands_to_include="{{own_brands_list}}" type="button" class="btn btn-default btn-xs brands_to_include" data-toggle="off">Marcas propias</button>                            
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+       </div>
+    </div>
     <!-- Main row -->
     <div class="row">
         <!-- Left col -->
@@ -171,36 +191,23 @@
             <div class="box box-info">
                 <div class="box-header">
                     <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Marca</h3>
-                    <div class="box-tools pull-right">                        
-                        <div class="btn-group" id="tweet_count_group_by" data-toggle="btn-toggle">
-                            <button group_by="hour" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Hora</button>
-                            <button group_by="day" type="button" class="btn btn-default btn-xs tweet_count_group_by active" data-toggle="on">Día</button>
-                            <button group_by="week" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Semana</button>
-                        </div>
-                    </div>                
+                    <h3 class="box-title">Tweets por Marca</h3>             
                 </div>
                 <div class="box-body chart-responsive">
                     <div class="chart" id="brand-chart" style="height: 300px;"></div>
                 </div><!-- /.box-body -->
             </div><!-- /.box -->
-            
+            {% if has_products %}
             <div class="box box-info">
                 <div class="box-header">
                     <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Producto</h3>
-                    <div class="box-tools pull-right">                        
-                        <div class="btn-group" id="tweet_count_group_by" data-toggle="btn-toggle">
-                            <button group_by="hour" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Hora</button>
-                            <button group_by="day" type="button" class="btn btn-default btn-xs tweet_count_group_by active" data-toggle="on">Día</button>
-                            <button group_by="week" type="button" class="btn btn-default btn-xs tweet_count_group_by" data-toggle="off">Semana</button>
-                        </div>
-                    </div>                
+                    <h3 class="box-title">Tweets por Producto</h3>              
                 </div>
                 <div class="box-body chart-responsive">
                     <div class="chart" id="product-chart" style="height: 300px;"></div>
                 </div><!-- /.box-body -->                
             </div><!-- /.box -->
+            {% endif %}            
 
 
         </section><!-- right col -->

@@ -1,1 +1,1 @@
-{u'@pablobesada': u'5400d1902e61d70aab2e9bdf'}
+{u'@pablobesada': {'bid': u'5405e8c72e61d70e566eedf3', 'brand': u'prueba nuev9', 'cid': u'5400d1902e61d70aab2e9bdf'}, u'@nuev9test': {'bid': u'5405e8c72e61d70e566eedf3', 'brand': u'prueba nuev9', 'cid': u'5400d1902e61d70aab2e9bdf'}, u'@sodexoMx': {'bid': u'542dca422e61d70e4590c752', 'brand': u'Sodexo', 'cid': u'5410f5a52e61d7162c700232'}}

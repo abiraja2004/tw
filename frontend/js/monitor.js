@@ -1,5 +1,6 @@
 var deb_var3 = null;
 tweets_count_group_by = 'day';
+brands_to_include = '';
 
 function getDateRange()
 {
@@ -27,7 +28,7 @@ function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
 
     $.ajax({
         url: "/api/tweets/list", 
-        data: {"account_id": account_id, 'campaign_id': campaign_id, 'start': start, 'end': end, 'include_sentiment_tagged_tweets': include_sentiment_tagged_tweets}, 
+        data: {"account_id": account_id, 'campaign_id': campaign_id, 'start': start, 'end': end, 'include_sentiment_tagged_tweets': include_sentiment_tagged_tweets, 'brands_to_include': brands_to_include}, 
         type: "GET",
     }).done(function (response) { 
         updateTweetBox(response)
@@ -106,7 +107,7 @@ function fetchTweetsCount(callbacks)
     campaign_id = $('[fn=c_id]').val();
     $.ajax({
         url: "/api/tweets/count", 
-        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, "account_id": account_id, 'campaign_id': campaign_id}, 
+        data: {'start': start, 'end': end, 'group_by': tweets_count_group_by, "account_id": account_id, 'campaign_id': campaign_id, brands_to_include: brands_to_include}, 
         type: "GET",
     }).done(function (data) { 
         for (var i=0; i<callbacks.length;i++)
