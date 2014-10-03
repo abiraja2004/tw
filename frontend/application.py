@@ -219,10 +219,12 @@ def tweets_count():
     group_by = request.args.get("group_by", "day")
     account_id = request.args.get("account_id", "")
     campaign_id = request.args.get("campaign_id", "")
+    brands_to_include = request.args.get("brands_to_include", "")
     res = {'timerange': []}
     if start and end and campaign_id:
         accs = getCampaignFollowAccounts(account_id, campaign_id)
         collection_name = "tweets_%s" % campaign_id
+        bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
         end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
         timerange = []
@@ -255,6 +257,8 @@ def tweets_count():
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         for tweet in dbtweets:
             pms = tweet.get('x_extracted_info', [])
+            if brands_to_include:
+                if not [pm for pm in pms if pm['brand'] in bti]: continue
             if pms:
                 pm = pms[0]
                 if not pm['brand'] in res['brand']: res['brand'][pm['brand']] = {}
