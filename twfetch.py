@@ -216,7 +216,7 @@ try:
                     x_mentions_count["@" + m['screen_name']] = 1
                     campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']]['cid'])
                     pm = ProductMatch()
-                    pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['name']
+                    pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['brand']
                     pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
                     pm.confidence = 5
                     pms.append(pm.getDictionary())
