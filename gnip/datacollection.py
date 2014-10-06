@@ -16,6 +16,11 @@ args = parser.parse_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
 mclient = MongoClient()
+
+SERVER_LOCAL=0
+SERVER_REMOTE=1
+
+server_mode = SERVER_LOCAL
 if args.auth:
     tweetdb.authenticate(dbuser, dbpasswd)
     server_mode = SERVER_REMOTE
@@ -31,7 +36,7 @@ password = "pdbpdb"
     
 class ActivityHandler(ContentHandler):
     entry_basic_tags = ("id","created", "published", "updated", "title")
-    entry_composed_tags = {"activity:object/link[rel=alternate]": {"activity:link:alternate": "href"}, "activity:object/link[rel=via]": {"activity:link:via": "href"}, "activity:object/activity:object-type": "activity:type", "author/name": "author:name", "author/uri": "author:uri", "activity:object/id": "activity:id", "activity:object/title": "activity:title", "activity:object/content": "activity:content"}
+    entry_composed_tags = {"source/gnip:rule": "rule", "activity:object/link[rel=alternate]": {"activity:link:alternate": "href"}, "activity:object/link[rel=via]": {"activity:link:via": "href"}, "activity:object/activity:object-type": "activity:type", "author/name": "author:name", "author/uri": "author:uri", "activity:object/id": "activity:id", "activity:object/title": "activity:title", "activity:object/content": "activity:content"}
     
     def __init__(self):
         self.entries = []
@@ -77,7 +82,8 @@ class ActivityHandler(ContentHandler):
         self.tagpath.pop()
         if name == "entry":
             self.entry['x_created_at'] = datetime.strptime(self.entry['created'], "%Y-%m-%dT%H:%M:%S+00:00")
-            accountdb[collection].save(self.entry)
+            if server_mode == SERVER_LOCAL or self.entry['rule'] == "sivalemx": #REVISAR!
+                accountdb[collection].save(self.entry)
             self.entries.append(self.entry)
             self.entry = None
             
