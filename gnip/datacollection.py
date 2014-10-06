@@ -146,6 +146,6 @@ def stream():
     
 
 if __name__ == "__main__":
-    pollAll()
+    #pollAll()
     stream()
     pass
