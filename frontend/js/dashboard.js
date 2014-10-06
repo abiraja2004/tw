@@ -19,6 +19,7 @@ $(function () {
     $(".brands_to_include").click(function (e) { 
         brands_to_include = $(this).attr('brands_to_include') 
     fetchTweets(account_id, campaign_id, true);
+    fetchFBPosts(account_id, campaign_id);
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
                      [updateTweetCountLineChart, ['product']], 
                      [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
@@ -34,7 +35,7 @@ function dateRangeChanged()
     campaign_id = $('[fn=c_id]').val();
     
     fetchTweets(account_id, campaign_id, true);
-    
+    fetchFBPosts(account_id, campaign_id);
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
                      [updateTweetCountLineChart, ['product']], 
                      [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 

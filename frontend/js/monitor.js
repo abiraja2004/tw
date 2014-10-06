@@ -212,3 +212,78 @@ function removeComponentExceptLast(tag)
         $(tag).closest(".removible_component").remove();
     }
 }
+
+function fetchFBPosts(account_id, campaign_id)
+{   
+    startend = getDateRange();
+    start = startend[0].format("YYYY-MM-DD");
+    end = startend[1].format("YYYY-MM-DD");
+
+    $.ajax({
+        url: "/api/fb_posts/list", 
+        data: {"account_id": account_id, 'campaign_id': campaign_id, 'start': start, 'end': end}, 
+        type: "GET",
+    }).done(function (response) { 
+        updateFBPostsBox(response)
+    });
+}
+
+function updateFBPostsBox(response)
+{
+    posts = response['posts'];
+    //mentions = 0;
+    html = $('#fb_posts_model').html();
+    postbox = $("#fb_posts-box");
+    postbox.html("");    
+    sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
+    colors = {'+': 'green', '-':'red', '=':'yellow', '?': 'gray'}
+    for (var i=0;i<posts.length;i++)
+    {
+        post = posts[i];
+        sent = '';
+        color= 'white';
+        if ('x_sentiment' in post) 
+        {
+            sent = sents[post['x_sentiment']];
+            color = colors[post['x_sentiment']];
+        }
+        brand = '';
+        product = '';
+        confidence = '';
+        //if ('x_mentions_count' in tweet)
+        //{
+        //    for (m in tweet['x_mentions_count']) mentions = mentions + tweet['x_mentions_count'][m];
+        //}
+        if ('x_extracted_info' in post && post['x_extracted_info'].length > 0)
+        {
+                brand = post['x_extracted_info'][0]['brand'];
+                product = post['x_extracted_info'][0]['product'];
+                confidence = post['x_extracted_info'][0]['confidence'];
+        }
+        topicshtml = "";
+        br = "<br>";
+        if ('x_extracted_topics' in post && post['x_extracted_topics'].length > 0)
+        {
+            for (var j=0;j<post['x_extracted_topics'].length; j++)
+            {
+                topic = post['x_extracted_topics'][j];
+                topicshtml = topicshtml + br + '<small class="badge pull-left bg-aqua">'+topic['topic_name'] + ' (' + topic['confidence'] + ')</small> ';
+                br = "";
+            }
+        }
+        posttag = $(html.replace("%%_id%%", post['_id']['$oid'])
+                    .replace("%%created_at%%", post['created'])
+                    .replace("%%user.screen_name%%", post['author:name'])
+                    .replace("%%text%%", post['activity:content'])
+                    .replace("%%sentiment%%", sent)
+                    .replace("%%sentiment_color%%", color)
+                    .replace("%%brand%%", brand)
+                    .replace("%%product%%", product)
+                    .replace("%%confidence%%", confidence)
+                    .replace("%%topics%%", topicshtml)
+                    );    
+        
+        postbox.append(posttag);
+    }
+    //$('#mentions_indicator').html(''+mentions);
+}

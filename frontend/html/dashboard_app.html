@@ -182,6 +182,32 @@
                 </div><!-- /.chat -->
             </div><!-- /.box (chat box) -->                                                        
 
+            <!-- Tweet list box -->
+            <div class="box box-success">
+                <div class="box-header">
+                    <i class="fa fa-comments-o"></i>
+                    <h3 class="box-title">Facebook</h3>
+                </div>
+                <div id="fb_posts_model" style="display: none">
+                    <div class="item">
+                        <img %%user.profile_image_url_https%% alt="user image" class="online"/>
+                        <p class="message">
+                            <a href="#" class="name">
+                                <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
+                                %%user.screen_name%%
+                            </a>%%text%% <small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
+                            <br>
+                            <small class="badge pull-left bg-olive">%%brand%%</small>
+                            <small class="badge pull-left bg-fuchsia">%%product%%</small>
+                            <small class="badge pull-left bg-orange">%%confidence%%</small>
+                            %%topics%%
+                        </p>
+                    </div>
+                </div>                  
+                
+                <div class="box-body chat" id="fb_posts-box">
+                </div><!-- /.chat -->
+            </div><!-- /.box (chat box) -->                                                        
                             
 
         </section><!-- /.Left col -->

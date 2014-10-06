@@ -1,0 +1,254 @@
+<results data_collector_id="1"  publisher="Facebook" endpoint="Fan Page - Feed (with comments)" refreshURL="https://promored.gnip.com/data_collectors/1/activities.xml?since_date=20141005155726">
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>927969820550904_933313823349837</id>
+  <created>2014-10-05T14:54:15+00:00</created>
+  <published>2014-10-05T14:54:15+00:00</published>
+  <updated>2014-10-05T14:54:15+00:00</updated>
+  <title>Pablo Besada posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=933313823349837"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-54-17Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>927969820550904_933313823349837</id>
+    <title>buenisimo!</title>
+    <content>buenisimo!</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=933313823349837"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=933313823349837"/>
+  </activity:object>
+  <author>
+    <name>Pablo Besada</name>
+    <uri>http://www.facebook.com/profile.php?id=10152382823983193</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=10152382823983193"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>927969820550904_932941270053759</id>
+  <created>2014-10-05T00:27:43+00:00</created>
+  <published>2014-10-05T00:27:43+00:00</published>
+  <updated>2014-10-05T00:27:43+00:00</updated>
+  <title>Pablo Besada posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932941270053759"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-48-01Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>927969820550904_932941270053759</id>
+    <title>me parece bien</title>
+    <content>me parece bien</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932941270053759"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932941270053759"/>
+  </activity:object>
+  <author>
+    <name>Pablo Besada</name>
+    <uri>http://www.facebook.com/profile.php?id=10152382823983193</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=10152382823983193"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>927969820550904_932940460053840</id>
+  <created>2014-10-05T00:25:55+00:00</created>
+  <published>2014-10-05T00:25:55+00:00</published>
+  <updated>2014-10-05T00:25:55+00:00</updated>
+  <title>Pablo Besada posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932940460053840"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-48-01Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>927969820550904_932940460053840</id>
+    <title>estoy de acuerdo</title>
+    <content>estoy de acuerdo</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932940460053840"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/927970013884218?comment_id=932940460053840"/>
+  </activity:object>
+  <author>
+    <name>Pablo Besada</name>
+    <uri>http://www.facebook.com/profile.php?id=10152382823983193</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=10152382823983193"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>932076653473554_933027013378518</id>
+  <created>2014-10-05T03:24:48+00:00</created>
+  <published>2014-10-05T03:24:48+00:00</published>
+  <updated>2014-10-05T03:24:48+00:00</updated>
+  <title>Jose Garcia posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=933027013378518"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-48-01Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>932076653473554_933027013378518</id>
+    <title>Para que dicen PARA EL SABADO ESTA LISTA LA NUEVA PAGINA SI NO CUMPLEN ESTE SERVICIO ESTA PESIMO LES DOY UNA ESTRELLA NOMAS POR LASTIMA</title>
+    <content>Para que dicen PARA EL SABADO ESTA LISTA LA NUEVA PAGINA SI NO CUMPLEN ESTE SERVICIO ESTA PESIMO LES DOY UNA ESTRELLA NOMAS POR LASTIMA</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=933027013378518"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=933027013378518"/>
+  </activity:object>
+  <author>
+    <name>Jose Garcia</name>
+    <uri>http://www.facebook.com/profile.php?id=1716981961859684</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=1716981961859684"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>932076653473554_932820770065809</id>
+  <created>2014-10-04T20:04:27+00:00</created>
+  <published>2014-10-04T20:04:27+00:00</published>
+  <updated>2014-10-04T20:04:27+00:00</updated>
+  <title>Yonker Quero Perez posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932820770065809"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-48-01Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>932076653473554_932820770065809</id>
+    <title>La neta</title>
+    <content>La neta</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932820770065809"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932820770065809"/>
+  </activity:object>
+  <author>
+    <name>Yonker Quero Perez</name>
+    <uri>http://www.facebook.com/profile.php?id=774361895955009</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=774361895955009"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:service="http://activitystrea.ms/service-provider" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:gnip="http://www.gnip.com/schemas/2010" xmlns:geo="http://www.georss.org/georss" xmlns:poco="http://portablecontacts.net/spec/1.0">
+  <id>932076653473554_932758660072020</id>
+  <created>2014-10-04T17:56:21+00:00</created>
+  <published>2014-10-04T17:56:21+00:00</published>
+  <updated>2014-10-04T17:56:21+00:00</updated>
+  <title>Patty Cortez posted a comment to the Sí Vale page on Facebook</title>
+  <category term="CommentPosted" label="Comment Posted"/>
+  <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932758660072020"/>
+  <source>
+    <link rel="self" type="application/json" href="https://graph.facebook.com/sivalemx/feed?limit=150&amp;access_token=385147608327441%7CgauWIKTs9XvHZyUwvT0Uuw5OrOc"/>
+    <title>Facebook - Fan Page - Feed (with comments) - sivalemx</title>
+    <updated>2014-10-05T14-48-01Z</updated>
+    <gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">sivalemx</gnip:rule>
+  </source>
+  <service:provider>
+    <name>Facebook</name>
+    <uri>www.facebook.com</uri>
+    <icon/>
+  </service:provider>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/comment</activity:object-type>
+    <id>932076653473554_932758660072020</id>
+    <title>Porque mejor en vez de poner post aquí, ARREGLAN LA APP PARA CHECAR SALDO??? Honestamente es una porqueria.</title>
+    <content>Porque mejor en vez de poner post aquí, ARREGLAN LA APP PARA CHECAR SALDO??? Honestamente es una porqueria.</content>
+    <link rel="alternate" type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932758660072020"/>
+    <link rel="via" type="text/html" href="https://www.facebook.com/sivalemx"/>
+    <thr:in-reply-to type="html" href="http://www.facebook.com/151776728170221/posts/932076716806881?comment_id=932758660072020"/>
+  </activity:object>
+  <author>
+    <name>Patty Cortez</name>
+    <uri>http://www.facebook.com/profile.php?id=773855456005328</uri>
+  </author>
+  <activity:actor>
+    <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+    <link rel="alternate" type="html" length="0" href="http://www.facebook.com/profile.php?id=773855456005328"/>
+  </activity:actor>
+  <gnip:matching_rules>
+    <gnip:matching_rule rel="source">sivalemx</gnip:matching_rule>
+  </gnip:matching_rules>
+</entry>
+
+</results>

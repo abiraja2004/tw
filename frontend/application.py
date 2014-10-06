@@ -3,7 +3,7 @@ from twython import Twython
 from pymongo import MongoClient, DESCENDING
 from bson import ObjectId
 from bson.json_util import dumps
-from flask import Flask, render_template, request, Blueprint
+from flask import Flask, render_template, request, Blueprint, redirect, url_for
 from rulesmanager import getBrandClassifiers
 import flask 
 import json
@@ -13,6 +13,7 @@ from oauth2client.client import OAuth2WebServerFlow, Credentials, AccessTokenRef
 from apiclient.discovery import build
 import analytics_api
 import httplib2
+import hashlib
 from base64 import b64encode, b64decode
 
 import argparse
@@ -24,6 +25,7 @@ dbpasswd = "monitor678"
 mclient = MongoClient()
 tweetdb = mclient['unilever']
 
+PASSWORD_SALT = "relatos salvajes"
 
 SERVER_LOCAL=0
 SERVER_REMOTE=1
@@ -47,6 +49,34 @@ def onRemoteServer():
 def onLocalServer():
     return server_mode == SERVER_LOCAL
 
+"""
+@app.route('/')
+def root():
+    return redirect(url_for('login'))
+"""
+
+def getPasswordHash(user, psw):
+    return hashlib.md5(user + psw + PASSWORD_SALT).hexdigest()
+        
+@app.route('/login', methods=["GET", "POST"])
+def login():    
+    if request.method == "GET":
+        return render_template("login.html")
+    elif request.method == "POST":
+        user = request.form["user"]
+        password = request.form["password"]
+        passwordhash = getPasswordHash(user, password)
+        acc = accountdb.accounts.find({"users.%s" % user: {"$exists": True}})
+        msg = ""
+        if not acc.count():
+            msg = "El usuario y/o clave son incorrectos"
+            return render_template("login.html", user=user, msg=msg)
+        else:
+            pass
+        
+        
+            
+            
 @app.route('/')
 @app.route('/app')
 @app.route('/sivale')
@@ -79,8 +109,6 @@ def home():
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
             break
-    
-    
     return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 @app.route('/campaign')
@@ -455,6 +483,33 @@ def analytics_auth_callback():
     if "error" in request.args and request.args['error'] == "access_denied":
         return u"Acceso a analytics (solo lectura) revocado. Ya puede cerrar esta ventana y refrescar la ventana de administracion de la campaña"
     return "something went wrong"
+
+
+@app.route('/api/fb_posts/list')
+def fb_posts_list():
+    start = request.args.get("start", "")
+    end = request.args.get("end", "")
+    page = int(request.args.get('page',"1"))-1
+    posts_per_page = int(request.args.get('ppp',"20"))
+    campaign_id = request.args.get("campaign_id", "")
+    brands_to_include = request.args.get("brands_to_include", "")
+    include_sentiment_tagged_posts = bool(request.args.get("include_sentiment_tagged_posts", "true") == "true")
+    res = {"posts": [], "mentions": 0}
+    if start and end and campaign_id:
+        collection_name = "fb_posts_%s" % campaign_id
+        start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+        docfilter = {"x_created_at": {"$gte": start, "$lte": end}}
+        if not include_sentiment_tagged_posts: docfilter['x_sentiment'] = {"$exists": False}
+        dbposts = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*posts_per_page).limit(posts_per_page) 
+        if not brands_to_include:
+            res['posts'].extend(dbposts)
+        else:
+            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
+            for t in dbposts:
+                if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
+                    res['posts'].append(t)
+    return flask.Response(dumps(res),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.debug = True
