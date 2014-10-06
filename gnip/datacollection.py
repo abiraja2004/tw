@@ -21,14 +21,13 @@ SERVER_LOCAL=0
 SERVER_REMOTE=1
 
 server_mode = SERVER_LOCAL
-if args.auth:
-    tweetdb.authenticate(dbuser, dbpasswd)
-    server_mode = SERVER_REMOTE
-    server_domain = "www.nuev9.com"
     
 accountdb = mclient['monitor']
 if args.auth:
     accountdb.authenticate(dbuser, dbpasswd)
+    server_mode = SERVER_REMOTE
+    server_domain = "www.nuev9.com"
+
 
 collection = "fb_posts_5410f5a52e61d7162c700232" #campaña sivale
 user = "pablobesada"
