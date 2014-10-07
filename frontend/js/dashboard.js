@@ -20,6 +20,7 @@ $(function () {
         brands_to_include = $(this).attr('brands_to_include') 
     fetchTweets(account_id, campaign_id, true);
     fetchFBPosts(account_id, campaign_id);
+    updateAggregatedInformation();
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
                      [updateTweetCountLineChart, ['product']], 
                      [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
@@ -36,11 +37,18 @@ function dateRangeChanged()
     
     fetchTweets(account_id, campaign_id, true);
     fetchFBPosts(account_id, campaign_id);
-    fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
-                     [updateTweetCountLineChart, ['product']], 
-                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
-                     [updateIndicators]]);
+    updateAggregatedInformation();
     fetchAnalyticsSessions();
+}
+
+function updateAggregatedInformation()
+{
+    $(".indicator").addClass("loading");
+    fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
+                    [updateTweetCountLineChart, ['product']], 
+                    [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
+                    [updateIndicators]]);
+
 }
 
 function updateIndicators(data)
@@ -50,6 +58,7 @@ function updateIndicators(data)
     $('#mentions_indicator').html(''+data['stats']['mentions']['total']);
     $('#reweets').html(''+data['stats']['own_tweets']['retweets']['total']);
     $('#favorites').html(''+data['stats']['own_tweets']['favorites']['total']);
+    $(".indicator").removeClass("loading");
 }
 
 function fetchAnalyticsSessions()

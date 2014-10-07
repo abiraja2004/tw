@@ -22,6 +22,7 @@ function getNewId(func)
 
 function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
 {   
+    tweetbox = $("#tweet-box").addClass("loading");
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
@@ -93,6 +94,7 @@ function updateTweetBox(response)
                     );    
         
         tweetbox.append(tweettag);
+        tweetbox = $("#tweet-box").removeClass("loading");
     }
     //$('#mentions_indicator').html(''+mentions);
 }
@@ -100,6 +102,13 @@ function updateTweetBox(response)
 
 function fetchTweetsCount(callbacks)
 {
+    for (var i=0; i<callbacks.length;i++)
+    {
+        if (callbacks[i].length != 1)
+        {
+            $('#'+callbacks[i][1][0]+'-chart').addClass("loading");
+        }
+    }
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
@@ -129,6 +138,7 @@ function fetchTweetsCount(callbacks)
 function updateTweetCountLineChart(data, args)
 {
     dimension = args[0];
+    $('#'+dimension+'-chart').removeClass("loading");
     options = args[1];
     $('#'+dimension+'-chart').off();
     $('#'+dimension+'-chart').empty();
@@ -164,13 +174,19 @@ function updateTweetCountLineChart(data, args)
     chartOptions['ykeys'] = dims;
     chartOptions['labels'] = labels;
     // LINE CHART
+    console.debug(chartOptions.element);
+    console.debug($('#chartOptions.element'));
     var line = new Morris.Line(chartOptions);   
+    console.debug("chart drawn");
+    $('#'+dimension+'-chart').removeClass("loading")
 }
 
 function updateTweetCountPieChart(data, args)
 {
+    console.debug(1);
     deb_var2 = data;
     dimension = args[0];
+    //if ($.isEmptyObject(data[dimension])) return;
     options = args[1];   
     
     d = []
@@ -197,6 +213,8 @@ function updateTweetCountPieChart(data, args)
         data: d,
         hideHover: 'auto'
     });    
+    $('#'+dimension+'-chart').removeClass("loading");
+    console.debug(2);
 }
 
 
