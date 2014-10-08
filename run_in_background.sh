@@ -1,1 +1,1 @@
-nohup python $1.py > $1.log 2>&1  &
+nohup python $1.py $2 > $1.log 2>&1  &
