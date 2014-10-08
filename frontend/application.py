@@ -326,10 +326,10 @@ def tweets_count():
                     res['stats']['own_tweets']['total'] += 1
                     res['stats']['own_tweets']['accounts']['@' + tweet['user']['screen_name']] += 1
                     if 'retweet_count' in tweet:
-                        res['stats']['own_tweets']['retweets']['total'] += int(tweet['retweet_count']) + 10
+                        res['stats']['own_tweets']['retweets']['total'] += int(tweet['retweet_count'])
                         res['stats']['own_tweets']['retweets']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['retweet_count'])
                     if 'favorite_count' in tweet:
-                        res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count']) + 20
+                        res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count'])
                         res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count'])
             
     return flask.Response(dumps(res),  mimetype='application/json')
