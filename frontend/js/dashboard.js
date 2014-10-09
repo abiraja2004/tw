@@ -21,11 +21,6 @@ $(function () {
     fetchTweets(account_id, campaign_id, true);
     fetchFBPosts(account_id, campaign_id);
     updateAggregatedInformation();
-    fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
-                     [updateTweetCountLineChart, ['product']], 
-                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
-                     [updateIndicators]]);
-
     });    
     
 });
@@ -44,11 +39,29 @@ function dateRangeChanged()
 function updateAggregatedInformation()
 {
     $(".indicator").addClass("loading");
-    fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
-                    [updateTweetCountLineChart, ['product']], 
-                    [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
-                    [updateIndicators]]);
+    params = [];
+    params.push([updateTweetCountLineChart, ['brand']]);
+    params.push([updateTweetCountLineChart, ['product']]);
+    params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]]);
+    params.push([updateIndicators]);
+    params.push([updatePollsPieCharts, ['polls']]);
+    fetchTweetsCount(params);
+}
 
+function updatePollsPieCharts(data)
+{
+    $('.poll-chart').remove();
+    for (var poll_id in data['polls'])
+    {
+        poll = data['polls'][poll_id];
+        var modeldiv = $('#poll-charts-container').children().first();
+        var newdiv = modeldiv.clone()
+        newdiv.css("display", "block");
+        newdiv.attr("id", poll_id+ "-chart");
+        newdiv.addClass("poll-chart")
+        modeldiv.parent().append(newdiv);
+        updateTweetCountPieChart(poll, poll['data'], [poll_id]);        
+    }
 }
 
 function updateIndicators(data)

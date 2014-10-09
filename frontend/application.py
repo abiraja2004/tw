@@ -148,7 +148,9 @@ def campaigns():
     analytics_revoke_url = ""
     if analytics_credentials:
         analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url)
+    campaign = account['campaigns'][campaign_id]        
+    if not 'polls' in campaign: campaign['polls'] = {}
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url)
 
 @app.route('/sentiment')
 def sentiment():
@@ -251,7 +253,8 @@ def tweets_count():
     brands_to_include = request.args.get("brands_to_include", "")
     res = {'timerange': []}
     if start and end and campaign_id:
-        accs = getCampaignFollowAccounts(account_id, campaign_id)
+        account = getAccount(account_id)
+        accs = getCampaignFollowAccounts(account, campaign_id)
         collection_name = "tweets_%s" % campaign_id
         bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
@@ -278,12 +281,27 @@ def tweets_count():
         res['brand'] = {}
         res['product'] = {}
         res['sentiment'] = {}
+        res['polls'] = {}
         res['stats'] = {}
         res['stats']['own_tweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['own_tweets']['retweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['own_tweets']['favorites'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        polls = {}
+        if 'polls' in account['campaigns'][campaign_id]:
+            polls = account['campaigns'][campaign_id]['polls']
+        poll_hashtags = {}
+        for poll_id, poll in polls.items():
+            poll['data'] = {}
+            for ht in poll['hashtags'].split(","):
+                ht = ht.strip()
+                if not ht: continue
+                if not ht in poll_hashtags: poll_hashtags[ht] = []
+                poll_hashtags[ht].append(poll_id)
+                poll['data'][ht] = {'total': 0}
+            res['polls'][poll_id] = poll
+        
         for tweet in dbtweets:
             pms = tweet.get('x_extracted_info', [])
             if brands_to_include:
@@ -331,7 +349,11 @@ def tweets_count():
                     if 'favorite_count' in tweet:
                         res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count'])
                         res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count'])
-            
+            if polls and 'entities' in tweet and 'hashtags' in tweet['entities']:
+                for ht in tweet['entities']['hashtags']:
+                    if ("#" + ht['text']) in poll_hashtags:
+                        for poll_id in poll_hashtags['#'+ht['text']]:
+                            res['polls'][poll_id]['data']['#'+ht['text']]['total'] += 1
     return flask.Response(dumps(res),  mimetype='application/json')
 
 
@@ -432,8 +454,12 @@ def analytics_sessions():
             error = "No Access"
     return flask.Response(json.dumps({"res": res, "error": error}),  mimetype='application/json')
 
-def getCampaignFollowAccounts(account_id, campaign_id):
-    account = accountdb.accounts.find_one({"_id": ObjectId(account_id)})
+
+def getAccount(account_id):
+    return accountdb.accounts.find_one({"_id": ObjectId(account_id)})
+
+def getCampaignFollowAccounts(account, campaign_id):
+    #account = accountdb.accounts.find_one({"_id": ObjectId(account_id)})
     s = set()
     campaign = account['campaigns'][campaign_id]
     for bid, brand in campaign['brands'].items():
@@ -454,7 +480,8 @@ def twitter_mentions():
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
         end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
         group = {"_id": None}
-        for tacc in getCampaignFollowAccounts(account_id, campaign_id):
+        account = getAccount(account_id)
+        for tacc in getCampaignFollowAccounts(account, campaign_id):
             group[tacc] = {"$sum": "$x_mentions_count.%s" % tacc}
         docs = accountdb[collection_name].aggregate([{"$match": { "retweeted_status": {"$exists": False}, "x_mentions_count": {"$exists": True}, "x_created_at": {"$gte": start, "$lte": end}}}, {"$group": group}])
         if len(docs['result']):

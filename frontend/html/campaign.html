@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 
-                <div id="analytics_content" fn="b_id" class="panel-collapse collapse brand_container">
+                <div id="analytics_content" fn="b_id" class="panel-collapse collapse analytics_container">
                     <div class="box-body">
                         <form role="form">
                             <!-- text input -->
@@ -320,6 +320,66 @@
                 </div>
             </div>
         </div><!-- ./col -->
+    </div> <!-- /.row -->
+    
+    <div class="row">
+        <div class="col-md-12 polls_section_container">
+            <div class="box box-solid">
+                <div class="panel box box-info">        
+                    <div class="box-header">
+                        <h2 class="box-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#polls_content">Encuestas</a>
+                        </h2>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-success btn-sm" onclick="addPoll(this); return false;"><i class="fa fa-plus"></i> Agregar Encuesta</button>
+                        </div>                
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">            
+                <div class="polls_container collapse" id="polls_content">
+                    {% set bfirst = True %}
+                    {% for poll_id, poll in [('new_poll', {'name': 'Nueva Encuesta'})] + campaign.polls.items() %}
+                    <div class="box box-solid poll removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
+                        <div class="panel box box-success">
+                            <div class="box-header">
+                                <h2 class="box-title">
+                                    <a class="poll_title" data-toggle="collapse" data-parent="#accordion" href="#{{poll_id}}" fn="name">{{poll['name']}}</a>
+                                </h2>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>
+                                </div>
+                            </div>  
+                        </div>
+
+                        <div id="{{poll_id}}" fn="p_id" class="panel-collapse collapse poll_container">
+                            <div class="box-body">
+                                <form role="form">
+                                    <!-- text input -->
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control" placeholder="nombre de la encuesta..." value="{{poll['name']}}" onchange="$(this).closest('.poll').find('.poll_title').html($(this).val());" />
+                                            </div>          
+                                        </div>
+                                        <div class="col-md-8">                                
+                                            <div class="form-group">
+                                                <label>Hashtags</label>
+                                                <input type="text" fn="hashtags" class="form-control" placeholder="Hashtags separados por comas..." value="{{poll['hashtags']}}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% set bfirst = False %}
+                    {% endfor %}
+                </div>
+            </div>
+       </div>
     </div>
 </section><!-- /.content -->
 

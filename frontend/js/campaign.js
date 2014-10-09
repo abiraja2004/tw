@@ -91,13 +91,33 @@ function addBrand(tag)
     });
 }
 
-function saveCampaign()
+function addPoll(tag)
 {
-    brands = $(".brand");
+    polls_container = $(tag).closest(".polls_section_container").find(".polls_container");
+    pt = $(polls_container.children()[0]).clone();
+    polls_container.append(pt);    
+    pt.css("display", "block");
+    $(pt).find(".pre_slider").removeClass('pre_slider').addClass('slider').slider();
+    $(pt).find(".slider").css("width", "100%");
+    $(pt).find(".pre_pre_slider").removeClass('pre_pre_slider').addClass('pre_slider');
+    $(pt).find(".pre_pre_pre_slider").removeClass('pre_pre_pre_slider').addClass('pre_pre_slider');
+    
+    setupTypeahead($(pt).find(".pre_typeahead").removeClass('pre_typeahead').addClass('typeahead'))    
+    $(pt).find(".pre_pre_typeahead").removeClass('pre_pre_typeahead').addClass('pre_typeahead');
+    $(pt).find(".pre_pre_pre_typeahead").removeClass('pre_pre_pre_typeahead').addClass('pre_pre_typeahead');
+    getNewId(function (id) {
+        pt.find(".poll_container").attr('id', id);
+        pt.find(".poll_title").attr('href', "#"+id);
+    });
+}
+
+function saveCampaign()
+{    
     campaign = {}
     campaign['name'] = $('[fn=cname]').val();
     campaign['active'] = $("[fn=cactive]").is(':checked');
     campaign['brands'] = {}
+    campaign['polls'] = {}
     campaign['analytics'] = {}
     campaign['analytics']['profiles'] = [];
     profiles =  $("[fn=analytics_profile]");
@@ -106,7 +126,7 @@ function saveCampaign()
         profile = $(profiles[i]);
         if (profile.is(':checked')) campaign['analytics']['profiles'].push(profile.attr('profile_id'));
     }
-    
+    brands = $(".brand");   
     for (var i = 1; i<brands.length; i++)
     {
         tagbrand = $(brands[i]);
@@ -193,6 +213,16 @@ function saveCampaign()
         
         campaign['brands'][brand_id] = brand;
     }
+    polls = $(".poll");   
+    for (var i = 1; i<polls.length; i++)
+    {
+        tagpoll = $(polls[i]);
+        poll = {};
+        poll_id = tagpoll.find("[fn=p_id]").attr('id');
+        poll['name'] = tagpoll.find("[fn=name]").html();
+        poll['hashtags'] = tagpoll.find("[fn=hashtags]").val();
+        campaign['polls'][poll_id] = poll;
+    }    
     data = {}
     data['campaign'] = campaign;
     data['campaign_id'] = $('[fn=c_id]').val();;

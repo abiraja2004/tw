@@ -128,36 +128,36 @@ function fetchTweetsCount(callbacks)
             }
             else
             {
-                cb[0](data, cb[1])
+                cb[0](data, data[cb[1][0]], cb[1])
             }
         }
     });
 }
 
 
-function updateTweetCountLineChart(data, args)
+function updateTweetCountLineChart(fulldata, data, args)
 {
     dimension = args[0];
     $('#'+dimension+'-chart').removeClass("loading");
     options = args[1];
     $('#'+dimension+'-chart').off();
     $('#'+dimension+'-chart').empty();
-    if ($.isEmptyObject(data[dimension])) return;
+    if ($.isEmptyObject(data)) return;
     series = [];
-    for (var i = 0;i<data['timerange'].length; i++)
+    for (var i = 0;i<fulldata['timerange'].length; i++)
     {
-        range = data['timerange'][i];
+        range = fulldata['timerange'][i];
         item = {};
         item['y'] = range;
-        for (dim in data[dimension])
+        for (dim in data)
         {
-            item[dim] = data[dimension][dim][range]
+            item[dim] = data[dim][range];
         }
         series.push(item);
     }
     dims = []
     deb_var = series;
-    for (dim in data[dimension]) dims.push(dim)
+    for (dim in data) dims.push(dim)
     chartOptions = {
         element: dimension+'-chart',
         resize: true,
@@ -174,47 +174,47 @@ function updateTweetCountLineChart(data, args)
     chartOptions['ykeys'] = dims;
     chartOptions['labels'] = labels;
     // LINE CHART
-    console.debug(chartOptions.element);
-    console.debug($('#chartOptions.element'));
     var line = new Morris.Line(chartOptions);   
-    console.debug("chart drawn");
     $('#'+dimension+'-chart').removeClass("loading")
 }
 
-function updateTweetCountPieChart(data, args)
+function updateTweetCountPieChart(fulldata, data, args)
 {
-    console.debug(1);
-    deb_var2 = data;
+    params = {};
     dimension = args[0];
     //if ($.isEmptyObject(data[dimension])) return;
     options = args[1];   
     
     d = []
-    colors = []
+    var total=0;
     if (options == null)
     {
-        for (dim in data[dimension]) d.push({'label': dim, 'value': data[dimension][dim]['total']})
+        for (dim in data) 
+        {
+            d.push({'label': dim, 'value': data[dim]['total']});
+            total = total + data[dim]['total'];
+        }
+            
     }
     else
     {
-        for (dim in data[dimension]) 
+        colors= [];
+        for (dim in data) 
         {
-            d.push({'label': options[dim][0], 'value': data[dimension][dim]['total']});
+            d.push({'label': options[dim][0], 'value': data[dim]['total']});
             colors.push(options[dim][1]);
+            total = total + data[dim]['total'];
         }
+        params['colors'] = colors;
     }
     
-    deb_var2 = d;
-    
-    var donut = new Morris.Donut({
-        element: dimension+'-chart',
-        resize: true,
-        colors: colors,
-        data: d,
-        hideHover: 'auto'
-    });    
+    console.debug(d);
+    params['element'] = dimension+'-chart';
+    params['resize'] = true;
+    params['data'] = d;
+    params['hideOver'] = 'auto';
+    if (total != 0) var donut = new Morris.Donut(params);    
     $('#'+dimension+'-chart').removeClass("loading");
-    console.debug(2);
 }
 
 
