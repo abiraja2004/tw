@@ -128,8 +128,8 @@ function addDatacollection(tag)
     $(pt).find(".pre_pre_typeahead").removeClass('pre_pre_typeahead').addClass('pre_typeahead');
     $(pt).find(".pre_pre_pre_typeahead").removeClass('pre_pre_pre_typeahead').addClass('pre_pre_typeahead');
     getNewId(function (id) {
-        account_id = $('[fn=c_id]').val();;
-        campaign_id = $('[fn=a_id]').val();
+        account_id = $('[fn=a_id]').val();;
+        campaign_id = $('[fn=c_id]').val();
         pt.find(".datacollection_container").attr('id', id);
         pt.find(".datacollection_title").attr('href', "#"+id);
         pt.find("[fn=dc_landing_page]").attr("href", "/dc/"+account_id+"/"+campaign_id+"/"+id);

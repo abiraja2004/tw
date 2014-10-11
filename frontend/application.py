@@ -565,6 +565,8 @@ def fb_posts_list():
 @app.route('/dc/<account_id>/<campaign_id>/<datacollection_id>', methods=['GET'])
 def datacollection_landing_page_get(account_id, campaign_id, datacollection_id):
     account = getAccount(account_id)
+    if not campaign_id in account['campaigns'] or datacollection_id not in account['campaigns'][campaign_id]['datacollections']:
+        return "La página no existe", 404
     campaign = account['campaigns'][campaign_id]
     datacollection = campaign['datacollections'][datacollection_id]
     return render_template("datacollection_landing_page.html", dc = datacollection, account= account, campaign_id=campaign_id, datacollection_id = datacollection_id)
