@@ -150,6 +150,7 @@ def campaigns():
         analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
     campaign = account['campaigns'][campaign_id]        
     if not 'polls' in campaign: campaign['polls'] = {}
+    if not 'datacollections' in campaign: campaign['datacollections'] = {}
     return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url)
 
 @app.route('/sentiment')
@@ -282,12 +283,14 @@ def tweets_count():
         res['product'] = {}
         res['sentiment'] = {}
         res['polls'] = {}
+        res['datacollections'] = {}
         res['stats'] = {}
         res['stats']['own_tweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['own_tweets']['retweets'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['own_tweets']['favorites'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+
         polls = {}
         if 'polls' in account['campaigns'][campaign_id]:
             polls = account['campaigns'][campaign_id]['polls']
@@ -302,6 +305,26 @@ def tweets_count():
                 poll['data'][ht] = {'total': 0}
             res['polls'][poll_id] = poll
         
+        datacollections = {}
+        if 'datacollections' in account['campaigns'][campaign_id]:
+            datacollections = account['campaigns'][campaign_id]['datacollections']
+
+        for datacollection_id, datacollection in datacollections.items():
+            datacollection['data'] = {}
+            for field in datacollection['fields']:
+                datacollection['data'][field['name']] = {}
+            
+            for dcitem in accountdb['datacollection_%s' % datacollection_id].find({}): #habria que filtrar por fecha??
+                for field in datacollection['fields']:
+                    if field['type'] != "combobox": continue #por ahora solo cuento los comboboxes
+                    if field['name'] in dcitem['fields']:
+                        if dcitem['fields'][field['name']] not in datacollection['data'][field['name']]:
+                            datacollection['data'][field['name']][dcitem['fields'][field['name']]] = {'total': 1}
+                        else:
+                            datacollection['data'][field['name']][dcitem['fields'][field['name']]]['total'] += 1
+            res['datacollections'][datacollection_id] = datacollection    
+            
+            
         for tweet in dbtweets:
             pms = tweet.get('x_extracted_info', [])
             if brands_to_include:
@@ -538,6 +561,28 @@ def fb_posts_list():
                 if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
                     res['posts'].append(t)
     return flask.Response(dumps(res),  mimetype='application/json')
+
+@app.route('/dc/<account_id>/<campaign_id>/<datacollection_id>', methods=['GET'])
+def datacollection_landing_page_get(account_id, campaign_id, datacollection_id):
+    account = getAccount(account_id)
+    campaign = account['campaigns'][campaign_id]
+    datacollection = campaign['datacollections'][datacollection_id]
+    return render_template("datacollection_landing_page.html", dc = datacollection, account= account, campaign_id=campaign_id, datacollection_id = datacollection_id)
+
+@app.route('/dc/<account_id>/<campaign_id>/<datacollection_id>', methods=['POST'])
+def datacollection_landing_page_post(account_id, campaign_id, datacollection_id):
+    account = getAccount(account_id)
+    campaign = account['campaigns'][campaign_id]
+    datacollection = campaign['datacollections'][datacollection_id]
+    obj = {}
+    obj['created_at'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    fields = {}
+    for f in datacollection['fields']:
+        fields[f['name']] = request.form[f['name']]
+    obj['fields'] = fields
+    collection = "datacollection_%s" % datacollection_id
+    accountdb[collection].insert(obj)
+    return "GRABADO"
 
 if __name__ == "__main__":
     app.debug = True

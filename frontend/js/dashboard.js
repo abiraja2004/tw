@@ -45,6 +45,7 @@ function updateAggregatedInformation()
     params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]]);
     params.push([updateIndicators]);
     params.push([updatePollsPieCharts, ['polls']]);
+    params.push([updateDataCollectionPieCharts, ['datacollections']]);
     fetchTweetsCount(params);
 }
 
@@ -61,6 +62,26 @@ function updatePollsPieCharts(data)
         newdiv.addClass("poll-chart")
         modeldiv.parent().append(newdiv);
         updateTweetCountPieChart(poll, poll['data'], [poll_id]);        
+    }
+}
+
+function updateDataCollectionPieCharts(data)
+{
+    $('.datacollection-chart').remove();
+    for (var datacollection_id in data['datacollections'])
+    {
+        datacollection = data['datacollections'][datacollection_id];
+        var modeldiv = $('#datacollection-charts-container').children().first();
+        for (var field in datacollection['data'])
+        {
+            if ($.isEmptyObject(datacollection['data'][field])) continue;  //algunos campos vienen sin datos xq no son de tipo combobox
+            var newdiv = modeldiv.clone()
+            newdiv.css("display", "block");
+            newdiv.attr("id", datacollection_id+field+ "-chart");
+            newdiv.addClass("datacollection-chart")
+            modeldiv.parent().append(newdiv);
+            updateTweetCountPieChart(datacollection['data'], datacollection['data'][field], [datacollection_id+field]);        
+        }
     }
 }
 

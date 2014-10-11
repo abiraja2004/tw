@@ -94,7 +94,9 @@ function addBrand(tag)
 function addPoll(tag)
 {
     polls_container = $(tag).closest(".polls_section_container").find(".polls_container");
+    console.debug(polls_container);
     pt = $(polls_container.children()[0]).clone();
+    console.debug(pt);
     polls_container.append(pt);    
     pt.css("display", "block");
     $(pt).find(".pre_slider").removeClass('pre_slider').addClass('slider').slider();
@@ -111,6 +113,30 @@ function addPoll(tag)
     });
 }
 
+function addDatacollection(tag)
+{
+    datacollections_container = $(tag).closest(".datacollections_section_container").find(".datacollections_container");
+    pt = $(datacollections_container.children()[0]).clone();
+    datacollections_container.append(pt);    
+    pt.css("display", "block");
+    $(pt).find(".pre_slider").removeClass('pre_slider').addClass('slider').slider();
+    $(pt).find(".slider").css("width", "100%");
+    $(pt).find(".pre_pre_slider").removeClass('pre_pre_slider').addClass('pre_slider');
+    $(pt).find(".pre_pre_pre_slider").removeClass('pre_pre_pre_slider').addClass('pre_pre_slider');
+    
+    setupTypeahead($(pt).find(".pre_typeahead").removeClass('pre_typeahead').addClass('typeahead'))    
+    $(pt).find(".pre_pre_typeahead").removeClass('pre_pre_typeahead').addClass('pre_typeahead');
+    $(pt).find(".pre_pre_pre_typeahead").removeClass('pre_pre_pre_typeahead').addClass('pre_pre_typeahead');
+    getNewId(function (id) {
+        account_id = $('[fn=c_id]').val();;
+        campaign_id = $('[fn=a_id]').val();
+        pt.find(".datacollection_container").attr('id', id);
+        pt.find(".datacollection_title").attr('href', "#"+id);
+        pt.find("[fn=dc_landing_page]").attr("href", "/dc/"+account_id+"/"+campaign_id+"/"+id);
+    });
+}
+
+
 function saveCampaign()
 {    
     campaign = {}
@@ -118,6 +144,7 @@ function saveCampaign()
     campaign['active'] = $("[fn=cactive]").is(':checked');
     campaign['brands'] = {}
     campaign['polls'] = {}
+    campaign['datacollections'] = {}
     campaign['analytics'] = {}
     campaign['analytics']['profiles'] = [];
     profiles =  $("[fn=analytics_profile]");
@@ -223,6 +250,28 @@ function saveCampaign()
         poll['hashtags'] = tagpoll.find("[fn=hashtags]").val();
         campaign['polls'][poll_id] = poll;
     }    
+    objects = $(".datacollection");   
+    for (var i = 1; i<objects.length; i++)
+    {
+        tag = $(objects[i]);
+        object = {};
+        object_id = tag.find("[fn=dc_id]").attr('id');
+        object['name'] = tag.find("[fn=name]").html();
+        object['title'] = tag.find("[fn=title]").val();
+        
+        object['fields'] = []
+        tags = tag.find("[fn=field]");
+        for (j=1;j<tags.length;j++)
+        {
+            tags2 = tags[j];
+            if ($(tags2).find("[fn=name]").val() != "") 
+            {   
+                object['fields'].push({'name': $(tags2).find("[fn=name]").val(), 'label': $(tags2).find("[fn=label]").val(), 'type': $(tags2).find("[fn=type]").val(), 'options': $(tags2).find("[fn=options]").val()});
+            }
+        }
+        
+        campaign['datacollections'][object_id] = object;
+    }        
     data = {}
     data['campaign'] = campaign;
     data['campaign_id'] = $('[fn=c_id]').val();;

@@ -1,3 +1,4 @@
+<!DOCTYPE html> 
 {% macro getSliderClass(first, bfirst=False, pfirst=False) -%}
 {% set res = "slider" %}
 {% if bfirst %}
@@ -30,7 +31,10 @@
 {%if b %}checked{% endif %}
 {%- endmacro %}
 
-<!DOCTYPE html> 
+{% macro selected(b) -%}
+{%if b %}selected{% endif %}
+{%- endmacro %}
+
 <html>
     <head>
         <meta charset="UTF-8">

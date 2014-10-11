@@ -328,7 +328,7 @@
                 <div class="panel box box-info">        
                     <div class="box-header">
                         <h2 class="box-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#polls_content">Encuestas</a>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#polls_content">Encuestas por hashtag</a>
                         </h2>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-success btn-sm" onclick="addPoll(this); return false;"><i class="fa fa-plus"></i> Agregar Encuesta</button>
@@ -374,6 +374,103 @@
                             </div>
                         </div>
 
+                    </div>
+                    {% set bfirst = False %}
+                    {% endfor %}
+                </div>
+            </div>
+       </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 datacollections_section_container">
+            <div class="box box-solid">
+                <div class="panel box box-info">        
+                    <div class="box-header">
+                        <h2 class="box-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#datacollections_content">Capturas de datos</a>
+                        </h2>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-success btn-sm" onclick="addDatacollection(this); return false;"><i class="fa fa-plus"></i> Agregar Captura de Datos</button>
+                        </div>                
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">            
+                <div class="datacollections_container collapse" id="datacollections_content">
+                    {% set bfirst = True %}
+                    {% for datacollection_id, datacollection in [('new_datacollection', {'name': 'Nueva captura de datos'})] + campaign.datacollections.items() %}
+                    <div class="box box-solid datacollection removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
+                        <div class="panel box box-success">
+                            <div class="box-header">
+                                <h2 class="box-title">
+                                    <a class="datacollection_title" data-toggle="collapse" data-parent="#accordion" href="#{{datacollection_id}}" fn="name">{{datacollection['name']}}</a>
+                                </h2>
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="{{datacollection_id}}" fn="dc_id" class="panel-collapse collapse datacollection_container">
+                            <div class="box-body">
+                                <form role="form">
+                                    <!-- text input -->
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control" placeholder="nombre de la captura de datos..." value="{{datacollection['name']}}" onchange="$(this).closest('.datacollection').find('.datacollection_title').html($(this).val());" />
+                                            </div>          
+                                            <div class="form-group">
+                                                <label>Título</label>
+                                                <input type="text" fn="title" class="form-control" placeholder="título del formulario..." value="{{datacollection['title']}}" />
+                                            </div>          
+
+
+                                            <div class="form-group">
+                                                <label>Campos del formulario</label>
+                                                <div id="{{datacollection_id}}_fields_container" class="datacollection_fields_container">
+                                                    {% if not 'fields' in datacollection %} {% do datacollection.update({'fields': []}) %} {% endif %}
+                                                    {% set first = True %}
+                                                    {% for field in [{'name':'', 'label':'', 'type': 'text', 'options': ''}] + datacollection['fields'] + [''] %}
+                                                    <div class="removible_component" {{ {True: 'style="display:none;"', False: ''}[first] |safe}}>
+                                                        <table style="width:600px" fn="field">
+                                                            <tr>
+                                                                <td style="width: 10%"><input type="text" fn="name" class="form-control" placeholder="nombre..." value="{{field['name']}}" onchange="checkLastItemChanged(this);"/></td>
+                                                                <td style="width: 10%"><input type="text" fn="label" class="form-control" placeholder="título..." value="{{field['label']}}"/></td>
+                                                                <td style="width: 10%">
+                                                                    <select fn="type" onchange="
+                                                                    $(this).closest('table').find('select[fn=type] option[value=combobox]').filter(':selected').closest('td').siblings('.field_options_cell').find('input').css('display', 'block');
+                                                                    $(this).closest('table').find('select[fn=type] option[value!=combobox]').filter(':selected').closest('td').siblings('.field_options_cell').find('input').css('display', 'none');">
+                                                                        <option value="text" {{selected(field['type'] == 'text')}}>Linea de texto</option>
+                                                                        <option value="textarea" {{selected(field['type'] == 'textarea')}}>Cuadro de texto</option>
+                                                                        <option value="number" {{selected(field['type'] == 'number')}}>Numero</option>
+                                                                        <option value="date" {{selected(field['type'] == 'date')}}>Fecha</option>
+                                                                        <option value="email" {{selected(field['type'] == 'email')}}>Email</option>
+                                                                        <option value="combobox" {{selected(field['type'] == 'combobox')}}>Opciones</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td class="field_options_cell" style="width: 25%" ><input {{ {False: 'style="display:none;"', True: ''}[field['type'] == 'combobox'] |safe}} type="text" fn="options" class="form-control" placeholder="opciones separadas con coma..." value="{{field['options']}}"/></td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    {% set first = False %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>                        
+
+                                            
+                                        </div>
+                                        <div class="col-md-8">                                
+                                            <div class="form-group">
+                                                <label>Landing page:</label>
+                                                <div><a fn="dc_landing_page" target="_new" href="/dc/{{account['_id']}}/{{campaign_id}}/{{datacollection_id}}">LINK</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     {% set bfirst = False %}
                     {% endfor %}
