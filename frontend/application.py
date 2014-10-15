@@ -60,6 +60,7 @@ def getPasswordHash(user, psw):
     return hashlib.md5(user + psw + PASSWORD_SALT).hexdigest()
         
 @app.route('/login', methods=["GET", "POST"])
+@app.route('/', methods=["GET", "POST"])
 def login():    
     if request.method == "GET":
         return render_template("login.html")
@@ -73,12 +74,9 @@ def login():
             msg = "El usuario y/o clave son incorrectos"
             return render_template("login.html", user=user, msg=msg)
         else:
-            pass
-        
-        
             
-            
-@app.route('/')
+            return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
+                    
 @app.route('/app')
 @app.route('/sivale')
 @app.route('/gm')
@@ -535,6 +533,20 @@ def analytics_auth_callback():
         return u"Acceso a analytics (solo lectura) revocado. Ya puede cerrar esta ventana y refrescar la ventana de administracion de la campaña"
     return "something went wrong"
 
+@app.route('/api/account/user/create', methods=["GET"])
+def create_user():
+    account_id = request.args.get("account_id", "")
+    username = request.args.get("username", "")
+    password = request.args.get("password", "")
+    if account_id and username and password:
+        account = getAccount(account_id)
+        if account:
+            if not 'users' in account: account['users'] = {}
+            user = {"username": username, "password": getPasswordHash(username, password)}
+            account['users'][username] = user
+            accountdb.accounts.save(account)
+            return "Usuario %s creado" % username
+    return "No se pudo crear el usuario"
 
 @app.route('/api/fb_posts/list')
 def fb_posts_list():
