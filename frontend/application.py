@@ -141,6 +141,8 @@ def campaigns():
                 analytics_access = True
             except AccessTokenRefreshError:
                 pass
+            except HttpError:
+                pass
     analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
     print FLOW.revoke_uri
     analytics_revoke_url = ""
