@@ -108,6 +108,7 @@ def home():
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
             break
+    print "own brands:", own_brands_list
     return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 @app.route('/campaign')
