@@ -104,6 +104,7 @@ def home():
     has_products = False
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
+        print brand['name'], brand['own_brand']
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
