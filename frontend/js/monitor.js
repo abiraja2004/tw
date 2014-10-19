@@ -4,8 +4,7 @@ brands_to_include = '';
 
 function getDateRange()
 {
-    return [$('#daterange').daterangepicker().data().daterangepicker.startDate, $('#daterange').daterangepicker().data().daterangepicker.endDate];
-    
+    return [$('#daterange').daterangepicker().data().daterangepicker.startDate, $('#daterange').daterangepicker().data().daterangepicker.endDate]; 
 }
 
 function getNewId(func)
@@ -94,8 +93,8 @@ function updateTweetBox(response)
                     );    
         
         tweetbox.append(tweettag);
-        tweetbox = $("#tweet-box").removeClass("loading");
     }
+    tweetbox = $("#tweet-box").removeClass("loading");
     //$('#mentions_indicator').html(''+mentions);
 }
 
@@ -142,7 +141,11 @@ function updateTweetCountLineChart(fulldata, data, args)
     options = args[1];
     $('#'+dimension+'-chart').off();
     $('#'+dimension+'-chart').empty();
-    if ($.isEmptyObject(data)) return;
+    if ($.isEmptyObject(data)) 
+    {
+        $('#'+dimension+'-chart').removeClass("loading")
+        return;
+    }
     series = [];
     for (var i = 0;i<fulldata['timerange'].length; i++)
     {

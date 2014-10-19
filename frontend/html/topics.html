@@ -2,12 +2,12 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Grupos de Palabras
+        Tópicos
         <small></small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Temas</li>
+        <li class="active">Tópicos</li>
     </ol>    
 </section>
 
@@ -19,7 +19,7 @@
             <div class="box box-solid">
                 <div class="panel box box-info">        
                     <div class="box-header">
-                        <h2 class="box-title">Temas</h2>
+                        <h2 class="box-title">Tópicos</h2>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-success btn-sm"  onclick="addTopic(this); return false;"><i class="fa fa-plus"></i> Agregar Nuevo</button>
                         </div>                
@@ -29,7 +29,7 @@
             
             <div class="topics_container">
                 {% set bfirst = True %}
-                {% for topic in [{'_id': None, 'name': 'Nuevo Tema', 'keywords': [], 'keywordsets': []}] + topics %}
+                {% for topic in [{'_id': None, 'name': 'Nuevo Tópico', 'keywords': [], 'keywordsets': []}] + topics %}
                 <div class="box box-solid topic removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
                     <div class="panel box box-success">
                         <div class="box-header">

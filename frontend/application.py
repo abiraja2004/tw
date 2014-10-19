@@ -56,6 +56,8 @@ def root():
     return redirect(url_for('login'))
 """
 
+
+
 def getPasswordHash(user, psw):
     return hashlib.md5(user + psw + PASSWORD_SALT).hexdigest()
         
@@ -74,25 +76,26 @@ def login():
             msg = "El usuario y/o clave son incorrectos"
             return render_template("login.html", user=user, msg=msg)
         else:
-            
+            accountdb.log_logins.insert({"account_id": acc[0]['_id'], "username": user, "timestamp": datetime.now()})
             return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
-                    
+    
 @app.route('/app')
 @app.route('/sivale')
 @app.route('/gm')
 def home():
     account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
-    logo = "logo.jpg"
-    logo2 = None
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
         campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id   
-        logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
     elif request.path == "/gm":
         account_id = "54189900d06625fc47e54b76" #general motors
         campaign_id = "54189b93d06625fc47e54b78" 
+    logo = "logo.jpg"
+    logo2 = None        
+    if account_id == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     template = "index.html"
     dashtemplate = "dashboard.html"
@@ -108,7 +111,8 @@ def home():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
+    restricted = request.args.get("restricted", "true") == "true"
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 @app.route('/campaign')
 def campaigns():
@@ -149,7 +153,14 @@ def campaigns():
     campaign = account['campaigns'][campaign_id]        
     if not 'polls' in campaign: campaign['polls'] = {}
     if not 'datacollections' in campaign: campaign['datacollections'] = {}
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url)
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
+    restricted = request.args.get("restricted", "true") == "true"
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2,restricted=restricted)
 
 @app.route('/sentiment')
 def sentiment():
@@ -157,7 +168,14 @@ def sentiment():
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
     campaign_id = request.args.get('campaign_id')
     custom_css= request.args.get("css", None)
-    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
+    restricted = request.args.get("restricted", "true") == "true"
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
 @app.route('/keywordsets')
 def keywordsets():
@@ -166,7 +184,14 @@ def keywordsets():
     campaign_id = request.args.get('campaign_id')    
     keywordsets = accountdb.keywordset.find({})
     custom_css= request.args.get("css", None)
-    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
+    restricted = request.args.get("restricted", "true") == "true"
+    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
 @app.route('/topics')
 def topics():
@@ -175,7 +200,14 @@ def topics():
     campaign_id = request.args.get('campaign_id')    
     topics = accountdb.topic.find({})
     custom_css= request.args.get("css", None)
-    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id])
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoLumia.jpg"
+    restricted = request.args.get("restricted", "true") == "true"
+    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
 @app.route('/<path:filename>')
 def send_js(filename):
@@ -597,6 +629,15 @@ def datacollection_landing_page_post(account_id, campaign_id, datacollection_id)
     collection = "datacollection_%s" % datacollection_id
     accountdb[collection].insert(obj)
     return "GRABADO"
+
+@app.route('/log/logins')
+def logs_login():
+    docs = accountdb.log_logins.find({}).sort("timestamp",-1).limit(20)
+    lines = []
+    for doc in docs:
+        lines.append("%s: %s  --  %s" % (doc['timestamp'], doc['account_id'], doc['username']))
+    return "<br>".join(lines)
+
 
 if __name__ == "__main__":
     app.debug = True
