@@ -95,7 +95,7 @@ def home():
     logo2 = None        
     if account_id == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
+        logo2 = "logoPromored.png"
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     template = "index.html"
     dashtemplate = "dashboard.html"
@@ -158,7 +158,7 @@ def campaigns():
     logo2 = None        
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
+        logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2,restricted=restricted)
 
@@ -173,7 +173,7 @@ def sentiment():
     logo2 = None        
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
+        logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
@@ -189,7 +189,7 @@ def keywordsets():
     logo2 = None        
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
+        logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
@@ -205,7 +205,7 @@ def topics():
     logo2 = None        
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
-        logo2 = "logoLumia.jpg"
+        logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
