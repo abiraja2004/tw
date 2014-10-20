@@ -126,7 +126,7 @@ def campaigns():
     analytics_credentials = None
     analytics_profiles = []
     analytics_access =False
-    if False and 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
+    if 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
         http = httplib2.Http()
         analytics_credentials = Credentials.new_from_json(account['campaigns'][campaign_id]["analytics"]["credentials"])
         print "CREDENTIAL STATUS", analytics_credentials.invalid, analytics_credentials.access_token_expired, analytics_credentials.token_expiry
