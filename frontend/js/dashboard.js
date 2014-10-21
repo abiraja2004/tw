@@ -97,6 +97,7 @@ function updateIndicators(data)
 
 function fetchAnalyticsSessions()
 {
+    $(".analytics_indicator").addClass("loading");
     data = {}
     data['campaign_id'] = $('[fn=c_id]').val();;
     data['account_id'] = $('[fn=a_id]').val();
@@ -121,5 +122,6 @@ function fetchAnalyticsSessions()
         {
             $('#analytics_sessions').html(response['res']);
         }
+        $(".analytics_indicator").removeClass("loading");
     });   
 }
