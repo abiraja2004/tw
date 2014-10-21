@@ -661,6 +661,6 @@ if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    
     app.run(host="0.0.0.0", port=5001)
-    Compress(app)
+    Compress(app, COMPRESS_DEBUG= True)
 
 
