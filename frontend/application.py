@@ -6,6 +6,7 @@ from bson.json_util import dumps
 from flask import Flask, render_template, request, Blueprint, redirect, url_for
 from rulesmanager import getBrandClassifiers
 import flask 
+from flask.ext.compress import Compress
 import json
 import re
 from datetime import datetime, timedelta
@@ -660,6 +661,6 @@ if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    
     app.run(host="0.0.0.0", port=5001)
-
+    Compress(app)
 
 
