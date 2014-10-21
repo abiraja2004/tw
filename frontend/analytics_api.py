@@ -37,22 +37,31 @@ def main(argv):
     print ('The credentials have been revoked or expired, please re-run '
            'the application to re-authorize')
 
-
+MAX_REQUESTS_PER_SEC = 10
 def get_all_profiles(service):
   # Get a list of all Google Analytics accounts for this user
+  requests = 0
+  if requests == MAX_REQUESTS_PER_SEC:
+    time.sleep(1)
+    requests = 0
   accounts = service.management().accounts().list().execute()
+  requests += 1
   res = []
   for account in accounts.get('items'):
     account_id = account.get('id')
     # Get a list of all the Web Properties for the account
+    if requests == MAX_REQUESTS_PER_SEC:
+        time.sleep(1)
+        requests = 0    
     webproperties = service.management().webproperties().list(accountId=account_id).execute()
+    requests += 1    
     if webproperties.get('items'):
-        requests = 0
+
         for webproperty in webproperties.get('items'):
             webproperty_id = webproperty.get('id')
 
             # Get a list of all Views (Profiles) for the Web Property of the Account
-            if requests == 10:
+            if requests == MAX_REQUESTS_PER_SEC:
                 time.sleep(1)
                 requests = 0
             profiles = service.management().profiles().list(accountId=account_id,webPropertyId=webproperty_id).execute()
