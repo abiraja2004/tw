@@ -60,13 +60,14 @@
                                 <div class="col-md-12">
                                     {% if analytics_access %}
                                         <a class="btn btn-success btn-sm" href="{{analytics_revoke_url}}" target="_blank">Revocar acceso a Google Analytics</a>
+                                        <a class="btn btn-success btn-sm" onclick="analytics_get_all_profiles(); return false" id="analytics_get_all_profiles_btn"/> Obtener Perfiles </a>
                                     {% else %}
                                         <a class="btn btn-success btn-sm" href="{{analytics_auth_url}}" target="_blank">Autorizar acceso a Google Analytics</a>
+                                        
                                     {% endif %}
                                     <br/><br/>
-                                    {% for ap in analytics_profiles %}
-                                        <div><label><input type="checkbox" fn="analytics_profile" profile_id="{{ap['id']}}" {{ checked(ap['id'] in campaign['analytics']['profiles']) }} /> {{ap['websiteUrl']}} / {{ap['name']}}</label></div>
-                                    {% endfor %}
+                                    <div id="analytics_profiles" loaded="false">
+                                    </div>
                                 </div>
                             </div>
                         </form>

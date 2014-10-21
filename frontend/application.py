@@ -111,8 +111,7 @@ def home():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
-    restricted = request.args.get("restricted", "true") == "true"
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted, has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 @app.route('/campaign')
 def campaigns():
@@ -124,29 +123,12 @@ def campaigns():
                            scope='https://www.googleapis.com/auth/analytics.readonly',
                            redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
     analytics_credentials = None
-    analytics_profiles = []
     analytics_access =False
-    if False and  'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
-        http = httplib2.Http()
+    if 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
         analytics_credentials = Credentials.new_from_json(account['campaigns'][campaign_id]["analytics"]["credentials"])
-        print "CREDENTIAL STATUS", analytics_credentials.invalid, analytics_credentials.access_token_expired, analytics_credentials.token_expiry
-        print FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
-        #if analytics_credentials.access_token_expired:
-        #    print "REFRESH:", analytics_credentials.refresh(http)
-        print "CREDENTIAL STATUS", analytics_credentials.invalid, analytics_credentials.access_token_expired, analytics_credentials.token_expiry
-        print dir(FLOW)
-        
         if not analytics_credentials.access_token_expired:
-            try:
-                http = analytics_credentials.authorize(http)
-                service = build('analytics', 'v3', http=http)
-                print dir(service)
-                analytics_profiles = analytics_api.get_all_profiles(service)
-                analytics_access = True
-            except AccessTokenRefreshError:
-                pass
+            analytics_access = True
     analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
-    print FLOW.revoke_uri
     analytics_revoke_url = ""
     if analytics_credentials:
         analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
@@ -159,14 +141,43 @@ def campaigns():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_profiles=analytics_profiles, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2,restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
+
+@app.route('/api/analytics/get_all_profiles')
+def analytics_get_all_profiles():
+    campaign_id = request.args.get("campaign_id") #default Campana unilever
+    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
+                           client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
+                           scope='https://www.googleapis.com/auth/analytics.readonly',
+                           redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
+    analytics_credentials = None
+    analytics_profiles = []
+    analytics_access =False
+    if 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
+        http = httplib2.Http()
+        analytics_credentials = Credentials.new_from_json(account['campaigns'][campaign_id]["analytics"]["credentials"])
+        if not analytics_credentials.access_token_expired:
+            try:
+                http = analytics_credentials.authorize(http)
+                service = build('analytics', 'v3', http=http)
+                analytics_profiles = analytics_api.get_all_profiles(service)
+                analytics_access = True
+            except AccessTokenRefreshError:
+                pass
+    res = {}
+    res['analytics_profiles']=analytics_profiles
+    res['campaign_profiles']=account['campaigns'][campaign_id]['analytics']['profiles']
+    if not analytics_access:
+        account['campaigns'][campaign_id]['analytics']['credentials'] = {}
+        accountdb.accounts.save(account)
+    return flask.Response(dumps(res),  mimetype='application/json')
+
 
 @app.route('/sentiment')
 def sentiment():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
     account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
-    campaign_id = request.args.get('campaign_id')
     custom_css= request.args.get("css", None)
 
     logo = "logo.jpg"
@@ -174,8 +185,7 @@ def sentiment():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2)
 
 @app.route('/keywordsets')
 def keywordsets():
@@ -446,6 +456,13 @@ def save_campaign():
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     oldcamp = account['campaigns'][data['campaign_id']]
     credentials = {}
+    
+    #tengo en cuenta se si cargaron los profiles desde la web o no
+    profiles = campaign['analytics']['profiles']
+    if not data['analytics_profiles_loaded'] and 'analytics' in oldcamp and 'profiles' in oldcamp['analytics']:
+        profiles = oldcamp['analytics']['profiles']
+    campaign['analytics']['profiles'] = profiles
+    
     if 'analytics' in oldcamp and 'credentials' in oldcamp['analytics']:
         credentials = oldcamp['analytics']['credentials']
     campaign['analytics']['credentials'] = credentials

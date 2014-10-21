@@ -165,19 +165,11 @@
                             </ul>                            
                         </li>                                                
                          <li>
-                            {% if restricted %}
-                                <a href=""><i class="fa fa-tag"></i> Grupos de Palabras (restringido)</a>
-                            {% else %}
-                                <a href="/keywordsets?campaign_id={{campaign_id}}"><i class="fa fa-tag"></i> Grupos de Palabras</a>
-                            {% endif %}
+                            <a href="/keywordsets?campaign_id={{campaign_id}}"><i class="fa fa-tag"></i> Grupos de Palabras</a>
                             </a>
                         </li>                           
                          <li>
-                            {% if restricted %}
-                                <a href="#"><i class="fa fa-tag"></i> Tópicos (restringido)</a>
-                            {% else %}
-                                <a href="/topics?campaign_id={{campaign_id}}"><i class="fa fa-tag"></i> Tópicos</a>
-                            {% endif %}                            
+                            <a href="/topics?campaign_id={{campaign_id}}"><i class="fa fa-tag"></i> Tópicos</a>
                         </li>                           
                    </ul>
                 </section>

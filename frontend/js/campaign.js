@@ -136,6 +136,36 @@ function addDatacollection(tag)
     });
 }
 
+function analytics_get_all_profiles()
+{
+    campaign_id = $('[fn=c_id]').val();
+    $('#analytics_profiles').find(".profile").remove();
+    $('#analytics_profiles').attr("loaded", "false");
+    $('#analytics_get_all_profiles_btn').addClass('loading');
+    $.ajax({
+        url: "/api/analytics/get_all_profiles", 
+        data: {'campaign_id': campaign_id}, 
+        type: "GET",
+    }).done(function (data) { 
+        console.log(data);
+        deb_var = data;
+        profiles = data['analytics_profiles'];
+        profiles_container = $('#analytics_profiles');
+        console.log(profiles_container);
+        for (var i=0;i<profiles.length;i++)
+        {
+            var ap = profiles[i];
+            var c = '<div class="profile"><label><input type="checkbox" fn="analytics_profile" profile_id="' + ap['id'] + '"';
+            if (data['campaign_profiles'].indexOf(ap['id']) > -1) c = c+ ' checked';
+            c = c + '/> ' + ap['websiteUrl'] + ' / ' + ap['name'] + '</label></div>';
+            console.log(c);
+            profiles_container.append($(c));
+        }
+        profiles_container.attr("loaded", "true");
+        console.log(profiles_container);
+        $('#analytics_get_all_profiles_btn').removeClass('loading');
+    });
+}
 
 function saveCampaign()
 {    
@@ -273,6 +303,7 @@ function saveCampaign()
         campaign['datacollections'][object_id] = object;
     }        
     data = {}
+    data['analytics_profiles_loaded'] = ($('#analytics_profiles').attr('loaded') == 'true')
     data['campaign'] = campaign;
     data['campaign_id'] = $('[fn=c_id]').val();;
     data['account_id'] = $('[fn=a_id]').val();
