@@ -47,11 +47,18 @@ def get_all_profiles(service):
     # Get a list of all the Web Properties for the account
     webproperties = service.management().webproperties().list(accountId=account_id).execute()
     if webproperties.get('items'):
+        requests = 0
         for webproperty in webproperties.get('items'):
             webproperty_id = webproperty.get('id')
 
             # Get a list of all Views (Profiles) for the Web Property of the Account
+            if requests == 10:
+                time.sleep(1)
+                requests = 0
             profiles = service.management().profiles().list(accountId=account_id,webPropertyId=webproperty_id).execute()
+            requests += 1
+
+                
             res.extend(profiles.get('items'))
   return res
 
