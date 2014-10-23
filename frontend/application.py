@@ -21,10 +21,14 @@ from base64 import b64encode, b64decode
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
+parser.add_argument('--host', default='')
 args = parser.parse_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
-mclient = MongoClient()
+if args.host:
+    mclient = MongoClient(args.host)
+else:
+    mclient = MongoClient()
 tweetdb = mclient['unilever']
 
 PASSWORD_SALT = "relatos salvajes"
@@ -114,6 +118,21 @@ def home():
             has_products = True
     return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
+
+def get_analytics_credentials(account, campaign_id):
+    campaign = account['campaigns'][campaign_id]
+    if not ('analytics' in campaign and 'credentials' in campaign['analytics'] and campaign['analytics']['credentials']): return None
+    credentials = Credentials.new_from_json(campaign['analytics']['credentials'])
+    if credentials.access_token_expired:
+        http = httplib2.Http()
+        credentials.refresh(http)
+    if credentials.access_token_expired:
+        accountdb.accounts.update({"_id": account['_id']}, {"$set": {"campaigns.%s.analytics" % campaign_id: {"credentials": null, "profiles": []}}})
+        return None
+    else:
+        accountdb.accounts.update({"_id": account['_id']}, {"$set": {"campaigns.%s.analytics.credentials" % campaign_id: credentials.to_json()}})
+        return credentials    
+    
 @app.route('/campaign')
 def campaigns():
     campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
@@ -123,12 +142,9 @@ def campaigns():
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
                            redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
-    analytics_credentials = None
-    analytics_access =False
-    if 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
-        analytics_credentials = Credentials.new_from_json(account['campaigns'][campaign_id]["analytics"]["credentials"])
-        if not analytics_credentials.access_token_expired:
-            analytics_access = True
+    analytics_credentials = get_analytics_credentials(account, campaign_id)
+    analytics_access = bool(analytics_credentials)
+    print "CCCCCCCCCCCCCCCCC"
     analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
     analytics_revoke_url = ""
     if analytics_credentials:
@@ -152,20 +168,18 @@ def analytics_get_all_profiles():
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
                            redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
-    analytics_credentials = None
+    analytics_credentials = get_analytics_credentials(account, campaign_id)
     analytics_profiles = []
     analytics_access =False
-    if 'analytics' in account['campaigns'][campaign_id] and account['campaigns'][campaign_id]["analytics"]["credentials"]:
+    if analytics_credentials:
         http = httplib2.Http()
-        analytics_credentials = Credentials.new_from_json(account['campaigns'][campaign_id]["analytics"]["credentials"])
-        if not analytics_credentials.access_token_expired:
-            try:
-                http = analytics_credentials.authorize(http)
-                service = build('analytics', 'v3', http=http)
-                analytics_profiles = analytics_api.get_all_profiles(service)
-                analytics_access = True
-            except AccessTokenRefreshError:
-                pass
+        try:
+            http = analytics_credentials.authorize(http)
+            service = build('analytics', 'v3', http=http)
+            analytics_profiles = analytics_api.get_all_profiles(service)
+            analytics_access = True
+        except AccessTokenRefreshError:
+            pass
     res = {}
     res['analytics_profiles']=analytics_profiles
     res['campaign_profiles']=account['campaigns'][campaign_id]['analytics']['profiles']
@@ -508,8 +522,8 @@ def analytics_sessions():
     end = request.args.get("end", "")    
     if start and end and "analytics" in account['campaigns'][data['campaign_id']] and 'profiles' in account['campaigns'][data['campaign_id']]['analytics'] and 'credentials' in account['campaigns'][data['campaign_id']]["analytics"] and account['campaigns'][data['campaign_id']]["analytics"]["credentials"]:
         profile_ids = account['campaigns'][data['campaign_id']]['analytics']['profiles']
-        analytics_credentials = Credentials.new_from_json(account['campaigns'][data['campaign_id']]["analytics"]["credentials"])
-        if analytics_credentials.access_token_expired: error = "Access Token Expired"
+        analytics_credentials = get_analytics_credentials(account, data['campaign_id'])
+        if not analytics_credentials.access_token_expired: error = "No access to Analytics"
         try:
             http = httplib2.Http()
             http = analytics_credentials.authorize(http)
@@ -569,8 +583,19 @@ def analytics_auth_callback():
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
                            redirect_uri='http://%s:5001/oauth2callback' % server_domain)
+        
         credentials = FLOW.step2_exchange(request.args['code'])
+        print "REFRESH TOKEN:" , credentials.refresh_token
+        if not credentials.refresh_token:
+            account = getAccount(aid)
+            campaign = account['campaigns'][cid]
+            if 'analytics' in campaign and 'credentials' in campaign['analytics'] and campaign['analytics']['credentials']:
+                oldcredentials = Credentials.new_from_json(campaign['analytics']['credentials'])
+                print "OLD REFRESH TOKEN:" , oldcredentials.refresh_token
+                credentials.refresh_token = oldcredentials.refresh_token
         accountdb.accounts.update({"_id": ObjectId(aid)}, {"$set": {"campaigns.%s.analytics" % cid: {"credentials": credentials.to_json(), "profiles": []}}})        
+        
+        ##todo lo siguiente no parece necesario
         print dir(credentials)
         print credentials.to_json()
         http = httplib2.Http()
@@ -578,6 +603,8 @@ def analytics_auth_callback():
         
         service = build('analytics', 'v3', http=http)
         profile_id = analytics_api.get_first_profile_id(service)
+        ##todo lo anterior no parece necesario
+        
         return u"Acceso a analytics (solo lectura) obtenido. Ya puede cerrar esta ventana y refrescar la ventana de administracion de la campaña"
     if "error" in request.args and request.args['error'] == "access_denied":
         return u"Acceso a analytics (solo lectura) revocado. Ya puede cerrar esta ventana y refrescar la ventana de administracion de la campaña"
