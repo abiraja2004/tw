@@ -130,7 +130,7 @@ def get_analytics_credentials(account, campaign_id):
         except AccessTokenRefreshError:
             credentials = None
     if not credentials or credentials.access_token_expired:
-        accountdb.accounts.update({"_id": account['_id']}, {"$set": {"campaigns.%s.analytics" % campaign_id: {"credentials": null, "profiles": []}}})
+        accountdb.accounts.update({"_id": account['_id']}, {"$set": {"campaigns.%s.analytics" % campaign_id: {"credentials": None, "profiles": []}}})
         return None
     else:
         accountdb.accounts.update({"_id": account['_id']}, {"$set": {"campaigns.%s.analytics.credentials" % campaign_id: credentials.to_json()}})
