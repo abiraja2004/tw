@@ -22,7 +22,7 @@
 
         <div class="form-box" id="login-box">
             <div class="header">{{dc['title']}}</div>
-            <form action="/dc/{{account['_id']}}/{{campaign_id}}/{{datacollection_id}}" method="post">
+            <form action="/dc/{{account['_id']}}/{{datacollection_id}}" method="post">
                 <div class="body bg-gray">
                     {% for field in dc['fields'] %}
                         <div class="form-group">                    

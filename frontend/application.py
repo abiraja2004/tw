@@ -89,7 +89,7 @@ def login():
 @app.route('/gm')
 def home():
     account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
-    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
+    campaign_id = request.args.get("campaign_id", "") #default Campana unilever
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
         campaign_id = "5410f5a52e61d7162c700232"  #SiVale campaign_id   
@@ -102,6 +102,7 @@ def home():
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     template = "index.html"
     dashtemplate = "dashboard.html"
     if request.path == "/app" or request.path == "/sivale" or request.path == "/gm":
@@ -162,6 +163,36 @@ def campaigns():
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
     return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
+
+@app.route('/polls')
+def polls():
+    account_id = request.args.get("account_id")
+    account = getAccount(account_id)
+    custom_css= request.args.get("css", None)
+
+    if not 'polls' in account: account['polls'] = {}
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoPromored.png"
+    return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, logo=logo, logo2 = logo2)
+
+@app.route('/datacollections')
+def datacollections():
+    account_id = request.args.get("account_id")
+    account = getAccount(account_id)
+    custom_css= request.args.get("css", None)
+
+    if not 'datacollections' in account: account['datacollections'] = {}
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoPromored.png"
+    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, logo=logo, logo2 = logo2)
 
 @app.route('/api/analytics/get_all_profiles')
 def analytics_get_all_profiles():
@@ -350,8 +381,8 @@ def tweets_count():
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
 
         polls = {}
-        if 'polls' in account['campaigns'][campaign_id]:
-            polls = account['campaigns'][campaign_id]['polls']
+        if 'polls' in account:
+            polls = account['polls']
         poll_hashtags = {}
         for poll_id, poll in polls.items():
             poll['data'] = {}
@@ -364,8 +395,8 @@ def tweets_count():
             res['polls'][poll_id] = poll
         
         datacollections = {}
-        if 'datacollections' in account['campaigns'][campaign_id]:
-            datacollections = account['campaigns'][campaign_id]['datacollections']
+        if 'datacollections' in account:
+            datacollections = account['datacollections']
 
         for datacollection_id, datacollection in datacollections.items():
             datacollection['data'] = {}
@@ -498,6 +529,33 @@ def save_campaign():
     print
     
     return flask.Response(json.dumps({}),  mimetype='application/json')
+
+@app.route("/api/account/poll/save", methods=['POST'])
+def save_poll():
+    data = request.get_json()
+    poll = data['poll']
+    
+    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    if not 'polls' in account: account['polls'] = {}
+    account['polls'][data['poll_id']] = poll
+    accountdb.accounts.save(account)
+    print
+    
+    return flask.Response(json.dumps({}),  mimetype='application/json')
+
+@app.route("/api/account/datacollection/save", methods=['POST'])
+def save_datacollection():
+    data = request.get_json()
+    datacollection = data['datacollection']
+    
+    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    if not 'datacollections' in account: account['datacollections'] = {}
+    account['datacollections'][data['datacollection_id']] = datacollection
+    accountdb.accounts.save(account)
+    print
+    
+    return flask.Response(json.dumps({}),  mimetype='application/json')
+
 
 @app.route("/api/account/keywordset/save", methods=['POST'])
 def save_keywordset():
@@ -654,20 +712,18 @@ def fb_posts_list():
                     res['posts'].append(t)
     return flask.Response(dumps(res),  mimetype='application/json')
 
-@app.route('/dc/<account_id>/<campaign_id>/<datacollection_id>', methods=['GET'])
-def datacollection_landing_page_get(account_id, campaign_id, datacollection_id):
+@app.route('/dc/<account_id>/<datacollection_id>', methods=['GET'])
+def datacollection_landing_page_get(account_id, datacollection_id):
     account = getAccount(account_id)
-    if not campaign_id in account['campaigns'] or datacollection_id not in account['campaigns'][campaign_id]['datacollections']:
+    if datacollection_id not in account['datacollections']:
         return "La página no existe", 404
-    campaign = account['campaigns'][campaign_id]
-    datacollection = campaign['datacollections'][datacollection_id]
-    return render_template("datacollection_landing_page.html", dc = datacollection, account= account, campaign_id=campaign_id, datacollection_id = datacollection_id)
+    datacollection = account['datacollections'][datacollection_id]
+    return render_template("datacollection_landing_page.html", dc = datacollection, account= account, datacollection_id = datacollection_id)
 
-@app.route('/dc/<account_id>/<campaign_id>/<datacollection_id>', methods=['POST'])
-def datacollection_landing_page_post(account_id, campaign_id, datacollection_id):
+@app.route('/dc/<account_id>/<datacollection_id>', methods=['POST'])
+def datacollection_landing_page_post(account_id, datacollection_id):
     account = getAccount(account_id)
-    campaign = account['campaigns'][campaign_id]
-    datacollection = campaign['datacollections'][datacollection_id]
+    datacollection = account['datacollections'][datacollection_id]
     obj = {}
     obj['created_at'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+00:00")
     fields = {}
