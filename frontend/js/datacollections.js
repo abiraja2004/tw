@@ -5,16 +5,24 @@ $(document).ready(function () {
     $('.slider').css("width", "100%");
     
     
-keywordsets_blookhound = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: '/api/keywordset/prefetch',
-  remote: '/api/keywordset/search?term=%QUERY'
-});
+    keywordsets_blookhound = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    prefetch: '/api/keywordset/prefetch',
+    remote: '/api/keywordset/search?term=%QUERY'
+    });
 
-keywordsets_blookhound.initialize();
-setupTypeahead($('.typeahead'));
-
+    keywordsets_blookhound.initialize();
+    setupTypeahead($('.typeahead'));
+    
+    $(".captured_data_table").dataTable({
+                    "bPaginate": true,
+                    "bLengthChange": false,
+                    "bFilter": false,
+                    "bSort": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
 });
 
 function dateRangeChanged()
@@ -70,16 +78,7 @@ function addDatacollection(tag)
         pt.find(".datacollection_title").attr('href', "#"+id);
         pt.find("[fn=dc_landing_page]").attr("href", "/dc/"+account_id+"/"+campaign_id+"/"+id);
     });
-}
-
-
-    objects = $(".datacollection");   
-    for (var i = 1; i<objects.length; i++)
-    {
-        tag = $(objects[i]);
-        
-        campaign['datacollections'][object_id] = object;
-    }        
+}     
 
 function saveDatacollection(tag)
 {    

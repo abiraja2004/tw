@@ -73,6 +73,23 @@ def getAccountsToTrack():
 
 stream = None
 
+def getHashtagsToTrack():
+    accounts = monitor.accounts.find({})
+    s = dict()
+    for acc in accounts:
+        if not 'polls' in acc: continue
+        for pid, poll in acc['polls'].items():
+            hts = set()
+            if poll.get('poll_hashtag', ''): 
+                hts.add(poll['poll_hashtag'].strip())
+            else:
+                for ht in [ht.strip() for ht in poll['hashtags'].split(",") if ht.strip()]:
+                    hts.add(ht)
+            for ht in hts:
+                if ht not in s: s[ht] = []
+                s[ht].append({"aid": str(acc['_id']), "pid": pid})
+    return s
+
 class TweetStreamer(TwythonStreamer):
     TWITTER_ADDRESS = "@TestProdeBr2014"
     CONSUMER_KEY = "1qxRMuTzu2I7BP7ozekfRw"
@@ -125,6 +142,7 @@ class MyThread(threading.Thread):
     keywords = []
     accountsToTrack = []
     accountsToTrackIds = []
+    hashtagsToTrack = []
     running = False
     
     def run(self):
@@ -134,8 +152,8 @@ class MyThread(threading.Thread):
         #k = stream.statuses.filter(follow="138814032,31133330,117185027", track=["CFKArgentina", "cristina", "cris", "kirchner", "scioli", "massa"], language="es")
         #kwords = ['unilever', 'dove', 'knorr', 'maizena', 'ala', 'skip', 'lux', 'ades', 'ponds', "pond's", 'rexona', "hellman's", "axe", "cif", "savora", "impulse", "vivere", "suave", "hellen curtis", "lipton" ,"lifebuoy", "drive", "sedal", "comfort", "clear", "vasenol", "vim"] #argentina
         #kwords = ['unilever', "ades", "pond's", "ponds", "st. ives", "ives", "knorr", "dove", "axe", "tresemme", u"tresemmé", "sedal", "hellman's", "cif" , "iberia", "rexona", "maizena", "vo5", "clear", "nexxus", "vasenol", "lipton", "not butter", "ben & jerry's", "jerry's", "slim-fast", "slimfast", "del valle", "jumex", 'veet', 'nair', 'america','sivale','sivalesi','crujitos'] #"holanda (helado)", "primavera (margarina)" #mexico
-        if MyThread.keywords or MyThread.accountsToTrack or MyThread.accountsToTrackIds:
-            k = stream.statuses.filter(follow=list(MyThread.accountsToTrackIds), track=list(MyThread.keywords) + list(MyThread.accountsToTrack), language="es")
+        if MyThread.keywords or MyThread.accountsToTrack or MyThread.accountsToTrackIds or MyThread.hashtagsToTrack:
+            k = stream.statuses.filter(follow=list(MyThread.accountsToTrackIds), track=list(MyThread.keywords) + list(MyThread.accountsToTrack) + list(MyThread.hashtagsToTrack), language="es")
         MyThread.running = False
         
 #        (follow="138814032", track=["CFKArgentina", "cristina", "cris"])
@@ -156,30 +174,36 @@ class KeywordMonitor(threading.Thread):
         t = datetime.now() - timedelta(hours=99)
         keywords = None
         accountsToTrack = None
+        hashtagsToTrack = None
         while not self.stop:
             if datetime.now()-t > timedelta(seconds=60):
                 print "checking keywords and accounts to track..."
                 t = datetime.now()
                 k2 = getWordsToTrack()
                 a2, i2 = getAccountsToTrack()
+                h2 = getHashtagsToTrack()
                 bcs = getBrandClassifiers()
                 tcs = getTopicClassifiers()
-                if k2 != keywords or a2 != accountsToTrack or i2 != accountsToTrackIds:
+                if k2 != keywords or a2 != accountsToTrack or i2 != accountsToTrackIds or h2 != hashtagsToTrack:
                     print "keyword or account changes found... restarting fetcher"
                     if stream: stream.finish()
                     while MyThread.running: time.sleep(1)
                     keywords = k2
                     accountsToTrack = a2
                     accountsToTrackIds = i2
+                    hashtagsToTrack = h2
                     MyThread.keywords = keywords
                     MyThread.accountsToTrack = accountsToTrack
                     MyThread.accountsToTrackIds = accountsToTrackIds
+                    MyThread.hashtagsToTrack = hashtagsToTrack
                     MyThread().start()
                     try:
                         print "Tracking:", keywords
                         print "Accounts: ", accountsToTrack                        
+                        print "Hashtags: ", hashtagsToTrack
                         open("tracking_words.txt", "wb").write(str(keywords))
                         open("tracking_accounts.txt", "wb").write(str(accountsToTrack))
+                        open("tracking_hashtags.txt", "wb").write(str(hashtagsToTrack))
                     except:
                         pass
                 time.sleep(1)
@@ -211,6 +235,7 @@ try:
                 pms.extend([pm.getDictionary() for pm in bc.extract(t['text'])])
             x_mentions_count = {}
             campaign_ids = set()                            
+            poll_ids = set()
             for m in t['entities']['user_mentions']:
                 if ("@" + m["screen_name"]) in MyThread.accountsToTrack: 
                     x_mentions_count["@" + m['screen_name']] = 1
@@ -220,6 +245,12 @@ try:
                     pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
                     pm.confidence = 5
                     pms.append(pm.getDictionary())
+                    
+            for m in t['entities']['hashtags']:
+                if ("#" + m["text"]) in MyThread.hashtagsToTrack: 
+                    for d in MyThread.hashtagsToTrack["#" + m['text']]:
+                        poll_ids.add(d['pid'])
+                    
             if 'user' in t and 'id_str' in t['user']:
                 if t['user']['id_str'] in MyThread.accountsToTrackIds:
                     campaign_ids.add(MyThread.accountsToTrackIds[t['user']['id_str']]['cid'])
@@ -229,7 +260,7 @@ try:
                     pm.confidence = 5
                     pms.append(pm.getDictionary())
                     
-            if pms or x_mentions_count or campaign_ids:
+            if pms or x_mentions_count or campaign_ids or poll_ids:
                 tms = []
                 for tc in tcs:
                     tm = tc.extract(t['text'])
@@ -247,6 +278,10 @@ try:
                     collection_name = "tweets_%s" % cid                    
                     print "INSERTING into %s" % collection_name
                     print monitor[collection_name].insert(t)
+                for pid in poll_ids:
+                    collection_name = "polls_%s" % pid                    
+                    print "INSERTING into %s" % collection_name
+                    print monitor[collection_name].insert(t)                    
             print            
             
             try:

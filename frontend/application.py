@@ -192,7 +192,11 @@ def datacollections():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, logo=logo, logo2 = logo2)
+    data = {}
+    for dc_id in account['datacollections'].keys():
+        records = accountdb['datacollection_%s' % dc_id].find({})
+        data[dc_id] = records[:]
+    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, data=data, logo=logo, logo2 = logo2)
 
 @app.route('/api/analytics/get_all_profiles')
 def analytics_get_all_profiles():
@@ -393,7 +397,20 @@ def tweets_count():
                 poll_hashtags[ht].append(poll_id)
                 poll['data'][ht] = {'total': 0}
             res['polls'][poll_id] = poll
-        
+        print polls
+        for poll_id, poll in polls.items():
+            print poll_id
+            collection_name = "polls_%s" % poll_id
+            polltweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
+            options = [x.strip() for x in poll['hashtags'].split(",") if x.strip()]
+            for tweet in polltweets:
+                print tweet['text']
+                if 'entities' in tweet and 'hashtags' in tweet['entities']:
+                    for ht in tweet['entities']['hashtags']:
+                        if ("#" + ht['text']) in options:
+                            res['polls'][poll_id]['data']['#'+ht['text']]['total'] += 1
+                
+                
         datacollections = {}
         if 'datacollections' in account:
             datacollections = account['datacollections']
@@ -461,11 +478,6 @@ def tweets_count():
                     if 'favorite_count' in tweet:
                         res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count'])
                         res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count'])
-            if polls and 'entities' in tweet and 'hashtags' in tweet['entities']:
-                for ht in tweet['entities']['hashtags']:
-                    if ("#" + ht['text']) in poll_hashtags:
-                        for poll_id in poll_hashtags['#'+ht['text']]:
-                            res['polls'][poll_id]['data']['#'+ht['text']]['total'] += 1
     return flask.Response(dumps(res),  mimetype='application/json')
 
 

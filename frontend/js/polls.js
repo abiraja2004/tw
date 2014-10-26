@@ -79,6 +79,7 @@ function savePoll(container)
     poll = {};
     poll_id = container.find('[fn=p_id]').attr('id');
     poll['name'] = container.find('[fn=name]').val();
+    poll['poll_hashtag'] = container.find('[fn=poll_hashtag]').val();
     poll['hashtags'] = container.find('[fn=hashtags]').val();
     console.debug(poll);
     data = {};

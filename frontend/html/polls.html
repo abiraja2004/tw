@@ -53,10 +53,12 @@
                                                 <label>Nombre</label>
                                                 <input type="text" fn="name" class="form-control" placeholder="nombre de la encuesta..." value="{{poll['name']}}" onchange="$(this).closest('.poll').find('.poll_title').html($(this).val());" />
                                             </div>          
-                                        </div>
-                                        <div class="col-md-8">                                
                                             <div class="form-group">
-                                                <label>Hashtags</label>
+                                                <label>Hashtag de la encuesta</label>
+                                                <input type="text" fn="poll_hashtag" class="form-control" placeholder="" value="{{poll['poll_hashtag']}}"/>
+                                            </div>                                            
+                                            <div class="form-group">
+                                                <label>Hashtags de opciones</label>
                                                 <input type="text" fn="hashtags" class="form-control" placeholder="Hashtags separados por comas..." value="{{poll['hashtags']}}"/>
                                             </div>
                                         </div>
