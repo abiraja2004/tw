@@ -404,7 +404,6 @@ def tweets_count():
             polltweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
             options = [x.strip() for x in poll['hashtags'].split(",") if x.strip()]
             for tweet in polltweets:
-                print tweet['text']
                 if 'entities' in tweet and 'hashtags' in tweet['entities']:
                     for ht in tweet['entities']['hashtags']:
                         if ("#" + ht['text']) in options:
