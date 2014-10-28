@@ -259,6 +259,7 @@ try:
                     pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
                     pm.confidence = 5
                     pms.append(pm.getDictionary())
+                    t['x_sentiment'] = '='
                     
             if pms or x_mentions_count or campaign_ids or poll_ids:
                 tms = []
