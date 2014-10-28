@@ -65,10 +65,10 @@ def getAccountsToTrack():
             for bid, brand in campaign['brands'].items():
                 if brand.get('follow_accounts','').strip():
                     for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
-                            s[kw] = {"cid": cid, "bid": bid, "brand": brand['name']}
+                            s[kw] = {"cid": cid, "bid": bid, "brand": brand['name'], 'own_brand': brand['own_brand']}
                 if brand.get('follow_account_ids','').strip():
                     for kw in [kw.strip() for kw in brand['follow_account_ids'].split(",") if kw.strip()]:
-                            i[kw] = {"cid": cid, "bid": bid, "brand": brand['name']}
+                            i[kw] = {"cid": cid, "bid": bid, "brand": brand['name'], 'own_brand': brand['own_brand']}
     return s,i
 
 stream = None
@@ -259,7 +259,8 @@ try:
                     pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
                     pm.confidence = 5
                     pms.append(pm.getDictionary())
-                    t['x_sentiment'] = '='
+                    if MyThread.accountsToTrackIds[t['user']['id_str']]['own_brand']:
+                        t['x_sentiment'] = '='
                     
             if pms or x_mentions_count or campaign_ids or poll_ids:
                 tms = []

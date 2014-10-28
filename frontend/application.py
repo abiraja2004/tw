@@ -113,7 +113,6 @@ def home():
     has_products = False
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
-        print brand['name'], brand['own_brand']
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
@@ -238,7 +237,11 @@ def sentiment():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2)
+        
+    own_brands_list = []
+    for bid, brand in account['campaigns'][campaign_id]['brands'].items():
+        if brand['own_brand']: own_brands_list.append(brand['name'])
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list))
 
 @app.route('/keywordsets')
 def keywordsets():
