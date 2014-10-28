@@ -42,7 +42,7 @@ function updateAggregatedInformation()
     params = [];
     params.push([updateTweetCountLineChart, ['brand']]);
     params.push([updateTweetCountLineChart, ['product']]);
-    params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]]);
+    params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}]]);
     params.push([updateIndicators]);
     params.push([updatePollsPieCharts, ['polls']]);
     params.push([updateDataCollectionPieCharts, ['datacollections']]);

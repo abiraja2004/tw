@@ -204,9 +204,12 @@ function updateTweetCountPieChart(fulldata, data, args)
         colors= [];
         for (dim in data) 
         {
-            d.push({'label': options[dim][0], 'value': data[dim]['total']});
-            colors.push(options[dim][1]);
-            total = total + data[dim]['total'];
+            if (options[dim][1] != null)
+            {
+                d.push({'label': options[dim][0], 'value': data[dim]['total']});
+                colors.push(options[dim][1]);
+                total = total + data[dim]['total'];
+            }
         }
         params['colors'] = colors;
     }
