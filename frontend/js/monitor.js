@@ -79,6 +79,9 @@ function updateTweetBox(response)
                 br = "";
             }
         }
+        
+        tweet_url = "https://www.twitter.com/" + tweet['user']['screen_name'] + "/status/" + tweet['id_str'];
+        user_url = "https://www.twitter.com/" + tweet['user']['screen_name'];
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
@@ -90,6 +93,9 @@ function updateTweetBox(response)
                     .replace("%%confidence%%", confidence)
                     .replace("%%user.profile_image_url_https%%", "src='"+tweet['user']['profile_image_url_https']+"'")                    
                     .replace("%%topics%%", topicshtml)
+                    .replace("%%tweet_url%%", tweet_url)
+                    .replace("%%user_url%%", user_url)
+                    .replace("%%user_url%%", user_url)
                     );    
         
         tweetbox.append(tweettag);

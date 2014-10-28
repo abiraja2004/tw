@@ -163,18 +163,23 @@
                 </div>
                 <div id="tweet_model" style="display: none">
                     <div class="item">
-                        <img %%user.profile_image_url_https%% alt="user image" class="online"/>
-                        <p class="message">
-                            <a href="#" class="name">
-                                <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
-                                %%user.screen_name%%
-                            </a>%%text%% <small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
-                            <br>
-                            <small class="badge pull-left bg-olive">%%brand%%</small>
-                            <small class="badge pull-left bg-fuchsia">%%product%%</small>
-                            <small class="badge pull-left bg-orange">%%confidence%%</small>
-                            %%topics%%
-                        </p>
+                            <a href="%%user_url%%" >
+                                <img %%user.profile_image_url_https%% alt="user image" class="online"/>
+                            </a>
+                            <p class="message">
+                                <a href="%%user_url%%" class="name">
+                                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
+                                    %%user.screen_name%%
+                                </a>
+                                <a href="%%tweet_url%%" target="_new">
+                                %%text%% <small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
+                                <br>
+                                </a>
+                                <small class="badge pull-left bg-olive">%%brand%%</small>
+                                <small class="badge pull-left bg-fuchsia">%%product%%</small>
+                                <small class="badge pull-left bg-orange">%%confidence%%</small>
+                            </p>
+                        </a>
                     </div>
                 </div>                         
                 <div class="box-body chat" id="tweet-box">                    
