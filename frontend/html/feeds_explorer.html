@@ -1,0 +1,57 @@
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Explorador de Feeds
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Explorador de Feeds</li>
+    </ol>    
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-lg-12 connectedSortable">                            
+
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Feeds</h3>
+                    <div class="box-tools">
+                        <div class="input-group">
+                            <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div id="feed_model" style="display: none">
+                    <div class="item">
+                            <a href="%%user_profile_url%%" >
+                                <img %%user.profile_image_url%% alt="user image" class="online"/>
+                            </a>
+                            <p class="message">
+                                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
+                                    <a href="%%user_profile_url%%" class="name">%%user.name%%</a>
+                                <a href="%%feed_url%%" target="_new" style="color: black;">
+                                %%text%% </a><small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
+                                <br>
+                                <small class="badge pull-left bg-olive">%%brand%%</small>
+                                <small class="badge pull-left bg-fuchsia">%%product%%</small>
+                                <small class="badge pull-left bg-orange">%%confidence%%</small>
+                            </p>
+                        </a>
+                    </div>
+                </div>                         
+                <div class="box-body chat" id="feed-box"></div> 
+            </div><!-- /.box -->
+        </section>
+    </div>
+
+</section><!-- /.content -->
