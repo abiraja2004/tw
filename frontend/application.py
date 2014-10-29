@@ -88,7 +88,7 @@ def login():
 @app.route('/sivale')
 @app.route('/gm')
 def home():
-    account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
+    account_id = request.args.get("account_id", "") #default: Prueba
     campaign_id = request.args.get("campaign_id", "") #default Campana unilever
     if request.path == "/sivale":
         account_id = "5410f47209109a09a2b5985b"  #SiVale account_id
@@ -228,8 +228,10 @@ def analytics_get_all_profiles():
 
 @app.route('/sentiment')
 def sentiment():
-    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
-    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    account_id = request.args.get("account_id", "") #default: Prueba
+    campaign_id = request.args.get("campaign_id", "") #default Campana unilever
+    account = getAccount(account_id)
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     custom_css= request.args.get("css", None)
 
     logo = "logo.jpg"
@@ -245,12 +247,14 @@ def sentiment():
 
 @app.route('/keywordsets')
 def keywordsets():
-    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
-    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    campaign_id = request.args.get("campaign_id", "")
+    account_id = request.args.get("account_id", "") #default: Prueba
+    account = getAccount(account_id)
     campaign_id = request.args.get('campaign_id')    
     keywordsets = accountdb.keywordset.find({})
     custom_css= request.args.get("css", None)
 
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     logo = "logo.jpg"
     logo2 = None        
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
@@ -261,9 +265,10 @@ def keywordsets():
 
 @app.route('/topics')
 def topics():
-    campaign_id = request.args.get("campaign_id", "5400d1902e61d70aab2e9bdf") #default Campana unilever
-    account = accountdb.accounts.find_one({"campaigns.%s" % campaign_id: {"$exists": True}})
+    account_id = request.args.get("account_id", "") #default: Prueba
+    account = getAccount(account_id)
     campaign_id = request.args.get('campaign_id')    
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     topics = accountdb.topic.find({})
     custom_css= request.args.get("css", None)
 
@@ -755,6 +760,48 @@ def logs_login():
     for doc in docs:
         lines.append("%s: %s  --  %s" % (doc['timestamp'], doc['account_id'], doc['username']))
     return "<br>".join(lines)
+
+@app.route('/feeds_explorer')
+def feeds_explorer():
+    campaign_id = request.args.get("campaign_id", "") #default Campana unilever
+    account_id = request.args.get("account_id", "")
+    account = getAccount(account_id)
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
+    custom_css= request.args.get("css", None)
+    campaign = account['campaigns'][campaign_id]        
+
+    logo = "logo.jpg"
+    logo2 = None        
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoPromored.png"
+    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2)
+
+@app.route('/api/feeds/search')
+def search_feeds():
+    start = request.args.get("start", "")
+    end = request.args.get("end", "")
+    text= request.args.get("text", "")
+    campaign_id = request.args.get("campaign_id", "")
+    brands_to_include = request.args.get("brands_to_include", "")
+    include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
+    res = {"feeds": []}
+    if start and end and campaign_id:
+        collection_name = "tweets_%s" % campaign_id
+        start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+        docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
+        if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
+        if text: docfilter['$text'] = {"$search": text}
+        dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1)
+        if not brands_to_include:
+            res['feeds'].extend(dbtweets)
+        else:
+            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
+            for t in dbtweets:
+                if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
+                    res['feeds'].append(t)
+    return flask.Response(dumps(res),  mimetype='application/json')
 
 
 if __name__ == "__main__":
