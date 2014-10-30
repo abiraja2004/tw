@@ -12,7 +12,7 @@
 
 <!-- Main content -->
 <section class="content">
-
+    <input id="object_id" type="hidden" value="{{object_id}}"/>
     <div class="row">
         <!-- Left col -->
         <section class="col-lg-12 connectedSortable">                            
@@ -20,18 +20,24 @@
             <div class="box box-info">
                 <div class="box-header">
                     <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Feeds</h3>
+                    <h3 class="box-title">Feeds</h3>                    
                     <div class="box-tools">
+                    
+                        <div class="btn-group pull-right" id="brands_to_include" data-toggle="btn-toggle">
+                            <button brands_to_include="" type="button" class="btn btn-default btn-xs brands_to_include active" data-toggle="on">Todos</button>
+                            <button brands_to_include="{{own_brands_list}}" type="button" class="btn btn-default btn-xs brands_to_include" data-toggle="off">Marcas propias</button>                            
+                        </div>
                         <div class="input-group">
                             <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
                             <div class="input-group-btn">
                                 <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
                             </div>
                         </div>
-                    </div>
-                    
-                </div>
+                    </div>                      
+                </div>              
                 <div id="feed_model" style="display: none">
+
+                
                     <div class="item">
                             <a href="%%user_profile_url%%" >
                                 <img %%user.profile_image_url%% alt="user image" class="online"/>

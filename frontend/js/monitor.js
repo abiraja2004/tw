@@ -45,6 +45,9 @@ function updateTweetBox(response)
     tweetbox.html("");    
     sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
     colors = {'+': 'green', '-':'red', '=':'yellow', '?': 'gray'}
+    account_id = $('[fn=a_id]').val();
+    campaign_id = $('[fn=c_id]').val();
+    
     for (var i=0;i<tweets.length;i++)
     {
         tweet = tweets[i];
@@ -82,6 +85,7 @@ function updateTweetBox(response)
         
         tweet_url = "https://www.twitter.com/" + tweet['user']['screen_name'] + "/status/" + tweet['id_str'];
         user_url = "https://www.twitter.com/" + tweet['user']['screen_name'];
+        feeds_explorer_url = '/feeds_explorer?account_id='+account_id+"&campaign_id="+campaign_id+'&object_id='+tweet['_id']['$oid'];
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
                     .replace("%%created_at%%", tweet['created_at'])
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
@@ -96,6 +100,7 @@ function updateTweetBox(response)
                     .replace("%%tweet_url%%", tweet_url)
                     .replace("%%user_url%%", user_url)
                     .replace("%%user_url%%", user_url)
+                    .replace("%%feeds_explorer_url%%", feeds_explorer_url)
                     );    
         
         tweetbox.append(tweettag);
@@ -117,7 +122,7 @@ function fetchTweetsCount(callbacks)
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
-    account_id = $('[fn=a_id]').val();;
+    account_id = $('[fn=a_id]').val();
     campaign_id = $('[fn=c_id]').val();
     $.ajax({
         url: "/api/tweets/count", 

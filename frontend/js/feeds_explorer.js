@@ -1,3 +1,15 @@
+brands_to_include = '';
+
+$(function () {   
+
+    $(".brands_to_include").click(function (e) { 
+        brands_to_include = $(this).attr('brands_to_include') ;
+        search();
+    });    
+    
+});
+
+
 
 function dateRangeChanged()
 {
@@ -14,8 +26,9 @@ function search()
 {   
     account_id = $('[fn=a_id]').val();;
     campaign_id = $('[fn=c_id]').val();
-    brands_to_include = $('#brands_to_include').val();
     tweetbox = $("#feed-box").addClass("loading");
+    object_id = $("#object_id").val();
+    $("#object_id").val('');
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
@@ -27,7 +40,9 @@ function search()
                'start': start, 
                'end': end, 
                'text': text,
-               'brands_to_include': brands_to_include}, 
+               'brands_to_include': brands_to_include,
+               'object_id': object_id
+        }, 
         type: "GET",
     }).done(function (response) { 
         updateFeedsContent(response)
