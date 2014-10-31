@@ -38,6 +38,7 @@ function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
 
 function updateTweetBox(response)
 {
+    deb_var3 = response['tweets'];
     tweets = response['tweets'];
     //mentions = 0;
     html = $('#tweet_model').html();
@@ -85,9 +86,10 @@ function updateTweetBox(response)
         
         tweet_url = "https://www.twitter.com/" + tweet['user']['screen_name'] + "/status/" + tweet['id_str'];
         user_url = "https://www.twitter.com/" + tweet['user']['screen_name'];
+        tweet_date = new Date(tweet['x_created_at']['$date'])
         feeds_explorer_url = '/feeds_explorer?account_id='+account_id+"&campaign_id="+campaign_id+'&object_id='+tweet['_id']['$oid'];
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
-                    .replace("%%created_at%%", tweet['created_at'])
+                    .replace("%%created_at%%", tweet_date)
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
                     .replace("%%text%%", tweet['text'])
                     .replace("%%sentiment%%", sent)

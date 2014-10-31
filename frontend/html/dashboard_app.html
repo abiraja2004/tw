@@ -144,16 +144,6 @@
     <div class="row">
         <!-- Left col -->
         <section class="col-lg-7 connectedSortable">                            
-
-            <div class="box box-info">
-                <div class="box-header">
-                    <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Sentiment</h3>
-                </div>
-                <div class="box-body chart-responsive">
-                    <div class="chart" id="sentiment-chart" style="height: 300px;"></div>
-                </div><!-- /.box-body -->                
-            </div><!-- /.box -->
             
             <!-- Tweet list box -->
             <div class="box box-success">
@@ -167,7 +157,7 @@
                                 <img %%user.profile_image_url_https%% alt="user image" class="online"/>
                             </a>
                             <p class="message">
-                                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> %%created_at%%</small>
+                                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> <span class="tweet_time">%%created_at%%</span></small>
                                     <a href="%%user_url%%" class="name">%%user.screen_name%%</a>
                                 <a href="%%feeds_explorer_url%%" target="_new" style="color: black;">
                                 %%text%% </a><small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
@@ -186,6 +176,17 @@
         </section><!-- /.Left col -->
         <!-- right col (We are only adding the ID to make the widgets sortable)-->
         <section class="col-lg-5 connectedSortable"> 
+        
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Tweets por Sentiment</h3>
+                </div>
+                <div class="box-body chart-responsive">
+                    <div class="chart" id="sentiment-chart" style="height: 300px;"></div>
+                </div><!-- /.box-body -->                
+            </div><!-- /.box -->
+        
             <!-- LINE CHART -->
             <div class="box box-info">
                 <div class="box-header">

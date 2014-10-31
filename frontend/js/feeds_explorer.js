@@ -93,10 +93,11 @@ function updateFeedsContent(response)
             }
         }
         
-        tweet_url = "https://www.twitter.com/" + feed['user']['screen_name'] + "/status/" + feed['id_str'];
+        feed_url = "https://www.twitter.com/" + feed['user']['screen_name'] + "/status/" + feed['id_str'];
         user_url = "https://www.twitter.com/" + feed['user']['screen_name'];
+        feed_date = new Date(feed['x_created_at']['$date'])
         feedtag = $(html.replace("%%_id%%", feed['_id']['$oid'])
-                    .replace("%%created_at%%", feed['created_at'])
+                    .replace("%%created_at%%", feed_date)
                     .replace("%%user.name%%", feed['user']['screen_name'])
                     .replace("%%text%%", feed['text'])
                     .replace("%%sentiment%%", sent)
@@ -106,7 +107,7 @@ function updateFeedsContent(response)
                     .replace("%%confidence%%", confidence)
                     .replace("%%user.profile_image_url%%", "src='"+feed['user']['profile_image_url_https']+"'")                    
                     .replace("%%topics%%", topicshtml)
-                    .replace("%%feed_url%%", tweet_url)
+                    .replace("%%feed_url%%", feed_url)
                     .replace("%%user_profile_url%%", user_url)
                     .replace("%%user_profile_url%%", user_url)
                     );    

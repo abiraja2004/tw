@@ -86,7 +86,6 @@ def login():
             return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
     
 @app.route('/app')
-@app.route('/sivale')
 @app.route('/gm')
 def home():
     account_id = request.args.get("account_id", "53ff7ae51e076582a6fb7f12") #default: Prueba
