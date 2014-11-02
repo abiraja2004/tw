@@ -23,9 +23,6 @@ args = parser.parse_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
 mclient = MongoClient()
-db = mclient['unilever']
-if args.auth:
-    db.authenticate(dbuser, dbpasswd)
 monitor = mclient['monitor']
 if args.auth:
     monitor.authenticate(dbuser, dbpasswd)
