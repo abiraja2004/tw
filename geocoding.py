@@ -31,8 +31,8 @@ w = 0
 limitperiod = timedelta(days=1, minutes=1)
 max_requests_per_period = 2400
 
-limitperiod = timedelta(seconds=5)
-max_requests_per_period = 20
+#limitperiod = timedelta(seconds=5)
+#max_requests_per_period = 20
 
 def geolocate(account, cid):
     global gr,r,k,w, limitperiod
