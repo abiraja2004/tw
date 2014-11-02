@@ -54,7 +54,10 @@ def geolocate(account, cid):
             loc = f['user']['location']
             origin = "user.location"
         if gr: print k, w, gr['requests'],
-        print loc, " -> ",
+        try:
+            print loc, " -> ",
+        except:
+            print repr(loc), " -> ",
         if loc and isinstance(loc, basestring):
             cached = monitor.places.find_one({'text': loc.strip().lower()})
             if not cached:      
