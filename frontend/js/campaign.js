@@ -128,6 +128,7 @@ function saveCampaign()
     campaign = {}
     campaign['name'] = $('[fn=cname]').val();
     campaign['active'] = $("[fn=cactive]").is(':checked');
+    campaign['geo_geolocation'] = $("[fn=cuse_geolocation]").is(':checked');
     campaign['brands'] = {}
     campaign['analytics'] = {}
     campaign['analytics']['profiles'] = [];

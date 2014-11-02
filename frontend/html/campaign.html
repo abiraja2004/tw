@@ -37,6 +37,7 @@
                                 <div class="col-md-4">            
                                     <input type="text" fn="cname" class="form-control" placeholder="nombre de la campaña..." value="{{campaign['name']}}" onchange="$('#campaign_title').html($(this).val());" />
                                     <div><label><input type="checkbox" fn="cactive" {{checked(campaign['active'])}} /> Campaña activa</label></div>
+                                    <div><label><input type="checkbox" fn="cuse_geolocation" {{checked(campaign['use_geolocation'])}} /> Usar geolocalizacion</label></div>
                                 </div>
                             </div>
                         </form>
