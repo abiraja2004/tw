@@ -104,11 +104,14 @@ def geolocate(account, cid):
         
         if coordinates:
             k += 1
-            if calculated_location: 
-                print calculated_location['address'],
-                print coordinates, " (from %s) -%s-" % (origin, calculated_location['cache'])
-            else:
-                print coordinates, " from tweet coordinates"
+            try:
+                if calculated_location: 
+                    print calculated_location['address'],
+                    print coordinates, " (from %s) -%s-" % (origin, calculated_location['cache'])
+                else:
+                    print coordinates, " from tweet coordinates"
+            except:
+                pass
             collection.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "Point", "coordinates": coordinates}, "x_coordinates_origin": origin}})
         else:
             print "not found"
