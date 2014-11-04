@@ -60,6 +60,7 @@ def geolocate(account, cid):
             print repr(loc), " -> ",
         if loc and isinstance(loc, basestring):
             cached = monitor.places.find_one({'text': loc.strip().lower()})
+            print cached
             if not cached:      
                 try:
                     try:
@@ -80,18 +81,19 @@ def geolocate(account, cid):
                         print "Waiting 1 sec..."
                         time.sleep(1.1)
                         r = 0         
-                        geo_calculated_location = geolocator.geocode(loc)
-                        if geo_calculated_location:
-                            calculated_location = {}
-                            calculated_location['text'] = loc.strip().lower()
-                            calculated_location['address'] = geo_calculated_location.address
-                            calculated_location['longitude'] = geo_calculated_location.longitude
-                            calculated_location['latitude'] = geo_calculated_location.latitude
-                            calculated_location['raw'] = geo_calculated_location.raw
-                            monitor.places.insert(calculated_location)
-                            calculated_location['cache'] = False          
-                        else:
-                            w += 1
+                    geo_calculated_location = geolocator.geocode(loc)
+                    print geo_calculated_location
+                    if geo_calculated_location:
+                        calculated_location = {}
+                        calculated_location['text'] = loc.strip().lower()
+                        calculated_location['address'] = geo_calculated_location.address
+                        calculated_location['longitude'] = geo_calculated_location.longitude
+                        calculated_location['latitude'] = geo_calculated_location.latitude
+                        calculated_location['raw'] = geo_calculated_location.raw
+                        monitor.places.insert(calculated_location)
+                        calculated_location['cache'] = False          
+                    else:
+                        w += 1
                 finally:
                     gr['requests'] += 1
                     cPickle.dump(gr, open("google_requests","wb"))

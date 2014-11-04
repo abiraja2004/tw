@@ -88,6 +88,8 @@ function updateTweetBox(response)
         user_url = "https://www.twitter.com/" + tweet['user']['screen_name'];
         tweet_date = new Date(tweet['x_created_at']['$date'])
         feeds_explorer_url = '/feeds_explorer?account_id='+account_id+"&campaign_id="+campaign_id+'&object_id='+tweet['_id']['$oid'];
+        country = '';
+        if ('x_coordinates' in tweet && tweet['x_coordinates'] != null) country = tweet['x_coordinates']['country'];
         tweettag = $(html.replace("%%_id%%", tweet['_id']['$oid'])
                     .replace("%%created_at%%", tweet_date)
                     .replace("%%user.screen_name%%", tweet['user']['screen_name'])
@@ -103,6 +105,7 @@ function updateTweetBox(response)
                     .replace("%%user_url%%", user_url)
                     .replace("%%user_url%%", user_url)
                     .replace("%%feeds_explorer_url%%", feeds_explorer_url)
+                    .replace("%%country%%", country)
                     );    
         
         tweetbox.append(tweettag);
