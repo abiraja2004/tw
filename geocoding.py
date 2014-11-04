@@ -82,7 +82,6 @@ def geolocate(account, cid):
                         time.sleep(1.1)
                         r = 0         
                     geo_calculated_location = geolocator.geocode(loc)
-                    print geo_calculated_location
                     if geo_calculated_location:
                         calculated_location = {}
                         calculated_location['text'] = loc.strip().lower()
