@@ -87,6 +87,7 @@ def geolocate(account, cid):
                             calculated_location['address'] = geo_calculated_location.address
                             calculated_location['longitude'] = geo_calculated_location.longitude
                             calculated_location['latitude'] = geo_calculated_location.latitude
+                            calculated_location['raw'] = geo_calculated_location.raw
                             monitor.places.insert(calculated_location)
                             calculated_location['cache'] = False          
                         else:
@@ -97,11 +98,22 @@ def geolocate(account, cid):
             else:
                 calculated_location = cached
                 calculated_location['cache'] = True
+
+        country = None
+        country_code = None            
+        if f['place'] and f['place']['country']:        
+            country = f['place']['country']
+            country_code = f['place']['country_code']
             
         if calculated_location:
             coordinates = [calculated_location['longitude'], calculated_location['latitude']]
-        
-        
+            if not country:
+                for ac in calculated_location['raw']['address_components']:
+                    if 'country' in ac['types']:
+                        country = ac['long_name']
+                        country_code = ac['short_name']
+                        break
+
         if coordinates:
             k += 1
             try:
@@ -112,7 +124,7 @@ def geolocate(account, cid):
                     print coordinates, " from tweet coordinates"
             except:
                 pass
-            collection.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "Point", "coordinates": coordinates}, "x_coordinates_origin": origin}})
+            collection.update({"_id": f["_id"]}, {"$set": {"x_coordinates": {"type": "Point", "coordinates": coordinates, "country": country, "country_code": country_code,  "origin": origin}}})
         else:
             print "not found"
             collection.update({"_id": f["_id"]}, {"$set": {"x_coordinates": None, "x_coordinates_origin": None}})
