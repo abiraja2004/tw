@@ -4,7 +4,7 @@ from pymongo import MongoClient, DESCENDING
 import bson
 from bson import ObjectId
 from bson.json_util import dumps
-from flask import Flask, render_template, request, Blueprint, redirect, url_for
+from flask import Flask, render_template, request, Blueprint, redirect, url_for, session
 from rulesmanager import getBrandClassifiers
 import flask 
 from flask.ext.compress import Compress
@@ -63,13 +63,17 @@ def root():
 """
 
 
-
+def getUser(account):
+    if 'username' in session: return account['users'][session['username']]
+    return None
+        
 def getPasswordHash(user, psw):
     return hashlib.md5(user + psw + PASSWORD_SALT).hexdigest()
         
 @app.route('/login', methods=["GET", "POST"])
 @app.route('/', methods=["GET", "POST"])
 def login():    
+    session['username'] = ''
     if request.method == "GET":
         return render_template("login.html")
     elif request.method == "POST":
@@ -78,11 +82,12 @@ def login():
         passwordhash = getPasswordHash(user, password)
         acc = accountdb.accounts.find({"users.%s" % user: {"$exists": True}})
         msg = ""
-        if not acc.count():
+        if not acc.count() or acc[0]['users'][user]['password'] != passwordhash:
             msg = "El usuario y/o clave son incorrectos"
             return render_template("login.html", user=user, msg=msg)
         else:
             accountdb.log_logins.insert({"account_id": acc[0]['_id'], "username": user, "timestamp": datetime.now()})
+            session['username'] = user
             return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
     
 @app.route('/app')
@@ -116,7 +121,7 @@ def home():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", user=getUser(account), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
 
 
 def get_analytics_credentials(account, campaign_id):
@@ -162,7 +167,7 @@ def campaigns():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
 
 @app.route('/polls')
 def polls():
@@ -177,7 +182,7 @@ def polls():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
-    return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, user=getUser(account), logo=logo, logo2 = logo2)
 
 @app.route('/datacollections')
 def datacollections():
@@ -196,7 +201,7 @@ def datacollections():
     for dc_id in account['datacollections'].keys():
         records = accountdb['datacollection_%s' % dc_id].find({})
         data[dc_id] = records[:]
-    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, data=data, logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, user=getUser(account), data=data, logo=logo, logo2 = logo2)
 
 @app.route('/api/analytics/get_all_profiles')
 def analytics_get_all_profiles():
@@ -244,7 +249,7 @@ def sentiment():
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
-    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list))
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list))
 
 @app.route('/keywordsets')
 def keywordsets():
@@ -262,7 +267,7 @@ def keywordsets():
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
 @app.route('/topics')
 def topics():
@@ -279,7 +284,7 @@ def topics():
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
     restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
 @app.route('/<path:filename>')
 def send_js(filename):
@@ -696,11 +701,13 @@ def create_user():
     account_id = request.args.get("account_id", "")
     username = request.args.get("username", "")
     password = request.args.get("password", "")
+    access = request.args.get("access", "basic")
     if account_id and username and password:
         account = getAccount(account_id)
         if account:
             if not 'users' in account: account['users'] = {}
-            user = {"username": username, "password": getPasswordHash(username, password)}
+            user = {"username": username, "password": getPasswordHash(username, password), "access": access}
+            
             account['users'][username] = user
             accountdb.accounts.save(account)
             return "Usuario %s creado" % username
@@ -782,7 +789,7 @@ def feeds_explorer():
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         
-    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id)
+    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id)
 
 @app.route('/api/feeds/search')
 def search_feeds():
@@ -819,6 +826,7 @@ def search_feeds():
 if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    
+    app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
     app.run(host="0.0.0.0", port=5001)
     Compress(app, COMPRESS_DEBUG= True)
 
