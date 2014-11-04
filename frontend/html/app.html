@@ -141,19 +141,19 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-bar-chart-o"></i>
+                                <span>Campañas</span>
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                {% for campaign_id, campaign in account['campaigns'].items() %}
+                                <li><a href="/campaign?campaign_id={{campaign_id}}"><i class="fa fa-angle-double-right"></i> {{campaign['name']}}</a></li>
+                                {% endfor %}
+                            </ul>                            
+                        </li> 
                         {% if user and user['access'] == 'admin' %}
-                            <li class="treeview">
-                                <a href="#">
-                                    <i class="fa fa-bar-chart-o"></i>
-                                    <span>Campañas</span>
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </a>
-                                <ul class="treeview-menu">
-                                    {% for campaign_id, campaign in account['campaigns'].items() %}
-                                    <li><a href="/campaign?campaign_id={{campaign_id}}"><i class="fa fa-angle-double-right"></i> {{campaign['name']}}</a></li>
-                                    {% endfor %}
-                                </ul>                            
-                            </li>                                                
                             <li class="treeview">
                                 <a href="#">
                                     <i class="fa fa-heart"></i>
@@ -165,7 +165,8 @@
                                     <li><a href="/sentiment?account_id={{account['_id']}}&campaign_id={{campaign_id}}"><i class="fa fa-heart"></i> {{campaign['name']}}</a></li>
                                     {% endfor %}
                                 </ul>                            
-                            </li>                                                
+                            </li>
+                        {% endif %}
                             <li class="treeview">
                                 <a href="#">
                                     <i class="fa fa-twitter"></i>
@@ -177,7 +178,8 @@
                                     <li><a href="/feeds_explorer?account_id={{account['_id']}}&campaign_id={{campaign_id}}"><i class="fa fa-twitter"></i> {{campaign['name']}}</a></li>
                                     {% endfor %}
                                 </ul>                            
-                            </li>                                                                        
+                            </li> 
+                        {% if user and user['access'] == 'admin' %}
                             <li>
                                 <a href="/polls?account_id={{account['_id']}}"><i class="fa fa-tag"></i> Encuestas x Hashtag</a>
                                 </a>
