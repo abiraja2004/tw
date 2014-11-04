@@ -1,0 +1,53 @@
+#imagenG {
+	
+	top:0px;
+	margin: 0;
+	left: 0;
+	padding: 0;
+	width: 100%;
+	display: block;
+}
+
+.imagen {
+	width: 180%;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+#foto {
+	width: 206px;
+	margin-left: 10%;
+	margin-top: -8%;
+}
+
+.fotoAvatar {
+background: #FFFFFF;
+border: 5px solid #fff;
+border-radius: 12px;
+box-shadow: 0 1px 1px rgba(136,153,166,0.15);
+height: 200px;
+position: relative;
+width: 200px;
+}
+
+#form-box {
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  width: 50%;
+}
+
+@media only screen and (min-width: 481px) {
+
+.imagen {
+	width: 130%;
+}
+}
+
+@media only screen and (min-width: 769px) {
+
+.imagen {
+	width: 100%;
+}
+}

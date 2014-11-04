@@ -757,7 +757,7 @@ def datacollection_landing_page_get(account_id, datacollection_id):
     if datacollection_id not in account['datacollections']:
         return "La página no existe", 404
     datacollection = account['datacollections'][datacollection_id]
-    return render_template("datacollection_landing_page.html", dc = datacollection, account= account, datacollection_id = datacollection_id)
+    return render_template("datacollection_landing_pages/generic/datacollection_landing_page.html", dc = datacollection, account= account, datacollection_id = datacollection_id)
 
 @app.route('/dc/<account_id>/<datacollection_id>', methods=['POST'])
 def datacollection_landing_page_post(account_id, datacollection_id):
