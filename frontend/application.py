@@ -336,7 +336,9 @@ def tweets_list():
             bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
             for t in dbtweets:
                 if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
-                    res['tweets'].append(t)
+                    if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
+                        if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code'] != 'MX': continue
+                            res['tweets'].append(t)
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
