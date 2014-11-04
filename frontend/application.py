@@ -336,14 +336,14 @@ def tweets_list():
                     if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code'] != 'MX': continue
                     res['tweets'].append(t)                    
             else:
-                res['tweets'].extend(dbtweets)
+                res['tweets'].extend(dbtweets)  #esta sola linea es la que va cuando se saque la condicion de sivale
         else:
             bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
             for t in dbtweets:
                 if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
                     if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                         if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code'] != 'MX': continue
-                    res['tweets'].append(t)
+                    res['tweets'].append(t)   #esta sola linea es la que va cuando se saque la condicion de sivale
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
@@ -425,6 +425,8 @@ def tweets_count():
             polltweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
             options = [x.strip() for x in poll['hashtags'].split(",") if x.strip()]
             for tweet in polltweets:
+                if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
+                    if 'x_coordinates' in tweet and tweet['x_coordinates'] and 'country_code' in tweet['x_coordinates'] and tweet['x_coordinates']['country_code'] != 'MX': continue                
                 if 'entities' in tweet and 'hashtags' in tweet['entities']:
                     for ht in tweet['entities']['hashtags']:
                         if ("#" + ht['text']) in options:
@@ -452,6 +454,9 @@ def tweets_count():
             
             
         for tweet in dbtweets:
+            if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
+                if 'x_coordinates' in tweet and tweet['x_coordinates'] and 'country_code' in tweet['x_coordinates'] and tweet['x_coordinates']['country_code'] != 'MX': continue                
+            
             pms = tweet.get('x_extracted_info', [])
             if brands_to_include:
                 if not [pm for pm in pms if pm['brand'] in bti]: continue
