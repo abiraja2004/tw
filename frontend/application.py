@@ -161,6 +161,7 @@ def campaigns():
     if not 'use_geolocation' in campaign: campaign['use_geolocation'] = False
     if not 'polls' in campaign: campaign['polls'] = {}
     if not 'datacollections' in campaign: campaign['datacollections'] = {}
+    if not 'syncversion' in campaign: campaign['syncversion'] = 1
 
     logo = "logo.jpg"
     logo2 = None        
@@ -541,6 +542,8 @@ def save_campaign():
     
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     oldcamp = account['campaigns'][data['campaign_id']]
+    if 'syncversion' in oldcamp and int(oldcamp['syncversion']) != int(campaign['syncversion']): 
+        return flask.Response(json.dumps({"result": "error", "error": "syncversion"}),  mimetype='application/json')
     credentials = {}
     
     #tengo en cuenta se si cargaron los profiles desde la web o no
@@ -552,9 +555,8 @@ def save_campaign():
     if 'analytics' in oldcamp and 'credentials' in oldcamp['analytics']:
         credentials = oldcamp['analytics']['credentials']
     campaign['analytics']['credentials'] = credentials
-    account['campaigns'][data['campaign_id']] = campaign
     
-    #traigo los ids de las cuentas a seguir
+    #traigo los ids de las cuentas a seguir  // Esto solo habria que hacerlo si el campo follow_accounts fue modificado!!!
     t = Twython("1qxRMuTzu2I7BP7ozekfRw", "whQFHN8rqR78L6su6U32G6TPT7e7W2vCouR4inMfM", "2305874377-TTmvLjLuP8aq8q2bT7GPJsOjG9n6uYLAA0tvsYU", "iy4SYpkHK26Zyfr9RhYSGOLVtd9eMNF6Ebl2p552gF4vL")    
     for bid, brand in campaign['brands'].items():
         follow_ids = []
@@ -562,10 +564,13 @@ def save_campaign():
             for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
                     follow_ids.append(t.lookup_user(screen_name=kw[1:])[0]['id_str'])
         campaign['brands'][bid]['follow_account_ids'] = ','.join(follow_ids)
+        
+    campaign['syncversion'] = int(campaign['syncversion'])+1
+    account['campaigns'][data['campaign_id']] = campaign        
     accountdb.accounts.save(account)
     print
     
-    return flask.Response(json.dumps({}),  mimetype='application/json')
+    return flask.Response(json.dumps({"result": "ok", "syncversion": campaign['syncversion']}),  mimetype='application/json')
 
 @app.route("/api/account/poll/save", methods=['POST'])
 def save_poll():

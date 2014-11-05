@@ -128,6 +128,7 @@ function saveCampaign()
     campaign = {}
     campaign['name'] = $('[fn=cname]').val();
     campaign['active'] = $("[fn=cactive]").is(':checked');
+    campaign['syncversion'] = $("#syncversion").val();
     campaign['use_geolocation'] = $("[fn=cuse_geolocation]").is(':checked');
     campaign['brands'] = {}
     campaign['analytics'] = {}
@@ -239,7 +240,14 @@ function saveCampaign()
             type: "POST",
             processData: false,
         }).done(function (response) {
-            alert("Campaña grabada")
+            if (response['result'] == 'ok')
+            {
+                $("#syncversion").val(response['syncversion']);
+                alert("Campaña grabada");
+            } else if (response['error'] == 'syncversion')
+            {
+                alert('La campaña fue modificada por otro usuario. Debes refrescar la pagina para obtener la ultima version de la misma');
+            }
         });   
     
     return data;
