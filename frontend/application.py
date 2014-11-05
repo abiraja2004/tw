@@ -565,7 +565,7 @@ def save_campaign():
                     follow_ids.append(t.lookup_user(screen_name=kw[1:])[0]['id_str'])
         campaign['brands'][bid]['follow_account_ids'] = ','.join(follow_ids)
         
-    campaign['syncversion'] = int(campaign.get('syncversion',1)+1
+    campaign['syncversion'] = int(campaign.get('syncversion',1))+1
     account['campaigns'][data['campaign_id']] = campaign        
     accountdb.accounts.save(account)
     print
