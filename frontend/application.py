@@ -117,7 +117,7 @@ def home():
     print logo
     has_products = False
     own_brands_list = []
-    if not 'brands' in campaign: campaign['brands'] = {}
+    if not 'brands' in account['campaigns'][campaign_id]: account['campaigns'][campaign_id]['brands'] = {}
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
