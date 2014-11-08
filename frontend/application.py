@@ -64,7 +64,7 @@ def root():
 
 
 def getUser(account):
-    if 'username' in session and 'users' in account: return account['users'][session['username']]
+    if 'username' in session and 'users' in account: return account['users'].get(session['username'], None)
     return None
         
 def getPasswordHash(user, psw):
