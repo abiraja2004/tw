@@ -232,12 +232,12 @@ try:
                 if not bc.campaign_id in pms: pms[bc.campaign_id] = []
                 pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(t['text'])])
             x_mentions_count = {}
-            campaign_ids = set()                            
+            #campaign_ids = set()                            
             poll_ids = set()
             for m in t['entities']['user_mentions']:
                 if ("@" + m["screen_name"]) in MyThread.accountsToTrack: 
                     x_mentions_count["@" + m['screen_name']] = 1
-                    campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']]['cid'])
+                    #campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']]['cid'])
                     pm = ProductMatch()
                     pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['brand']
                     pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
@@ -251,7 +251,7 @@ try:
                     
             if 'user' in t and 'id_str' in t['user']:
                 if t['user']['id_str'] in MyThread.accountsToTrackIds:
-                    campaign_ids.add(MyThread.accountsToTrackIds[t['user']['id_str']]['cid'])
+                    #campaign_ids.add(MyThread.accountsToTrackIds[t['user']['id_str']]['cid'])
                     pm = ProductMatch()
                     pm.brand = MyThread.accountsToTrackIds[t['user']['id_str']]['brand']
                     pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
@@ -260,7 +260,8 @@ try:
                     if MyThread.accountsToTrackIds[t['user']['id_str']]['own_brand']:
                         t['x_sentiment'] = '='
                     
-            if pms or x_mentions_count or campaign_ids or poll_ids:
+            #if pms or x_mentions_count or campaign_ids or poll_ids:
+            if pms or x_mentions_count or poll_ids:
                 tms = []
                 for tc in tcs:
                     tm = tc.extract(t['text'])
@@ -270,15 +271,17 @@ try:
                 if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_topics'] = tms
                 
-                for cids in pms:
-                    campaign_ids.add(cids)
-                for cid in campaign_ids:
+                #for cids in pms:
+                #    campaign_ids.add(cids)
+                #for cid in campaign_ids:
+                for cid in pms.keys():
                     extracted_infos = pms.get(cid, [])
-                    if extracted_infos: extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
-                    t['x_extracted_info'] = extracted_infos
-                    collection_name = "tweets_%s" % cid                    
-                    print "INSERTING into %s" % collection_name
-                    print monitor[collection_name].insert(t)
+                    if extracted_infos:
+                        extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
+                        t['x_extracted_info'] = extracted_infos
+                        collection_name = "tweets_%s" % cid                    
+                        print "INSERTING into %s" % collection_name
+                        print monitor[collection_name].insert(t)
                 for pid in poll_ids:
                     collection_name = "polls_%s" % pid                    
                     print "INSERTING into %s" % collection_name
