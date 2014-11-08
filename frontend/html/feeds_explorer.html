@@ -36,9 +36,8 @@
                     </div>                      
                 </div>              
                 <div id="feed_model" style="display: none">
-
-                
                     <div class="item">
+                        <input name="id" type="hidden" value="%%_id%%"/>
                             <a href="%%user_profile_url%%" >
                                 <img %%user.profile_image_url%% alt="user image" class="online"/>
                             </a>
@@ -53,6 +52,9 @@
                                 <small class="badge pull-left bg-orange">%%confidence%%</small>
                             </p>
                         </a>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-info btn-sm" onclick="removeFeed(this);"><i class="fa fa-times"></i></button>                            
+                        </div>                                      
                     </div>
                 </div>                         
                 <div class="box-body chat" id="feed-box"></div> 

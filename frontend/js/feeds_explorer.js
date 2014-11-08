@@ -117,3 +117,26 @@ function updateFeedsContent(response)
     tweetbox = $("#feed-box").removeClass("loading");
     //$('#mentions_indicator').html(''+mentions);
 }
+
+var item;
+function removeFeed(btn)
+{
+    account_id = $('[fn=a_id]').val();;
+    campaign_id = $('[fn=c_id]').val();    
+    item = $(btn).closest(".item");
+    feed_object_id = item.find("input[name=id]").val();
+    $.ajax({
+        url: "/api/feeds/remove", 
+        data: {"account_id": account_id, 
+               'campaign_id': campaign_id, 
+               'feed_object_id': feed_object_id, 
+        }, 
+        type: "GET",
+    }).done(function (response) { 
+        if (response['result'] == 'ok')
+        {
+            item.hide(500);
+        }
+    });
+    
+}

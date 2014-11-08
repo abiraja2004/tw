@@ -841,6 +841,16 @@ def search_feeds():
                     res['feeds'].append(t)
     return flask.Response(dumps(res),  mimetype='application/json')
 
+@app.route('/api/feeds/remove')
+def remove_feed():
+    campaign_id = request.args.get("campaign_id", "")
+    feed_object_id = request.args.get("feed_object_id", "")
+    res = {'result': 'error'}
+    if campaign_id and feed_object_id:
+        collection_name = "tweets_%s" % campaign_id
+        accountdb[collection_name].remove({"_id": ObjectId(feed_object_id)})
+        res['result']="ok"
+    return flask.Response(dumps(res),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.debug = True
