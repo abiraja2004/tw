@@ -227,9 +227,10 @@ try:
         for t in stream:
             t['x_process_version'] = 2
             t['x_created_at'] = datetime.strptime(t['created_at'], "%a %b %d %H:%M:%S +0000 %Y")
-            pms = []
+            pms = {}
             for bc in bcs:
-                pms.extend([pm.getDictionary() for pm in bc.extract(t['text'])])
+                if not bc.campaign_id in pms: pms[bc.campaign_id] = []
+                pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(t['text'])])
             x_mentions_count = {}
             campaign_ids = set()                            
             poll_ids = set()
@@ -241,7 +242,7 @@ try:
                     pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['brand']
                     pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
                     pm.confidence = 5
-                    pms.append(pm.getDictionary())
+                    pms[pm.campaign_id].append(pm.getDictionary())
                     
             for m in t['entities']['hashtags']:
                 if ("#" + m["text"]) in MyThread.hashtagsToTrack: 
@@ -255,7 +256,7 @@ try:
                     pm.brand = MyThread.accountsToTrackIds[t['user']['id_str']]['brand']
                     pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
                     pm.confidence = 5
-                    pms.append(pm.getDictionary())
+                    pms[pm.campaign_id].append(pm.getDictionary())
                     if MyThread.accountsToTrackIds[t['user']['id_str']]['own_brand']:
                         t['x_sentiment'] = '='
                     
@@ -264,16 +265,17 @@ try:
                 for tc in tcs:
                     tm = tc.extract(t['text'])
                     if tm: tms.append(tm.getDictionary())
-                pms.sort(key=lambda x: x['confidence'], reverse=True)
-                t['x_extracted_info'] = pms
                 t['x_mentions_count'] = x_mentions_count
                 print "mentions count: " + str(x_mentions_count)
                 if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_topics'] = tms
                 
-                for pm in pms:
-                    campaign_ids.add(pm['campaign_id'])
+                for cids in pms:
+                    campaign_ids.add(cids)
                 for cid in campaign_ids:
+                    extracted_infos = pms.get(cid, [])
+                    if extracted_infos: extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
+                    t['x_extracted_info'] = extracted_infos
                     collection_name = "tweets_%s" % cid                    
                     print "INSERTING into %s" % collection_name
                     print monitor[collection_name].insert(t)
