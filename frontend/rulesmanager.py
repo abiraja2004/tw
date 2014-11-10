@@ -193,7 +193,7 @@ if __name__ == "__main__":
     bcs = getBrandClassifiers()
     for bc in bcs:
         #print bc.name, bc.brand_regexps
-        pms = bc.extract('Que copadas la ofertas del #CyberMonday... Lastima no tener un sope para comprar..! :P')
+        pms = bc.extract(u'LA NUEVA HISTORIA ,CULTURA ,DE AMERICA ,PERU CAJAMARCA AGENCIA DE VIAJES Y TURISMO KNOWING PERU ')
         for pm in pms: 
             acc = monitor.accounts.find({"_id": ObjectId(pm.account_id)})
             print pm.rule, pm.confidence, pm.brand, pm.product, pm.product_matched_word, pm.campaign_id, pm.account_id,

@@ -197,8 +197,8 @@ class BrandClassifier(object):
             return res
         
         confidence = 0
-        if pm.brand: confidence += 5
-        if pm.product: 
+        if pm.brand_matched_word: confidence += 5
+        if pm.product_matched_word: 
             confidence += 5
             if pm.product in self.product_confidence_clues: confidence += processClues(self.product_confidence_clues[pm.product])
         confidence += processClues(self.brand_confidence_clues)
@@ -249,6 +249,7 @@ class BrandClassifier(object):
                         pm.product = self.product_list[int(k.split("_")[1])]
                         pm.product_matched_word = m.group(k)
                         pm.product_matched_pos = (m.start(k), m.end(k))
+                        pm.brand = self.name.keys()[0]
                         pm.source = text                        
                 pm.confidence = self.calculateConfidence(pm, text)
                 pm.rule = rule
@@ -262,7 +263,6 @@ class BrandClassifier(object):
                 matches = pattern.finditer(text)
                 #print pattern.pattern, text
                 for m in matches:
-                    print m.groups()
                     pm = ProductMatch()
                     pm.pattern = pattern.pattern
                     for k in m.groupdict():
@@ -275,6 +275,7 @@ class BrandClassifier(object):
                             pm.product = self.product_list[int(k.split("_")[1])]
                             pm.product_matched_word = m.group(k)
                             pm.product_matched_pos = (m.start(k), m.end(k))
+                            pm.brand = self.name.keys()[0]
                             pm.source = text
                     pm.confidence = self.calculateConfidence(pm, text)
                     pm.rule = rule
@@ -283,7 +284,6 @@ class BrandClassifier(object):
                     pm.account_id = self.account_id
                     pm.account_name = self.account_name                    
                     res.append(pm)
-                
         return res
 
 class AdesClassifier(BrandClassifier):
