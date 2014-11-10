@@ -107,10 +107,12 @@ def genEntityRegexp(entity_type, name, entity_number, synonyms):
     return regexp
 
 def getBrandRegexpFromRule(br, rule):
+    rule = rule.replace("[m]", "[M]")
     brand_regexp = genEntityRegexp("BLD", br.name, 0, br.synonyms)
     return "(?:\\A|\\Z|\\W)" + rule.replace(" ", "\\W+").replace("[M]", brand_regexp) + "(?:\\A|\\Z|\\W)"
     
 def getProductRegexpFromRule(br, pr, pr_number, rule):
+    rule = rule.replace("[m]", "[M]").replace("[p]", "[P]")
     brand_regexp = genEntityRegexp("BLD", br.name, 0, br.synonyms)
     product_regexp = genEntityRegexp("PLD", pr.name, pr_number, pr.synonyms)
     return "(?:\\A|\\Z|\\W)" + rule.replace(" ", "\\W+").replace("[M]", brand_regexp).replace("[P]", product_regexp) + "(?:\\A|\\Z|\\W)"
@@ -187,15 +189,18 @@ def getTopicClassifiers():
     return res
 
 if __name__ == "__main__":
-    """
+    
     bcs = getBrandClassifiers()
     for bc in bcs:
-        print bc.name, bc.brand_regexps
-        pms = bc.extract('quiero sivale ahoraaa')
-        if pms: 
-            print pms[0].confidence
-            print "|" + pms[0].campaign_id + "|"
-    """
+        #print bc.name, bc.brand_regexps
+        pms = bc.extract('Que copadas la ofertas del #CyberMonday... Lastima no tener un sope para comprar..! :P')
+        for pm in pms: 
+            acc = monitor.accounts.find({"_id": ObjectId(pm.account_id)})
+            print pm.rule, pm.confidence, pm.brand, pm.product, pm.product_matched_word, pm.campaign_id, pm.account_id,
+            if acc:
+                print acc[0]['name'], acc[0]['campaigns'][pm.campaign_id]['name']
+            
+    
     """
     text = "estoy probando tc votos candidato, cancha hincha competir"
     tcs = getTopicClassifiers()
@@ -205,8 +210,10 @@ if __name__ == "__main__":
         print tc.topic_name, unicode(tc.extract(text))
         
     """
+    """
     tcs = getTopicClassifiers()
     w = 0
     for tc in tcs:
         if tc.topic_name == "Deporte":
             print tc.topic_confidence_clues
+    """

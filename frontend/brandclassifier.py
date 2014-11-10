@@ -262,7 +262,7 @@ class BrandClassifier(object):
                 matches = pattern.finditer(text)
                 #print pattern.pattern, text
                 for m in matches:
-                    #print "MATCHSS"
+                    print m.groups()
                     pm = ProductMatch()
                     pm.pattern = pattern.pattern
                     for k in m.groupdict():
