@@ -10,6 +10,18 @@
     </ol>    
 </section>
 
+<script>
+var brands=[];
+var b = null;
+{% for brand_id, brand in campaign['brands'].items() %}
+    var b = {id: "{{brand_id}}", name: "{{brand['name']}}", products: [] };
+    {% for product_id, product in campaign['brands'][brand_id]['products'].items() %}
+        b['products'].push({id: "{{product_id}}", name: "{{product['name']}}"});
+    {% endfor %}
+    brands.push(b);
+{% endfor %}
+</script>
+
 <!-- Main content -->
 <section class="content">
     <input id="object_id" type="hidden" value="{{object_id}}"/>
@@ -22,16 +34,37 @@
                     <i class="fa fa-bar-chart-o"></i>
                     <h3 class="box-title">Feeds</h3>                    
                     <div class="box-tools">
-                    
-                        <div class="btn-group pull-right" id="brands_to_include" data-toggle="btn-toggle">
-                            <button brands_to_include="" type="button" class="btn btn-default btn-xs brands_to_include active" data-toggle="on">Todos</button>
-                            <button brands_to_include="{{own_brands_list}}" type="button" class="btn btn-default btn-xs brands_to_include" data-toggle="off">Marcas propias</button>                            
-                        </div>
+                        <div class="form-group pull-right" >
+                            <select id="filter_country" class="form-control input-sm" onchange="filterCountryChanged($(this).val())">
+                              <option value="" selected >Todos los paises</option>
+                              <option value="UNDEFINED" >Sin identificar</option>
+                              {% include 'country_options.html' %}
+                            </select>
+                        </div>                        
+                        <div class="form-group pull-right" >
+                            <select id="filter_product" class="form-control input-sm" onchange="filterProductChanged($(this).val())">
+                                <option value="" selected >Todos los productos</option>
+                                {% for brand_id, brand in campaign['brands'].items() %}
+                                    {% for product_id, product in campaign['brands'][brand_id]['products'].items() %}
+                                        <option value="{{product['name']}}">{{product['name']}} - {{brand['name']}}</option>
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                        </div>                       
+                        <div class="form-group pull-right" >
+                            <select id="filter_brand" class="form-control input-sm" onchange="filterBrandChanged($(this).val())">
+                                <option value="" selected >Todas las marcas</option>
+                                <option value="{{own_brands_list}}" >Marcas Propias</option>
+                                {% for brand_id, brand in campaign['brands'].items() %}
+                                    <option value="{{brand['name']}}">{{brand['name']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>                                                                          
                         <div class="input-group">
                             <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
                             <div class="input-group-btn">
                                 <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
-                            </div>
+                            </div>                                                    
                         </div>
                     </div>                      
                 </div>              
@@ -46,6 +79,7 @@
                                     <a href="%%user_profile_url%%" class="name">%%user.name%%</a>
                                 <a href="%%feed_url%%" target="_new" style="color: black;">
                                 %%text%% </a><small class="badge pull-right bg-%%sentiment_color%%">%%sentiment%%</small>
+                                <small class="badge pull-right bg-%%sentiment_color%%">%%country%%</small>
                                 <br>
                                 <small class="badge pull-left bg-olive">%%brand%%</small>
                                 <small class="badge pull-left bg-fuchsia">%%product%%</small>
