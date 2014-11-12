@@ -41,6 +41,11 @@ function filterCountryChanged()
     search();    
 }
 
+function filterSentimentChanged()
+{
+    search();    
+}
+
 function search()
 {   
     account_id = $('[fn=a_id]').val();;
@@ -50,6 +55,7 @@ function search()
     brands_to_include = $("#filter_brand").val();
     filter_product = $("#filter_product").val();
     filter_country = $("#filter_country").val();
+    filter_sentiment = $("#filter_sentiment").val();
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
@@ -64,6 +70,7 @@ function search()
                'brands_to_include': brands_to_include,
                'filter_product': filter_product,
                'filter_country': filter_country,
+               'filter_sentiment': filter_sentiment,
                'object_id': object_id
         }, 
         type: "GET",

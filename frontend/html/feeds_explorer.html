@@ -35,6 +35,16 @@ var b = null;
                     <h3 class="box-title">Feeds</h3>                    
                     <div class="box-tools">
                         <div class="form-group pull-right" >
+                            <select id="filter_sentiment" class="form-control input-sm" onchange="filterSentimentChanged($(this).val())">
+                              <option value="" selected >Todos</option>
+                              <option value="UNDEFINED" >No definidos</option>
+                              <option value="+" >Positivos</option>
+                              <option value="=" >Neutrales</option>
+                              <option value="-" >Negativos</option>
+                              <option value="?" >Irrelevantes</option>
+                            </select>
+                        </div>                        
+                        <div class="form-group pull-right" >
                             <select id="filter_country" class="form-control input-sm" onchange="filterCountryChanged($(this).val())">
                               <option value="" selected >Todos los paises</option>
                               <option value="UNDEFINED" >Sin identificar</option>
@@ -59,13 +69,13 @@ var b = null;
                                     <option value="{{brand['name']}}">{{brand['name']}}</option>
                                 {% endfor %}
                             </select>
-                        </div>                                                                          
+                        </div>     
                         <div class="input-group">
                             <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
                             <div class="input-group-btn">
                                 <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
                             </div>                                                    
-                        </div>
+                        </div>                                            
                     </div>                      
                 </div>              
                 <div id="feed_model" style="display: none">

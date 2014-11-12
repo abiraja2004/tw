@@ -819,6 +819,7 @@ def search_feeds():
     brands_to_include = request.args.get("brands_to_include", "")
     filter_product = request.args.get("filter_product", "")
     filter_country = request.args.get("filter_country", "")
+    filter_sentiment = request.args.get("filter_sentiment", "")
     object_id = request.args.get("object_id", "")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"feeds": []}
@@ -834,7 +835,7 @@ def search_feeds():
         except bson.errors.InvalidId:
             pass
         dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1)
-        if not brands_to_include and not filter_product and not filter_country:
+        if not brands_to_include and not filter_product and not filter_country and not filter_sentiment:
             res['feeds'].extend(dbtweets)
         else:
             bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
@@ -844,6 +845,12 @@ def search_feeds():
                         if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code']: continue
                     else:
                         if not 'x_coordinates' in t or not t['x_coordinates'] or not 'country_code' in t['x_coordinates'] or t['x_coordinates']['country_code'] != filter_country: continue
+                if filter_sentiment:
+                    if filter_sentiment == "UNDEFINED":
+                        if 'x_sentiment' in t and t['x_sentiment']: continue
+                    else:
+                        if not 'x_sentiment' in t or not t['x_sentiment'] or t['x_sentiment'] != filter_sentiment: continue
+                    
                 match = True                
                 if brands_to_include or filter_product:
                     if not 'x_extracted_info' in t: continue
