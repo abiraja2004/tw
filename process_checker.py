@@ -37,5 +37,6 @@ def start_process(p):
 
 
 if __name__ == "__main__":
+    os.chdir("/home/pablo/tw")
     check_processes()
     
