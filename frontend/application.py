@@ -880,11 +880,13 @@ def remove_feed():
         res['result']="ok"
     return flask.Response(dumps(res),  mimetype='application/json')
 
+compress = Compress()
 if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    
     app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
+    compress.init_app(app)
     app.run(host="0.0.0.0", port=5001)
-    Compress(app, COMPRESS_DEBUG= True)
+    
 
 

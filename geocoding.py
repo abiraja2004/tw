@@ -37,7 +37,10 @@ max_requests_per_period = 2400
 def geolocate(account, cid):
     global gr,r,k,w, limitperiod
     campaign = account['campaigns'][cid]
-    print "fetching locations for campaign: %s (%s) from account %s" % (campaign['name'],cid,  account['name'])
+    try:
+        print "fetching locations for campaign: %s (%s) from account %s" % (campaign['name'],cid,  account['name'])
+    except:
+        pass
     collection_name = "tweets_%s" % cid
     collection = monitor[collection_name]
     for f in collection.find({'x_coordinates': {"$exists": False}}):    
