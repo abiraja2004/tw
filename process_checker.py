@@ -32,7 +32,7 @@ def start_process(p):
     if p[1]:
         os.chdir(p[1])
         back = "."
-    subprocess.Popen(["%s./run_in_background.sh %s" % (back,p[0])], shell=True)
+    subprocess.Popen(["%s./run_in_background.sh %s --auth" % (back,p[0])], shell=True)
     os.chdir(oldcwd)
 
 
