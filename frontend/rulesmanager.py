@@ -1,3 +1,4 @@
+#encoding: utf-8
 from pymongo import MongoClient
 from bson import ObjectId
 from brandclassifier import BrandClassifier
@@ -193,12 +194,15 @@ if __name__ == "__main__":
     bcs = getBrandClassifiers()
     for bc in bcs:
         #print bc.name, bc.brand_regexps
-        pms = bc.extract(u'LA NUEVA HISTORIA ,CULTURA ,DE AMERICA ,PERU CAJAMARCA AGENCIA DE VIAJES Y TURISMO KNOWING PERU ')
+        pms = bc.extract(u"Oferta de #Trabajo Manager restauración: Córdoba Sodexo, que opera en España desde 1976, ofr... http://t.co/LdJ8mXF9r3 #Córdoba #Empleo ")
         for pm in pms: 
             acc = monitor.accounts.find({"_id": ObjectId(pm.account_id)})
             print pm.rule, pm.confidence, pm.brand, pm.product, pm.product_matched_word, pm.campaign_id, pm.account_id,
             if acc:
-                print acc[0]['name'], acc[0]['campaigns'][pm.campaign_id]['name']
+                try:
+                    print acc[0]['name'], acc[0]['campaigns'][pm.campaign_id]['name']
+                except:
+                    print (acc[0]['name'], acc[0]['campaigns'][pm.campaign_id]['name']).__repr__()
             
     
     """

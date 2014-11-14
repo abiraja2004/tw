@@ -278,10 +278,11 @@ try:
                     extracted_infos = pms.get(cid, [])
                     if extracted_infos:
                         extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
-                        t['x_extracted_info'] = extracted_infos
-                        collection_name = "tweets_%s" % cid                    
-                        print "INSERTING into %s" % collection_name
-                        print monitor[collection_name].insert(t)
+                        if extracted_infos[0]['confidence'] > 0:
+                            t['x_extracted_info'] = extracted_infos
+                            collection_name = "tweets_%s" % cid                    
+                            print "INSERTING into %s" % collection_name
+                            print monitor[collection_name].insert(t)
                 for pid in poll_ids:
                     collection_name = "polls_%s" % pid                    
                     print "INSERTING into %s" % collection_name
