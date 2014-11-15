@@ -81,7 +81,7 @@ def getPasswordHash(user, psw):
         
 @app.route('/login', methods=["GET", "POST"])
 @app.route('/', methods=["GET", "POST"])
-def login():    
+def login():
     session['username'] = ''
     if request.method == "GET":
         return render_template("login.html")
