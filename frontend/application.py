@@ -51,6 +51,13 @@ if args.auth:
 
 app = Flask(__name__, template_folder='html')
 app.config['PROPAGATE_EXCEPTIONS'] = True
+compress = Compress()
+app.debug = True
+app.testing = True
+app.jinja_options['extensions'].append('jinja2.ext.do')    
+app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
+compress.init_app(app)
+
 
 def onRemoteServer():
     return server_mode == SERVER_REMOTE
@@ -886,11 +893,6 @@ def remove_feed():
 def test_alive():
     return flask.Response("ALIVE!", 200)
 
-compress = Compress()
+
 if __name__ == "__main__":
-    app.debug = True
-    app.testing = True
-    app.jinja_options['extensions'].append('jinja2.ext.do')    
-    app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
-    compress.init_app(app)
     app.run(host="0.0.0.0", port=5001)
