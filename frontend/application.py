@@ -881,6 +881,10 @@ def remove_feed():
         res['result']="ok"
     return flask.Response(dumps(res),  mimetype='application/json')
 
+@app.route('/api/test/alive')
+def test_alive():
+    return flask.Response("ALIVE!", 200)
+
 compress = Compress()
 if __name__ == "__main__":
     app.debug = True
