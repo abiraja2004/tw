@@ -4,9 +4,9 @@ p2
 cdatetime
 date
 p3
-(S'\x07\xde\x0b\r'
+(S'\x07\xde\x0b\x0f'
 tRp4
 sS'requests'
 p5
-I3
+I487
 s.

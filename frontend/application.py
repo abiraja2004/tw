@@ -886,6 +886,7 @@ if __name__ == "__main__":
     app.debug = True
     app.jinja_options['extensions'].append('jinja2.ext.do')    
     app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
+    application.config['PROPAGATE_EXCEPTIONS'] = True
     compress.init_app(app)
     app.run(host="0.0.0.0", port=5001)
     
