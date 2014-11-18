@@ -4,8 +4,6 @@ from bson import ObjectId
 from brandclassifier import BrandClassifier
 from topicclassifier import TopicClassifier
 import re
-mclient = MongoClient()
-monitor = mclient['monitor']
 
 import argparse
 parser = argparse.ArgumentParser()

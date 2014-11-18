@@ -829,6 +829,8 @@ def search_feeds():
     filter_product = request.args.get("filter_product", "")
     filter_country = request.args.get("filter_country", "")
     filter_sentiment = request.args.get("filter_sentiment", "")
+    skip = int(request.args.get("skip", 0))
+    limit = int(request.args.get("limit", 80))
     object_id = request.args.get("object_id", "")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"feeds": []}
@@ -844,6 +846,8 @@ def search_feeds():
         except bson.errors.InvalidId:
             pass
         dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1)
+        if skip: dbtweets = dbtweets.skip(skip)
+        dbtweets = dbtweets.limit(limit)
         if not brands_to_include and not filter_product and not filter_country and not filter_sentiment:
             res['feeds'].extend(dbtweets)
         else:

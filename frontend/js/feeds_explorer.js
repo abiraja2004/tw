@@ -47,10 +47,20 @@ function filterSentimentChanged()
 }
 
 function search()
+{
+    search_extended(false);
+}
+
+function searchMore()
+{
+    search_extended(true);
+}
+
+function search_extended(more)
 {   
     account_id = $('[fn=a_id]').val();;
     campaign_id = $('[fn=c_id]').val();
-    tweetbox = $("#feed-box").addClass("loading");
+    feedbox = $("#feed-box").addClass("loading_bottom");
     object_id = $("#object_id").val();
     brands_to_include = $("#filter_brand").val();
     filter_product = $("#filter_product").val();
@@ -59,6 +69,15 @@ function search()
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
+    if (more)
+    {
+        skip = $('#feed-box').children().length;
+    }
+    else
+    {
+        skip = 0;
+    }
+    limit = 20;
     text = $("#search_text").val();
     $.ajax({
         url: "/api/feeds/search", 
@@ -71,21 +90,27 @@ function search()
                'filter_product': filter_product,
                'filter_country': filter_country,
                'filter_sentiment': filter_sentiment,
+               'skip': skip,
+               'limit': limit,
                'object_id': object_id
         }, 
         type: "GET",
     }).done(function (response) { 
-        updateFeedsContent(response)
+        updateFeedsContent(response, more)
+        if (response['feeds'].length == limit)
+        {
+            $(window).scroll(bindScroll);            
+        }
     });
 }
 
-function updateFeedsContent(response)
+function updateFeedsContent(response, more)
 {
     feeds = response['feeds'];
     //mentions = 0;
     html = $('#feed_model').html();
     feedbox = $("#feed-box");
-    feedbox.html("");    
+    if (!more) feedbox.html("");    
     sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
     colors = {'+': 'green', '-':'red', '=':'yellow', '?': 'gray'}
     for (var i=0;i<feeds.length;i++)
@@ -146,9 +171,9 @@ function updateFeedsContent(response)
                     .replace("%%country%%", country)
                     );    
         
-        tweetbox.append(feedtag);
+        feedbox.append(feedtag);
     }
-    tweetbox = $("#feed-box").removeClass("loading");
+    $("#feed-box").removeClass("loading_bottom");
     //$('#mentions_indicator').html(''+mentions);
 }
 
@@ -174,4 +199,13 @@ function removeFeed(btn)
         }
     });
     
+}
+
+function bindScroll()
+{
+   if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+       $(window).unbind('scroll');
+       console.log("loading more feeds...");
+       searchMore();
+   }
 }

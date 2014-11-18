@@ -4,6 +4,12 @@ background-repeat: no-repeat;
 background-position: center top;
 }
 
+.loading_bottom {
+background-image: url('/img/ajax-loader.gif');
+background-repeat: no-repeat;
+background-position: center bottom;
+}
+
 .loaded {
 background-image: none;
 }
