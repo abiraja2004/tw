@@ -2,7 +2,7 @@ var deb_var=null;
 var deb_var2=null;
 
 $(function () {   
-    $('#tweet-box').slimScroll({
+    $('#tweet-box,#fb_posts-box').slimScroll({
         height: '705px'
     });
         
@@ -44,8 +44,8 @@ function updateAggregatedInformation()
     params.push([updateTweetCountLineChart, ['product']]);
     params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}]]);
     params.push([updateIndicators]);
-    params.push([updatePollsPieCharts, ['polls']]);
-    params.push([updateDataCollectionPieCharts, ['datacollections']]);
+    //params.push([updatePollsPieCharts, ['polls']]);
+    //params.push([updateDataCollectionPieCharts, ['datacollections']]);
     fetchTweetsCount(params);
 }
 

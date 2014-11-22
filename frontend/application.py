@@ -79,6 +79,11 @@ def getUser(account):
 def getPasswordHash(user, psw):
     return hashlib.md5(user + psw + PASSWORD_SALT).hexdigest()
         
+@app.route('/logout', methods=["GET", "POST"])        
+def logout():
+    del session['username']
+    return redirect('/')
+
 @app.route('/login', methods=["GET", "POST"])
 @app.route('/', methods=["GET", "POST"])
 def login():
