@@ -807,6 +807,7 @@ def feeds_explorer():
     campaign_id = request.args.get("campaign_id", "") #default Campana unilever
     account_id = request.args.get("account_id", "")
     object_id = request.args.get("object_id", "")
+    sentiment = request.args.get("sentiment", "")
     account = getAccount(account_id)
     if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     custom_css= request.args.get("css", None)
@@ -822,7 +823,7 @@ def feeds_explorer():
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         
-    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id)
+    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment)
 
 @app.route('/api/feeds/search')
 def search_feeds():
@@ -845,6 +846,17 @@ def search_feeds():
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
         docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
         if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
+        if filter_sentiment:
+            if filter_sentiment == "UNDEFINED":
+                docfilter['x_sentiment'] = {'$exists': False}
+            else:
+                docfilter['x_sentiment'] = filter_sentiment
+        if filter_country:                
+            if filter_country == "UNDEFINED":
+                docfilter['x_coordinates.country_code'] = {'$exists': False}
+            else:
+                docfilter['x_coordinates.country_code'] = filter_country
+                
         if text: docfilter['$text'] = {"$search": text}
         try:
             if object_id: docfilter['_id'] = ObjectId(object_id)

@@ -203,6 +203,7 @@ function updateTweetCountPieChart(fulldata, data, args)
     dimension = args[0];
     //if ($.isEmptyObject(data[dimension])) return;
     options = args[1];   
+    clickfunc = args[2];
     
     d = []
     var total=0;
@@ -235,7 +236,11 @@ function updateTweetCountPieChart(fulldata, data, args)
     params['resize'] = true;
     params['data'] = d;
     params['hideOver'] = 'auto';
-    if (total != 0) var donut = new Morris.Donut(params);    
+    if (total != 0)
+    {
+        var donut = new Morris.Donut(params);    
+        if (clickfunc!= null) donut.on('click', clickfunc);            
+    }
     $('#'+dimension+'-chart').removeClass("loading");
 }
 

@@ -36,12 +36,12 @@ var b = null;
                     <div class="box-tools">
                         <div class="form-group pull-right" >
                             <select id="filter_sentiment" class="form-control input-sm" onchange="filterSentimentChanged($(this).val())">
-                              <option value="" selected >Todos</option>
+                              <option value="" {{selected(not sentiment)}} >Todos</option>
                               <option value="UNDEFINED" >No definidos</option>
-                              <option value="+" >Positivos</option>
-                              <option value="=" >Neutrales</option>
-                              <option value="-" >Negativos</option>
-                              <option value="?" >Irrelevantes</option>
+                              <option value="+" {{selected(sentiment=='+')}}>Positivos</option>
+                              <option value="=" {{selected(sentiment=='=')}}>Neutrales</option>
+                              <option value="-" {{selected(sentiment=='-')}}>Negativos</option>
+                              <option value="?" {{selected(sentiment=='?')}}>Irrelevantes</option>
                             </select>
                         </div>                        
                         <div class="form-group pull-right" >

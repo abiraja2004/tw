@@ -11,7 +11,7 @@ $(function () {
         tweets_count_group_by = $(this).attr('group_by') 
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
                      [updateTweetCountLineChart, ['product']], 
-                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}]], 
+                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}, sentimentClick]], 
                      [updateIndicators]]);
 
     });
@@ -42,13 +42,25 @@ function updateAggregatedInformation()
     params = [];
     params.push([updateTweetCountLineChart, ['brand']]);
     params.push([updateTweetCountLineChart, ['product']]);
-    params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}]]);
+    params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}, sentimentClick]]);
     params.push([updateIndicators]);
     //params.push([updatePollsPieCharts, ['polls']]);
     //params.push([updateDataCollectionPieCharts, ['datacollections']]);
     fetchTweetsCount(params);
 }
 
+function sentimentClick(i ,row)
+{
+    sent = null;
+    if (row['label'] == 'pos') sent = '+';
+    if (row['label'] == 'neg') sent = '-';
+    if (row['label'] == 'neu') sent = '=';
+    if (row['label'] == 'irr') sent = '?';
+    account_id = $('[fn=a_id]').val();;
+    campaign_id = $('[fn=c_id]').val();    
+    feeds_explorer_url = '/feeds_explorer?account_id='+account_id+"&campaign_id="+campaign_id+'&sentiment='+sent;
+    if (sent != null) window.location = feeds_explorer_url;
+}
 function updatePollsPieCharts(data)
 {
     $('.poll-chart').remove();
