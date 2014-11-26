@@ -18,7 +18,7 @@ function dateRangeChanged()
 {
     account_id = $('[fn=a_id]').val();;
     campaign_id = $('[fn=c_id]').val();
-    brands_to_include = $('#brands_to_include').val();
+    //brands_to_include = $('#brands_to_include').val();
     fetchTweets(account_id, campaign_id, false);
     fetchTweetsCount([[updateTweetCountLineChart, ['sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors}]]]);
     //fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})

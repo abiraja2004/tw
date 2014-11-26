@@ -2,25 +2,23 @@ var deb_var=null;
 var deb_var2=null;
 
 $(function () {   
-    $('#tweet-box,#fb_posts-box').slimScroll({
-        height: '705px'
-    });
-        
+    $('#tweet-box,#fb_posts-box').slimScroll({height: '705px'});
     tweets_count_group_by = "day";
     $(".tweet_count_group_by").click(function (e) { 
         tweets_count_group_by = $(this).attr('group_by') 
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
                      [updateTweetCountLineChart, ['product']], 
                      [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}, sentimentClick]], 
+                     [updateTweetCountPieChart, ['topic']]
                      [updateIndicators]]);
 
     });
     
-    $(".brands_to_include").click(function (e) { 
+    $(".brands_to_include").click(function (e) {
         brands_to_include = $(this).attr('brands_to_include') 
-    fetchTweets(account_id, campaign_id, true);
-    fetchFBPosts(account_id, campaign_id);
-    updateAggregatedInformation();
+        fetchTweets(account_id, campaign_id, true);
+        fetchFBPosts(account_id, campaign_id);
+        updateAggregatedInformation();
     });    
     
 });
@@ -43,6 +41,7 @@ function updateAggregatedInformation()
     params.push([updateTweetCountLineChart, ['brand']]);
     params.push([updateTweetCountLineChart, ['product']]);
     params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}, sentimentClick]]);
+    params.push([updateTweetCountPieChart, ['topic']]);
     params.push([updateIndicators]);
     //params.push([updatePollsPieCharts, ['polls']]);
     //params.push([updateDataCollectionPieCharts, ['datacollections']]);

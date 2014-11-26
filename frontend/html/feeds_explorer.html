@@ -34,6 +34,14 @@ var b = null;
                     <i class="fa fa-bar-chart-o"></i>
                     <h3 class="box-title">Feeds</h3>                    
                     <div class="box-tools">
+                        <div class="input-group">
+                            <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+                            </div>                                                    
+                        </div>                                            
+                    </div>                       
+                    <div class="box-tools">
                         <div class="form-group pull-right" >
                             <select id="filter_sentiment" class="form-control input-sm" onchange="filterSentimentChanged($(this).val())">
                               <option value="" {{selected(not sentiment)}} >Todos</option>
@@ -51,6 +59,14 @@ var b = null;
                               {% include 'country_options.html' %}
                             </select>
                         </div>                        
+                        <div class="form-group pull-right" >
+                            <select id="filter_topic" class="form-control input-sm" onchange="filterTopicChanged($(this).val())">
+                                <option value="" selected >Todos los tópicos</option>
+                                {% for topic in topics %}
+                                    <option value="{{topic['name']}}">{{topic['name']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>                                               
                         <div class="form-group pull-right" >
                             <select id="filter_product" class="form-control input-sm" onchange="filterProductChanged($(this).val())">
                                 <option value="" selected >Todos los productos</option>
@@ -70,13 +86,7 @@ var b = null;
                                 {% endfor %}
                             </select>
                         </div>     
-                        <div class="input-group">
-                            <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
-                            <div class="input-group-btn">
-                                <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
-                            </div>                                                    
-                        </div>                                            
-                    </div>                      
+                    </div>                        
                 </div>              
                 <div id="feed_model" style="display: none">
                     <div class="item">
@@ -94,6 +104,7 @@ var b = null;
                                 <small class="badge pull-left bg-olive">%%brand%%</small>
                                 <small class="badge pull-left bg-fuchsia">%%product%%</small>
                                 <small class="badge pull-left bg-orange">%%confidence%%</small>
+                                %%topics%%
                             </p>
                         </a>
                         <div class="box-tools pull-right">

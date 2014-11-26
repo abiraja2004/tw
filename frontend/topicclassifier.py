@@ -10,6 +10,9 @@ class TopicMatch(object):
         self.topic_id = ""
         self.confidence = 0
     
+
+    def __repr__(self):
+        return repr(u"<Topic: %s, Score: %s>" % (self.topic_name, self.confidence))
     
     def __unicode__(self):
         return u"<Topic: %s, Score: %s>" % (self.topic_name, self.confidence)

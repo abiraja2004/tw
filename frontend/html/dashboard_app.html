@@ -176,6 +176,7 @@
                                 <small class="badge pull-left bg-olive">%%brand%%</small>
                                 <small class="badge pull-left bg-fuchsia">%%product%%</small>
                                 <small class="badge pull-left bg-orange">%%confidence%%</small>
+                                %%topics%%
                             </p>
                         </a>
                     </div>
@@ -184,6 +185,16 @@
                 </div><!-- /.chat -->
             </div><!-- /.box (chat box) -->                                                                                    
 
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Tweets por Tópico</h3>
+                </div>
+                <div class="box-body chart-responsive">
+                    <div class="chart" id="topic-chart" style="height: 300px;"></div>
+                </div><!-- /.box-body -->                
+            </div><!-- /.box -->
+            
         </section><!-- /.Left col -->
         <!-- right col (We are only adding the ID to make the widgets sortable)-->
         <section class="col-lg-5 connectedSortable"> 

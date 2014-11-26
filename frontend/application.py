@@ -421,6 +421,7 @@ def tweets_count():
         res['stats']['own_tweets']['favorites'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        res['topic'] = {}
 
         polls = {}
         if 'polls' in account:
@@ -435,9 +436,7 @@ def tweets_count():
                 poll_hashtags[ht].append(poll_id)
                 poll['data'][ht] = {'total': 0}
             res['polls'][poll_id] = poll
-        print polls
         for poll_id, poll in polls.items():
-            print poll_id
             collection_name = "polls_%s" % poll_id
             polltweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
             options = [x.strip() for x in poll['hashtags'].split(",") if x.strip()]
@@ -468,8 +467,7 @@ def tweets_count():
                         else:
                             datacollection['data'][field['name']][dcitem['fields'][field['name']]]['total'] += 1
             res['datacollections'][datacollection_id] = datacollection    
-            
-            
+
         for tweet in dbtweets:
             if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                 if 'x_coordinates' in tweet and tweet['x_coordinates'] and 'country_code' in tweet['x_coordinates'] and tweet['x_coordinates']['country_code'] != 'MX': continue                
@@ -505,6 +503,10 @@ def tweets_count():
                 else:
                     res['sentiment'][tweet['x_sentiment']][key] += 1                   
             res['stats']['total_tweets'] += 1                    
+            if 'x_extracted_topics' in tweet:
+                for k in tweet['x_extracted_topics']:
+                    if not k['topic_name'] in res['topic']: res['topic'][k['topic_name']] = {'total': 0}
+                    res['topic'][k['topic_name']]['total'] += 1
             if 'x_mentions_count' in tweet:
                 for k,v in tweet['x_mentions_count'].items():
                     if k in accs:
@@ -822,8 +824,9 @@ def feeds_explorer():
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
-        
-    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment)
+
+    topics = accountdb.topic.find({})[:]
+    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment, topics=topics)
 
 @app.route('/api/feeds/search')
 def search_feeds():
@@ -835,6 +838,7 @@ def search_feeds():
     filter_product = request.args.get("filter_product", "")
     filter_country = request.args.get("filter_country", "")
     filter_sentiment = request.args.get("filter_sentiment", "")
+    filter_topic = request.args.get("filter_topic", "")
     skip = int(request.args.get("skip", 0))
     limit = int(request.args.get("limit", 80))
     object_id = request.args.get("object_id", "")
@@ -856,7 +860,8 @@ def search_feeds():
                 docfilter['x_coordinates.country_code'] = {'$exists': False}
             else:
                 docfilter['x_coordinates.country_code'] = filter_country
-                
+        if filter_topic:
+            docfilter['x_extracted_topics.topic_name'] = filter_topic
         if text: docfilter['$text'] = {"$search": text}
         try:
             if object_id: docfilter['_id'] = ObjectId(object_id)
@@ -875,12 +880,6 @@ def search_feeds():
                         if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code']: continue
                     else:
                         if not 'x_coordinates' in t or not t['x_coordinates'] or not 'country_code' in t['x_coordinates'] or t['x_coordinates']['country_code'] != filter_country: continue
-                if filter_sentiment:
-                    if filter_sentiment == "UNDEFINED":
-                        if 'x_sentiment' in t and t['x_sentiment']: continue
-                    else:
-                        if not 'x_sentiment' in t or not t['x_sentiment'] or t['x_sentiment'] != filter_sentiment: continue
-                    
                 match = True                
                 if brands_to_include or filter_product:
                     if not 'x_extracted_info' in t: continue
