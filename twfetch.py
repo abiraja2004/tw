@@ -19,14 +19,18 @@ import argparse
 from frontend.brandclassifier import ProductMatch
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
+parser.add_argument('--host', default='')
 args = parser.parse_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
-mclient = MongoClient()
+if args.host:
+    mclient = MongoClient(args.host)
+else:
+    mclient = MongoClient()
+
 monitor = mclient['monitor']
 if args.auth:
     monitor.authenticate(dbuser, dbpasswd)
-
 
 #db.authenticate("pablo", "1234")
 

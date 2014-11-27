@@ -1,6 +1,6 @@
 #encoding: utf-8
 import sys
-from twython import Twython
+from twython import Twython, TwythonError
 from pymongo import MongoClient, DESCENDING
 import bson
 from bson import ObjectId
@@ -580,7 +580,10 @@ def save_campaign():
         follow_ids = []
         if brand.get('follow_accounts','').strip():
             for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
-                    follow_ids.append(t.lookup_user(screen_name=kw[1:])[0]['id_str'])
+                    try:
+                        follow_ids.append(t.lookup_user(screen_name=kw[1:])[0]['id_str'])
+                    except TwythonError, e:
+                        return flask.Response(json.dumps({"result": "error", "error": "twitter account error", "message": "No se pudo identificar el id de la cuenta a seguir: %s en la marca: %s" % (kw, brand.get("name", ""))}),  mimetype='application/json')
         campaign['brands'][bid]['follow_account_ids'] = ','.join(follow_ids)
         
     campaign['syncversion'] = int(campaign.get('syncversion',1))+1

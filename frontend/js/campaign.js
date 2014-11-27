@@ -247,6 +247,9 @@ function saveCampaign()
             } else if (response['error'] == 'syncversion')
             {
                 alert('La campaña fue modificada por otro usuario. Debes refrescar la pagina para obtener la ultima version de la misma');
+            } else if (response['error'] == 'twitter account error')
+            {
+                alert(response['message']);
             }
         });   
     
