@@ -188,6 +188,10 @@ def campaigns():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+        
     return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
 
 @app.route('/polls')
@@ -203,6 +207,10 @@ def polls():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+        
     return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, user=getUser(account), logo=logo, logo2 = logo2)
 
 @app.route('/datacollections')
@@ -218,6 +226,10 @@ def datacollections():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+        
     data = {}
     for dc_id in account['datacollections'].keys():
         records = accountdb['datacollection_%s' % dc_id].find({})
@@ -266,6 +278,9 @@ def sentiment():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
         
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
@@ -287,6 +302,10 @@ def keywordsets():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+        
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
 
@@ -304,6 +323,10 @@ def topics():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+        
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
