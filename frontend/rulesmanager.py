@@ -181,39 +181,28 @@ def getBrandClassifiers():
     return res
 
 def getTopicClassifiers():
+    #devuelve un diccionario con los topics x campania
+    res = {}
+    accounts = monitor.accounts.find({})
+    for acc in accounts:
+        for campaign_id, campaign in acc['campaigns'].items():
+            if not 'active' in campaign or not campaign['active'] or not 'topics' in campaign: continue
+            res[campaign_id] = {}
+            for topic_id, topic in campaign['topics'].items():
+                topic['_id'] = topic_id
+                res[campaign_id][topic_id] = generateTopicClassifier(topic)
+                    
+    #los topics globales por ahora quedan desactivados
+    """
     topics = monitor.topic.find({})
     res = []
     for topicdoc in topics:
         res.append(generateTopicClassifier(topicdoc))
+    """
     return res
 
 if __name__ == "__main__":
-    
+            
     bcs = getTopicClassifiers()
-    print len(bcs)
-    for bc in bcs:
-        print bc.topic_name
-        
-        #print bc.name, bc.brand_regexps
-        pm = bc.extract(u"probando de nuevo nuev9 candidato")
-        print pm
-        if pm:
-            print pm
-        
-    
-    """
-    text = "estoy probando tc votos candidato, cancha hincha competir"
-    tcs = getTopicClassifiers()
-    print text
-    for tc in tcs:
-        print tc.topic_confidence_clues
-        print tc.topic_name, unicode(tc.extract(text))
-        
-    """
-    """
-    tcs = getTopicClassifiers()
-    w = 0
-    for tc in tcs:
-        if tc.topic_name == "Deporte":
-            print tc.topic_confidence_clues
-    """
+    bcs2 = getTopicClassifiers()
+    print bcs == bcs2

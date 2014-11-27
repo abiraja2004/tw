@@ -35,6 +35,10 @@ class TopicClassifier(object):
         self.topic_name = ""
         self.topic_id = ""
         self.topic_confidence_clues = []
+        
+    def __eq__(self, o):
+        return self.topic_name == o.topic_name and self.topic_id == o.topic_id and self.topic_confidence_clues == o.topic_confidence_clues
+    
     
     def calculateConfidence(self, text):
         def processClues(cluelist):

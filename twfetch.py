@@ -104,11 +104,12 @@ class TweetStreamer(TwythonStreamer):
         TwythonStreamer.__init__(self, TweetStreamer.CONSUMER_KEY, TweetStreamer.CONSUMER_SECRET, TweetStreamer.ACCESS_TOKEN, TweetStreamer.ACCESS_KEY)
         self.tweets = []
         self.stop = False
+        print "stream created %s" % id(self)
 
     
     def on_success(self, data):
         try:
-            print "received:", data['text']
+            print "received:", data['text'], id(self)
         except:
             pass
         self.tweets.append(data)
@@ -124,19 +125,22 @@ class TweetStreamer(TwythonStreamer):
         return self
       
     def next(self):
-        if self.stop: raise StopIteration
+        print "en next"
         while not self.tweets: 
-            print "%s, waiting..." % (datetime.now())
+            if self.stop: raise StopIteration
+            print "%s, waiting... %s" % (datetime.now(), id(self))
             time.sleep(0.5)
         t = self.tweets.pop(0)
         return t
 
     def finish(self):
-        print "finishing streamer thread..."      
+        print "finishing streamer thread... %s" % id(self)
         global stream
-        stream.disconnect()
-        self.stop = True
+        print "current stream: %s" % id(stream)
+        self.disconnect()
+        self.stop = True        
         stream = None
+        print "Streamer thread finished"  
     
 
 class MyThread(threading.Thread):
@@ -172,27 +176,31 @@ class KeywordMonitor(threading.Thread):
     def run(self):
         global bcs
         global tcs
+        global stream
         t = datetime.now() - timedelta(hours=99)
         keywords = None
         accountsToTrack = None
         hashtagsToTrack = None
+        checking_interval=6 #seconds
         while not self.stop:
-            if datetime.now()-t > timedelta(seconds=60):
+            if datetime.now()-t > timedelta(seconds=checking_interval):
                 print "checking keywords and accounts to track..."
                 t = datetime.now()
                 k2 = getWordsToTrack()
                 a2, i2 = getAccountsToTrack()
                 h2 = getHashtagsToTrack()
                 bcs = getBrandClassifiers()
-                tcs = getTopicClassifiers()
-                if k2 != keywords or a2 != accountsToTrack or i2 != accountsToTrackIds or h2 != hashtagsToTrack:
+                tcs2 = getTopicClassifiers()
+                if k2 != keywords or a2 != accountsToTrack or i2 != accountsToTrackIds or h2 != hashtagsToTrack or not (tcs2 == tcs):
                     print "keyword or account changes found... restarting fetcher"
+                    print (tcs2 == tcs)
                     if stream: stream.finish()
                     while MyThread.running: time.sleep(1)
                     keywords = k2
                     accountsToTrack = a2
                     accountsToTrackIds = i2
                     hashtagsToTrack = h2
+                    tcs = tcs2
                     MyThread.keywords = keywords
                     MyThread.accountsToTrack = accountsToTrack
                     MyThread.accountsToTrackIds = accountsToTrackIds
@@ -209,7 +217,7 @@ class KeywordMonitor(threading.Thread):
                         pass
                 time.sleep(1)
             else:
-                time.sleep(30)
+                time.sleep(checking_interval/2)
 
     def finish(self):
         print "finishing keyword monitor thread..."      
@@ -227,7 +235,8 @@ try:
     kwmonitor = KeywordMonitor()
     kwmonitor.start()
     while True:
-        while not stream: time.sleep(0.2)                     
+        while not stream: 
+            time.sleep(0.2)                     
         for t in stream:
             t['x_process_version'] = 2
             t['x_created_at'] = datetime.strptime(t['created_at'], "%a %b %d %H:%M:%S +0000 %Y")
@@ -266,14 +275,18 @@ try:
                     
             #if pms or x_mentions_count or campaign_ids or poll_ids:
             if pms or x_mentions_count or poll_ids:
+                t['x_mentions_count'] = x_mentions_count
+                
+                """ por el momento topics globales desactivados
                 tms = []
                 for tc in tcs:
                     tm = tc.extract(t['text'])
                     if tm: tms.append(tm.getDictionary())
-                t['x_mentions_count'] = x_mentions_count
+
                 print "mentions count: " + str(x_mentions_count)
                 if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
                 t['x_extracted_topics'] = tms
+                """ #topics globales desactivados
                 
                 #for cids in pms:
                 #    campaign_ids.add(cids)
@@ -284,6 +297,15 @@ try:
                         extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
                         if extracted_infos[0]['confidence'] > 0:
                             t['x_extracted_info'] = extracted_infos
+                            
+                            #una vez que ya se que voy a guardar el tweet en una campanna le aplico los x_extracted_topics
+                            tms = []
+                            for topic_id, topic_classiffier in tcs.get(cid, []).items():
+                                tm = topic_classiffier.extract(t['text'])
+                                if tm: tms.append(tm.getDictionary())
+                            if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
+                            t['x_extracted_topics'] = tms                            
+                            
                             collection_name = "tweets_%s" % cid                    
                             print "INSERTING into %s" % collection_name
                             print monitor[collection_name].insert(t)

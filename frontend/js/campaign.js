@@ -91,6 +91,28 @@ function addBrand(tag)
     });
 }
 
+function addTopic(tag)
+{
+    topics_container = $(tag).closest(".topics_section_container").find(".topics_container");
+    deb_var =topics_container;
+    bt = $(topics_container.children()[0]).clone();
+    deb_var2 = bt;
+    topics_container.append(bt);
+    bt.css("display", "block");
+    $(bt).find(".pre_slider").removeClass('pre_slider').addClass('slider').slider();
+    $(bt).find(".slider").css("width", "100%");
+    $(bt).find(".pre_pre_slider").removeClass('pre_pre_slider').addClass('pre_slider');
+    $(bt).find(".pre_pre_pre_slider").removeClass('pre_pre_pre_slider').addClass('pre_pre_slider');
+    
+    setupTypeahead($(bt).find(".pre_typeahead").removeClass('pre_typeahead').addClass('typeahead'))    
+    $(bt).find(".pre_pre_typeahead").removeClass('pre_pre_typeahead').addClass('pre_typeahead');
+    $(bt).find(".pre_pre_pre_typeahead").removeClass('pre_pre_pre_typeahead').addClass('pre_pre_typeahead');
+    getNewId(function (id) {
+        bt.find(".topic_container").attr('id', id);
+        bt.find(".topic_title").attr('href', "#"+id);
+    });
+}
+
 
 function analytics_get_all_profiles()
 {
@@ -131,6 +153,7 @@ function saveCampaign()
     campaign['syncversion'] = $("#syncversion").val();
     campaign['use_geolocation'] = $("[fn=cuse_geolocation]").is(':checked');
     campaign['brands'] = {}
+    campaign['topics'] = {}
     campaign['analytics'] = {}
     campaign['analytics']['profiles'] = [];
     profiles =  $("[fn=analytics_profile]");
@@ -223,15 +246,49 @@ function saveCampaign()
             }              
             brand['products'][product_id] = product;
         }
-        
         campaign['brands'][brand_id] = brand;
     }
+    
+    topics = $('.topic');
+    for (var i = 1; i<topics.length; i++)
+    {
+        tagtopic = $(topics[i]);
+        topic = {};
+        topic_id = tagtopic.find("[fn=_id]").attr('id');
+        topic['name'] = tagtopic.find("[fn=tname]").val();
+        topic['keywordsets'] = []
+        tags = tagtopic.find("[fn=keywordset]");
+        for (j=1;j<tags.length;j++)
+        {
+            tags2 = tags[j];
+            if ($(tags2).find("[fn=word]").typeahead('val') != "") 
+            {   
+                d = {}
+                d['name'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").typeahead('val');
+                d['value'] = $(tags2).find("[fn=value]:not([kwset_id='']):not([readonly])").data('slider').getValue();
+                d['_id'] = $(tags2).find("[fn=word]:not([kwset_id='']):not([readonly])").attr("kwset_id")
+                topic['keywordsets'].push(d);
+            }
+        }
+        topic['keywords'] = [];
+        tags = tagtopic.find("[fn=keyword]");
+        for (j=1;j<tags.length;j++)
+        {
+            tags2 = tags[j];
+            if ($(tags2).find("[fn=word]").val() != "") 
+            {   
+                topic['keywords'].push([$(tags2).find("[fn=word]").val(), $(tags2).find("[fn=value]").data('slider').getValue()]);
+            }
+        } 
+        campaign['topics'][topic_id] = topic;
+    }
+    
     data = {}
     data['analytics_profiles_loaded'] = ($('#analytics_profiles').attr('loaded') == 'true')
     data['campaign'] = campaign;
     data['campaign_id'] = $('[fn=c_id]').val();;
     data['account_id'] = $('[fn=a_id]').val();
-    
+    console.log(data);
     $.ajax({
             url: "/api/account/campaign/save", 
             contentType: 'application/json',

@@ -174,6 +174,7 @@ def campaigns():
         analytics_revoke_url = FLOW.revoke_uri + "?token=%s" % analytics_credentials.access_token
     campaign = account['campaigns'][campaign_id]        
     if not 'brands' in campaign: campaign['brands'] = {}
+    if not 'topics' in campaign: campaign['topics'] = {}
     if not 'use_geolocation' in campaign: campaign['use_geolocation'] = False
     if not 'polls' in campaign: campaign['polls'] = {}
     if not 'datacollections' in campaign: campaign['datacollections'] = {}
