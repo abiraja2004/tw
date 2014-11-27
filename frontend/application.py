@@ -120,6 +120,9 @@ def home():
     if account_id == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif account_id == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
     account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
     if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     template = "index.html"
