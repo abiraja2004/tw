@@ -850,6 +850,9 @@ def feeds_explorer():
     if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
         logo = "logoSivale.jpg"
         logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
         
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
