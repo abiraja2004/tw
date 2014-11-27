@@ -300,7 +300,7 @@ try:
                             
                             #una vez que ya se que voy a guardar el tweet en una campanna le aplico los x_extracted_topics
                             tms = []
-                            for topic_id, topic_classiffier in tcs.get(cid, []).items():
+                            for topic_id, topic_classiffier in tcs.get(cid, {}).items():
                                 tm = topic_classiffier.extract(t['text'])
                                 if tm: tms.append(tm.getDictionary())
                             if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
