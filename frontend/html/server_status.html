@@ -1,0 +1,30 @@
+<html>
+<head>
+<style>
+.status_True {
+    color: green;
+    }
+
+.status_False {
+    color: red;
+    }
+</style>
+</head>
+<body>
+<h1>Nuev9 Server Status</h1>
+
+<div><h2>Services and Processes</h2>
+<table>
+{% for p,s in processes.items() %}
+<tr>
+<td>{{p}}</td><td><span class="status_{{s}}">{{ {True: 'OK', False: 'NOT RUNNING!'}[s] }}</span></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<h2>Storage Resources</h2>
+<pre>
+{{storage}}
+</pre>
+</body>
+</html>

@@ -655,6 +655,27 @@ def save_keywordset():
     accountdb.keywordset.save(kwset)
     return flask.Response(json.dumps({}),  mimetype='application/json')
 
+@app.route("/api/server/status", methods=['GET'])
+def server_status():
+    import subprocess
+    from subprocess import PIPE
+    output = subprocess.Popen('ps ax | grep python', shell=True, stdout=PIPE).stdout.read()
+    processes = {}
+    processes['FLASK Web Server'] = output.find("python application.py") >= 0
+    processes['Google Geocoding Service'] = output.find("python geocoding.py") >= 0
+    processes['Gnip Datacollection Service'] = output.find("python datacollection.py") >= 0
+    processes['Twitter API Connection Service'] = output.find("python twfetch.py") >= 0
+    
+    output = subprocess.Popen('ps ax | grep uwsgi', shell=True, stdout=PIPE).stdout.read()
+    processes['UWSGI Service'] = output.find("uwsgi uwsgi.ini") >= 0
+
+    output = subprocess.Popen('ps ax | grep nginx', shell=True, stdout=PIPE).stdout.read()
+    processes['NGINX Service'] = output.find("nginx: master process") >= 0
+
+    storage = subprocess.Popen('df -h', shell=True, stdout=PIPE).stdout.read().decode("utf-8")
+
+    return render_template('server_status.html', processes=processes, storage=storage)
+
 @app.route("/api/account/topic/save", methods=['POST'])
 def save_topic():
     data = request.get_json()
