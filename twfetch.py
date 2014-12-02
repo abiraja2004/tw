@@ -115,7 +115,10 @@ class TweetStreamer(TwythonStreamer):
         self.tweets.append(data)
 
     def on_error(self, status_code, data):
-        print "error:", status_code, data
+        try:
+            print "error:", status_code, data
+        except:
+            pass
 
         # Want to stop trying to get data because of the error?
         # Uncomment the next line!

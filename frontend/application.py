@@ -921,35 +921,17 @@ def search_feeds():
             if object_id: docfilter['_id'] = ObjectId(object_id)
         except bson.errors.InvalidId:
             pass
+        if filter_product:
+            docfilter['x_extracted_info'] = {"$exists": True, "$elemMatch": {"product": filter_product, "confidence": {"$gt": 0}}}
+        if brands_to_include:
+            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
+            if not 'x_extracted_info' in docfilter: docfilter['x_extracted_info'] = {"$exists": True}
+            if not '$elemMatch' in docfilter['x_extracted_info']: docfilter['x_extracted_info']['$elemMatch'] = {"confidence": {"$gt": 0}}
+            docfilter['x_extracted_info']["$elemMatch"]["brand"] = {'$in': bti}
         dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1)
         if skip: dbtweets = dbtweets.skip(skip)
         dbtweets = dbtweets.limit(limit)
-        if not brands_to_include and not filter_product and not filter_country and not filter_sentiment:
-            res['feeds'].extend(dbtweets)
-        else:
-            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
-            for t in dbtweets:
-                if filter_country:
-                    if filter_country == "UNDEFINED":
-                        if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code']: continue
-                    else:
-                        if not 'x_coordinates' in t or not t['x_coordinates'] or not 'country_code' in t['x_coordinates'] or t['x_coordinates']['country_code'] != filter_country: continue
-                match = True                
-                if brands_to_include or filter_product:
-                    if not 'x_extracted_info' in t: continue
-                    pms = t['x_extracted_info']
-                    match = False
-                    for pm in pms:
-                        if filter_product: #si hay definido un producto se chequea directamente que se haya matcheado el producto independientemente de la marca, ya que la marca esta implicita en el producto
-                            if pm['product'] == filter_product:
-                                match = True
-                                break
-                        elif brands_to_include:
-                            if pm['brand'] in bti:
-                                match = True
-                                break
-                if match:
-                    res['feeds'].append(t)
+        res['feeds'].extend(dbtweets)
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/feeds/remove')
