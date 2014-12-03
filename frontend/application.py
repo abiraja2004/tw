@@ -6,7 +6,8 @@ import bson
 from bson import ObjectId
 from bson.json_util import dumps
 from flask import Flask, render_template, request, Blueprint, redirect, url_for, session
-from rulesmanager import getBrandClassifiers
+from rulesmanager import getBrandClassifiers, getTopicClassifiers, getAccountsToTrack
+from brandclassifier import ProductMatch
 import flask 
 from flask.ext.compress import Compress
 import json
@@ -330,6 +331,80 @@ def topics():
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
+@app.route('/api/account/campaign/topics/reassign')
+def reassign_topics():
+    account_id = request.args.get("account_id", "")
+    campaign_id = request.args.get('campaign_id')
+    account = getAccount(account_id)
+    campaign = account['campaigns'][campaign_id]
+    tcs = getTopicClassifiers()
+    collection_name = "tweets_%s" % campaign_id
+    dbtweets = accountdb[collection_name].find({})
+    n = 0
+    for t in dbtweets:
+        tms = []
+        for topic_id, topic_classiffier in tcs.get(campaign_id, {}).items():
+            tm = topic_classiffier.extract(t['text'])
+            if tm: tms.append(tm.getDictionary())
+        if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
+        t['x_extracted_topics'] = tms                            
+        accountdb[collection_name].save(t)
+        n += 1    
+    res = {"result": "OK", "tweets_updated": n}
+    return flask.Response(dumps(res),  mimetype='application/json')
+    
+@app.route('/api/account/campaign/brands/reassign')
+def reassign_brands():
+    account_id = request.args.get("account_id", "")
+    campaign_id = request.args.get('campaign_id')
+    account = getAccount(account_id)
+    campaign = account['campaigns'][campaign_id]
+    bcs = getBrandClassifiers()
+    collection_name = "tweets_%s" % campaign_id
+    dbtweets = accountdb[collection_name].find({})
+    n = 0
+    accountsToTrack, accountsToTrackIds= getAccountsToTrack()
+    for t in dbtweets:
+        pms = {}
+        for bc in bcs:
+            if not bc.campaign_id in pms: pms[bc.campaign_id] = []
+            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(t['text'])])
+        x_mentions_count = {}
+        for m in t['entities']['user_mentions']:
+            if ("@" + m["screen_name"]) in accountsToTrack: 
+                x_mentions_count["@" + m['screen_name']] = 1
+                pm = ProductMatch()
+                pm.brand = accountsToTrack["@" + m['screen_name']]['brand']
+                pm.campaign_id = accountsToTrack["@" + m['screen_name']]['cid']
+                pm.confidence = 5
+                pms[pm.campaign_id].append(pm.getDictionary())
+                                
+        if 'user' in t and 'id_str' in t['user']:
+            if t['user']['id_str'] in accountsToTrackIds:
+                pm = ProductMatch()
+                pm.brand = accountsToTrackIds[t['user']['id_str']]['brand']
+                pm.campaign_id = accountsToTrackIds[t['user']['id_str']]['cid']
+                pm.confidence = 5
+                pms[pm.campaign_id].append(pm.getDictionary())
+                if accountsToTrackIds[t['user']['id_str']]['own_brand']:
+                   if not 'x_sentiment' in t: t['x_sentiment'] = '='
+                
+        if 'x_extracted_info' in t: del t['x_extracted_info']
+        if 'x_mentions_count' in t: del t['x_mentions_count']
+        if pms or x_mentions_count:
+            t['x_mentions_count'] = x_mentions_count
+            extracted_infos = pms.get(campaign_id, [])
+            if extracted_infos:
+                extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
+                if extracted_infos[0]['confidence'] > 0:
+                    t['x_extracted_info'] = extracted_infos
+
+        accountdb[collection_name].save(t)
+        n += 1
+        
+    res = {"result": "OK", "tweets_updated": n}
+    return flask.Response(dumps(res),  mimetype='application/json')
+    
 @app.route('/<path:filename>')
 def send_js(filename):
     return flask.send_from_directory('html', filename)
@@ -568,7 +643,7 @@ def search_keywordset():
         res.append({"value": r['name'], "id": str(r['_id']) })
     return flask.Response(json.dumps(res),  mimetype='application/json')
 
-def getAccountsToTrack():
+"""def getAccountsToTrack():
     accounts = monitor.accounts.find({})
     s = dict()
     for acc in accounts:
@@ -579,6 +654,7 @@ def getAccountsToTrack():
                     for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
                             s[kw] = cid
     return s
+"""
 
 @app.route("/api/account/campaign/save", methods=['POST'])
 def save_campaign():

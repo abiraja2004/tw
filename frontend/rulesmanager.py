@@ -201,6 +201,22 @@ def getTopicClassifiers():
     """
     return res
 
+def getAccountsToTrack():
+    accounts = monitor.accounts.find({})
+    s = dict()
+    i = dict()
+    for acc in accounts:
+        for cid, campaign in acc['campaigns'].items():
+            if not 'active' in campaign or not campaign['active']: continue
+            for bid, brand in campaign['brands'].items():
+                if brand.get('follow_accounts','').strip():
+                    for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:
+                            s[kw] = {"cid": cid, "bid": bid, "brand": brand['name'], 'own_brand': brand['own_brand']}
+                if brand.get('follow_account_ids','').strip():
+                    for kw in [kw.strip() for kw in brand['follow_account_ids'].split(",") if kw.strip()]:
+                            i[kw] = {"cid": cid, "bid": bid, "brand": brand['name'], 'own_brand': brand['own_brand']}
+    return s,i
+
 if __name__ == "__main__":
             
     bcs = getTopicClassifiers()

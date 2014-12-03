@@ -86,8 +86,9 @@
                         <h2 class="box-title">
                             <a data-toggle="collapse" data-parent="#accordion" href="#brands_content">Marcas</a>
                         </h2>
-                        <div class="box-tools pull-right">
+                        <div class="box-tools pull-right">  
                             <button type="button" class="btn btn-success btn-sm" onclick="addBrand(this); return false;"><i class="fa fa-plus"></i> Agregar Marca</button>
+                            <button type="button" class="btn btn-success btn-sm"  onclick="reassignBrands(this); return false;"><i class="fa fa-refresh"></i> &nbsp;Reasignar Marcas/Productos/Confianza</button>
                         </div>                
                     </div>
                 </div>
@@ -333,7 +334,8 @@
                     <div class="box-header">
                         <h2 class="box-title"> <a data-toggle="collapse" data-parent="#accordion" href="#topics_content">Tópicos</a></h2>
                         <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-success btn-sm"  onclick="addTopic(this); return false;"><i class="fa fa-plus"></i> Agregar Nuevo</button>
+                            <button type="button" class="btn btn-success btn-sm"  onclick="addTopic(this); return false;"><i class="fa fa-plus"></i> &nbsp;Agregar Nuevo</button>
+                            <button type="button" class="btn btn-success btn-sm"  onclick="reassignTopics(this); return false;"><i class="fa fa-refresh"></i> &nbsp;Reasignar tópicos</button>
                         </div>                
                     </div>
                 </div>
@@ -417,7 +419,6 @@
                                             {% endfor %}
                                         </div>
                                     </div>
-                                    
                                 </form>
                             </div>
                         </div>

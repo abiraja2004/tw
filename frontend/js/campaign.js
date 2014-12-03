@@ -312,3 +312,34 @@ function saveCampaign()
     
     return data;
 }
+
+
+function reassignTopics()
+{
+    if (!confirm('Estás seguro de realizar esta acción? (Esta operación puede durar muchos minutos)')) return;
+    campaign_id = $('[fn=c_id]').val();
+    account_id = $('[fn=a_id]').val();
+    $.ajax({
+        url: "/api/account/campaign/topics/reassign", 
+        data: {'campaign_id': campaign_id, 'account_id': account_id}, 
+        type: "GET",
+    }).done(function (data) { 
+        console.log(data);
+        alert("Topicos reasignados")
+    })
+}
+
+function reassignBrands()
+{
+    if (!confirm('Estás seguro de realizar esta acción? (Esta operación puede durar muchos minutos)')) return;
+    campaign_id = $('[fn=c_id]').val();
+    account_id = $('[fn=a_id]').val();
+    $.ajax({
+        url: "/api/account/campaign/brands/reassign", 
+        data: {'campaign_id': campaign_id, 'account_id': account_id}, 
+        type: "GET",
+    }).done(function (data) { 
+        console.log(data);
+        alert("Marcas reasignadas")
+    })
+}
