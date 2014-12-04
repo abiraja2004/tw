@@ -17,8 +17,7 @@ def check_processes():
     processes = [("twfetch", None),
                 ("datacollection", "gnip"),
                 ("application", "frontend"),
-                #("geocoding", None)
-                ]
+                ("geocoding", None)]
 
     for p in processes:
         if r.find("python %s.py" % p[0]) < 0:

@@ -101,7 +101,7 @@ function updateIndicators(data)
     $('#total_tweets').html(''+data['stats']['total_tweets']);
     $('#own_tweets').html(''+data['stats']['own_tweets']['total']);
     $('#mentions_indicator').html(''+data['stats']['mentions']['total']);
-    $('#reweets').html(''+data['stats']['own_tweets']['retweets']['total']);
+    $('#retweets').html(''+data['stats']['own_tweets']['retweets']['total']);
     $('#favorites').html(''+data['stats']['own_tweets']['favorites']['total']);
     $(".indicator").removeClass("loading");
 }
