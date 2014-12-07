@@ -35,7 +35,7 @@ k = 0
 w = 0
 
 limitperiod = timedelta(days=1, minutes=1)
-max_requests_per_period = 2400
+max_requests_per_period = 1200
 
 #limitperiod = timedelta(seconds=5)
 #max_requests_per_period = 20
