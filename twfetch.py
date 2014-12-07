@@ -17,6 +17,7 @@ from datetime import datetime,  timedelta
 from frontend.rulesmanager import getBrandClassifiers, getTopicClassifiers, getAccountsToTrack
 import argparse
 from frontend.brandclassifier import ProductMatch
+import traceback
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
@@ -311,7 +312,7 @@ try:
 except KeyboardInterrupt, e:
     pass
 except Exception, e:
-    print e
+    print traceback.format_exc()
     if kwmonitor: kwmonitor.finish()    
     if stream: stream.finish()
     raise

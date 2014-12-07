@@ -81,7 +81,8 @@ def generateBrandClassifier(br):
     bc.name = {br.name: br.synonyms}
     bc.brand_confidence_clues = genClassifierClues(br.keywords)
     for kws in br.keyword_sets:
-        bc.brand_confidence_clues.append((kws['value'],) + tuple(fetchKeywordset(kws['_id'])))
+        if '_id' in kws:
+            bc.brand_confidence_clues.append((kws['value'],) + tuple(fetchKeywordset(kws['_id'])))
     if br.rules:
         bc.brand_regexps = [(re.compile(getBrandRegexpFromRule(br, rule), re.I|re.U), rule) for rule in br.rules]
     pr_number = 0
