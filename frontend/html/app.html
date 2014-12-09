@@ -237,6 +237,12 @@
                                 <a href="/topics?account_id={{account['_id']}}&campaign_id={{campaign_id}}"><i class="fa fa-tag"></i> Tópicos</a>
                             </li>                           
                         {% endif %}
+                        {% if user and user['access'] == 'server_admin' %}
+                            <li>
+                                <a href="/account_admin"><i class="fa fa-gear"></i>Administracion de Cuentas y Usuarios</a>
+                                </a>
+                            </li>                                                   
+                        {% endif %}                        
                    </ul>
                 </section>
                 <!-- /.sidebar -->

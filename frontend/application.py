@@ -74,7 +74,9 @@ def root():
 
 
 def getUser(account):
-    if 'username' in session and 'users' in account: return account['users'].get(session['username'], None)
+    if not account:
+        if 'account_id' in session: account = getAccount(session['account_id'])
+    if account and 'username' in session and 'users' in account: return account['users'].get(session['username'], None)
     return None
         
 def getPasswordHash(user, psw):
@@ -83,6 +85,7 @@ def getPasswordHash(user, psw):
 @app.route('/logout', methods=["GET", "POST"])        
 def logout():
     del session['username']
+    del session['account']
     return redirect('/')
 
 @app.route('/login', methods=["GET", "POST"])
@@ -103,6 +106,7 @@ def login():
         else:
             accountdb.log_logins.insert({"account_id": acc[0]['_id'], "username": user, "timestamp": datetime.now()})
             session['username'] = user
+            session['account_id'] = str(acc[0]['_id'])
             return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
     
 @app.route('/app')
@@ -330,6 +334,18 @@ def topics():
         
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
+
+@app.route('/account_admin')
+def account_admin():
+    account = getAccount(session['account_id'])
+    campaign_id = request.args.get('campaign_id')    
+    if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
+    accounts = accountdb.accounts.find({})
+    custom_css= request.args.get("css", None)
+
+    logo = "logo.jpg"
+    logo2 = None        
+    return render_template('app.html', custom_css = custom_css, content_template="account_admin.html", js="account_admin.js",account=account, accounts=list(accounts), user=getUser(account), campaign_id = campaign_id, logo=logo, logo2 = logo2,)
 
 @app.route('/api/account/campaign/topics/reassign')
 def reassign_topics():
@@ -696,6 +712,33 @@ def save_campaign():
     
     return flask.Response(json.dumps({"result": "ok", "syncversion": campaign['syncversion']}),  mimetype='application/json')
 
+
+
+@app.route("/api/account/save", methods=['POST'])
+def save_account():
+    data = request.get_json()
+    print data
+    print data['account']['campaigns']
+    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    for campaign_id, campaign in data['account']['campaigns'].items():
+        if campaign_id not in account['campaigns']:
+            account['campaigns'][campaign['_id']] = campaign
+            
+    for username, user in data['account']['users'].items():
+        
+        if username in account['users'] and not user['password']:
+            user['password'] = account['users'][username]['password']
+        else:
+            user['password'] = getPasswordHash(username, user['password'])
+        account['users'][username] = user
+    for username, user in account['users'].items():
+        if username not in data['account']['users']:
+            del account['users'][username]
+    accountdb.accounts.save(account)    
+    return flask.Response(json.dumps({"result": "ok"}),  mimetype='application/json')
+
+
+
 @app.route("/api/account/poll/save", methods=['POST'])
 def save_poll():
     data = request.get_json()
@@ -795,6 +838,7 @@ def getCampaignFollowAccounts(account, campaign_id):
     #account = accountdb.accounts.find_one({"_id": ObjectId(account_id)})
     s = set()
     campaign = account['campaigns'][campaign_id]
+    if not 'brands' in campaign: return s
     for bid, brand in campaign['brands'].items():
         if brand.get('follow_accounts','').strip():
             for kw in [kw.strip() for kw in brand['follow_accounts'].split(",") if kw.strip()]:

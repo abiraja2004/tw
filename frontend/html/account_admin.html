@@ -1,0 +1,177 @@
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Administración de Cuentas y Usuarios
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Administración de Cuentas</li>
+    </ol>    
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-12 accounts_section_container">
+            <div class="box box-solid">
+                <div class="panel box box-info">        
+                    <div class="box-header">
+                        <h2 class="box-title">Cuentas</h2>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-success btn-sm"  onclick="addAccount(this); return false;"><i class="fa fa-plus"></i> Agregar Nueva Cuenta</button>
+                        </div>                
+                    </div>
+                </div>
+            </div>        
+            
+            <div class="accounts_container">
+                {% set bfirst = True %}
+                {% for account in [{'_id': None, 'name': 'Nueva Cuenta', 'users': {}, 'campaigns': {}}] + accounts %}
+                <div class="box box-solid account removible_component " {{ {True: 'style="display:none;"', False: ''}[bfirst] |safe}}>
+                    <div class="panel box box-success">
+                        <div class="box-header">
+                            <h2 class="box-title">
+                                <a class="account_name" data-toggle="collapse" data-parent="#accordion" href="#{{account['_id']}}" fn="name">{{account['name']}}</a>
+                            </h2>
+                            <div class="box-tools pull-right">
+                                <!--button type="button" class="btn btn-success btn-sm" onclick="removeComponent(this); return false;"><i class="fa fa-trash-o"></i></button-->                                
+                                <button class="btn btn-info btn-sm" onclick="saveAccount(this); return false"><i class="fa fa-save"></i></button>
+                            </div>
+                        </div>  
+                        <div id="{{account['_id']}}" fn="_id" class="panel-collapse collapse account_container">
+                            <div class="box-body">
+                                <form role="form">
+                                    <!-- text input -->
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" fn="name" class="form-control" placeholder="nombre de la cuenta..." value="{{account['name']}}" onchange="$(this).closest('.account').find('.account_name').html($(this).val());" />
+                                            </div>          
+                                        </div>
+                                    </div>
+
+                                    <div class="box box-solid users_section_container">
+                                        <div class="box-header user_header">
+                                            <h3 class="box-title">Usuarios</h3>
+                                            <div class="box-tools pull-right">
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="addUser(this); return false;"><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </div><!-- /.box-header -->
+                                        <div class="box-body">
+                                            <div class="box-group users_container" id="accordion">
+                                            {% set pfirst = True %}
+                                            {% if not 'users' in account %}
+                                            {% set dummy = account.update({'users': {}}) %}
+                                            {% endif %}
+                                            {% for username, user in [('new_user', {'name': 'Nuevo Usuario'})] + account['users'].items() %}
+                                                <div class="panel box box-primary user removible_component" {{ {True: 'style="display:none;"', False: ''}[pfirst] |safe}}>
+                                                    <div class="box-header">
+                                                        <h4 class="box-title">
+                                                            <a data-toggle="collapse" data-parent="#accordion" class="user_title" href="#{{username}}_{{account['_id']}}" fn="pname">{{user['username']}}</a>
+                                                        </h4>
+                                                        <div class="box-tools pull-right">
+                                                            <button class="btn btn-primary btn-sm" onclick="removeComponent(this); return false"><i class="fa fa-trash-o"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="{{username}}_{{account['_id']}}" fn="p_id" class="panel-collapse collapse user_container">
+                                                        <div class="box-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Nombre</label>
+                                                                        <input type="text" class="form-control" fn="uname" placeholder="nombre de usuario..." value="{{user['username']}}" onchange="$(this).closest('.user').find('.user_title').html($(this).val());" />
+                                                                    </div>          
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Clave</label>
+                                                                        <input type="password" class="form-control" fn="upassword" placeholder="clave..." value="" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                 
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Acceso</label>
+                                                                        <select fn="uaccess" class="form-control">
+                                                                            <option value="basic" {{selected(user['access'] == 'basic')}}>Básico</option>
+                                                                            <option value="admin" {{selected(user['access'] == 'admin')}}>Administrador de Campañas</option>
+                                                                            <option value="server_admin" {{selected(user['access'] == 'server_admin')}}>Administrador General</option>
+                                                                        </select>
+                                                                    </div>          
+                                                                </div>
+                                                            </div>                                                              
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% set pfirst = False %}
+                                            {% endfor %}                                    
+                                            </div>
+                                        </div><!-- /.box-body -->
+                                    </div><!-- /.box --> 
+                                    <div class="box box-solid campaigns_section_container">
+                                        <div class="box-header campaign_header">
+                                            <h3 class="box-title">Campañas</h3>
+                                            <div class="box-tools pull-right">
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="addCampaign(this); return false;"><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </div><!-- /.box-header -->
+                                        <div class="box-body">
+                                            <div class="box-group campaigns_container" id="accordion">
+                                            {% set pfirst = True %}
+                                            {% for campaign_id, campaign in [('new_campaign', {'name': 'Nueva Campaña'})] + account['campaigns'].items() %}
+                                                <div class="panel box box-primary campaign removible_component" {{ {True: 'style="display:none;"', False: ''}[pfirst] |safe}}>
+                                                    <div class="box-header">
+                                                        <h4 class="box-title">
+                                                            <a data-toggle="collapse" data-parent="#accordion" class="campaign_title" href="#{{campaign_id}}" fn="pname">{{campaign['name']}}</a>
+                                                        </h4>
+                                                        <div class="box-tools pull-right">
+                                                            <button class="btn btn-primary btn-sm" onclick="removeComponent(this); return false"><i class="fa fa-trash-o"></i></button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="{{campaign_id}}" fn="c_id" class="panel-collapse collapse campaign_container">
+                                                        <div class="box-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group">
+                                                                        <label>Nombre</label>
+                                                                        <input type="text" fn="cname" class="form-control" placeholder="nombre de la campaña..." value="{{campaign['name']}}" onchange="$(this).closest('.campaign').find('.campaign_title').html($(this).val());" />
+                                                                    </div>          
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% set pfirst = False %}
+                                            {% endfor %}                                    
+                                            </div>
+                                        </div><!-- /.box-body -->
+                                    </div><!-- /.box --> 
+
+
+
+
+
+
+
+
+
+
+                                    
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% set bfirst = false %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section><!-- /.content -->
