@@ -9,9 +9,7 @@ import sys
  
 #Global varialbes
 EMAIL_SUBJECT = "Email from Python script"
-EMAIL_RECEIVERS = ['pablobesada@gmail.com', 
-#, 'santiagoappiani@gmail.com', 'fedegisbert@gmail.com'
-]
+EMAIL_RECEIVERS = ['pablobesada@gmail.com', 'santiagoappiani@gmail.com', 'fedegisbert@gmail.com']
 EMAIL_SENDER  =  'nuev9info@gmail.com'
 EMAIL_PASSWORD = 'monitor678'
 GMAIL_SMTP = "smtp.gmail.com"
