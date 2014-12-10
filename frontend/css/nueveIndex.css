@@ -1,0 +1,203 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+body {
+	background-image: url(/img/bg.jpg);
+	margin-top:0px;
+	}
+
+.message {
+width: 60%;
+margin-top: 10px;
+padding-top: 10px;
+padding-bottom: 10px;
+margin-left: 20%;
+margin-right: auto;
+background-color: rgba(0, 0, 0, 0.6);
+text-align: center;
+color: white;
+font-weight: bold;
+border-radius: 5px;
+}
+
+/*TOP*/
+#top{
+	clear: both;
+	float: left;
+	padding-left: 0;
+	padding-right: 0;
+	width: 100%;
+	max-width: 1700px;
+	display: block;
+	background: #3e3c41; 
+	}
+#izquierda{
+	float: left;
+	width: 40%;
+	background: #3e3c41;
+	}
+#derecha{
+	float: right;
+	width: 60%;
+	}
+#login{
+	float: right;
+	width: 310px;
+	margin-right: 2%;
+	margin-top: 19px;
+	}
+	
+/*login*/	
+.btn {
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 14px;
+  background: #3498db;
+  padding: 3px 12px 3px 12px;
+  text-decoration: none;
+  border: none;
+}
+
+.btn:hover {
+  background: #1094b5;
+  text-decoration: none;
+  color: #ffffff;
+  border: none;
+}
+
+.input{
+	background-color:#FFF;
+	width: 110px;
+	height: 14px;
+	padding: 4px;
+	border: 1px solid;
+	border: none;
+}
+form{
+border: none;
+}	
+/*CUERPO*/
+#cuerpo{
+	clear: both;
+	float: left;
+	padding-left: 0;
+	padding-right: 0;
+	width: 100%;
+	max-width: 1700px;
+	display: block;
+	}
+#contenido{
+	float: right;
+	width: 40%;
+	margin-top: 1%;
+	margin-right: 2%;
+	}
+	
+#frase{
+	float: none;
+	width: 100%;
+	}
+.texto{
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 40px;
+	color: #FFF;
+	text-shadow: 1px 0px 4px rgba(20, 20, 20, 0.47);
+	}
+	
+#arregla{
+	border: 1px soliz blue;
+}
+#baseform{
+	width: 100%;
+	margin-top: 1%;
+	background-color: rgba(0, 0, 0, 0.6);
+    display: inline-block;
+}
+
+#contform{
+	width: 100%;
+	clear: both;
+}
+
+label{
+	clear:both;
+	float: left;
+	font-family: Arial;
+	font-size: 12px;
+	color: white;
+	margin-left: 1%;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.textbox{
+	float: right;
+	background-color:#FFF;
+	width: 70%;
+	margin-right: 2%;
+	margin-top: 3%;
+	/*margin-bottom: 2%;*/
+	height: 22px;
+	padding: 4px;
+	border: 1px solid;
+	border: none;
+}
+.btnenviar{
+	float:right;
+	font-family: Arial;
+	color: #ffffff;
+	font-size: 14px;
+	background: #3a373e;
+	width: 71%;
+	height: 28px;
+	margin-right: 2%;
+	margin-top: 3%;
+ 	text-decoration: none;
+	border: none;
+}
+
+.btnenviar:hover {
+	background: #3a373e;
+	text-decoration: none;
+	border: none;
+}
+#tweet{
+	clear: both;
+	margin-top: 25px;
+	float: left;
+	margin-left: 2%;
+}
+.texto2{	
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 20px;
+	color: #FFF;
+	/*text-shadow: 1px 0px 4px rgba(20, 20, 20, 0.47);*/
+}
+.textnueve{	
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 35px;
+	text-shadow: 1px 0px 4px rgba(20, 20, 20, 0.47);
+}
+
+
+
+@media all and (max-width: 1000px){
+	#contenido{
+	width: 60%;
+	margin-top: 1%;
+	}
+@media all and (max-width: 700px){
+	#izquierda{
+		float: none;
+		width: 100%;
+	}
+	#derecha{
+		float: none;
+		width: 100%;
+	}
+	#contenido{
+	width: 90%;
+	margin-top: 1%;
+	}
+}
+				

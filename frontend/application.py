@@ -84,16 +84,26 @@ def getPasswordHash(user, psw):
         
 @app.route('/logout', methods=["GET", "POST"])        
 def logout():
-    del session['username']
-    del session['account']
+    if 'username' in session: del session['username']
+    if 'account' in session: del session['account']
     return redirect('/')
+
+@app.route('/contact_request', methods=["POST"])        
+def contact_request():
+    from mailutils import send_email, EMAIL_RECEIVERS
+    content = "nombre: %s\napellido: %s\nemail: %s\ncomentario: %s\n" % (request.form['nombre'],request.form['apellido'],request.form['email'],request.form['comentario'])
+    ok=send_email(EMAIL_RECEIVERS, "nueva solicitud de contacto de %s" % request.form['email'], content)
+    msg = "Gracias, en breve nos comunicaremos por email"
+    if not ok:
+        msg = "No hemos podido registrar la solicitud de contacto, por favor envianos un email a: nuev9info@gmail.com"
+    return render_template("index.html", msg=msg)
 
 @app.route('/login', methods=["GET", "POST"])
 @app.route('/', methods=["GET", "POST"])
 def login():
     session['username'] = ''
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("index.html")
     elif request.method == "POST":
         user = request.form["user"]
         password = request.form["password"]
@@ -102,7 +112,7 @@ def login():
         msg = ""
         if not acc.count() or acc[0]['users'][user]['password'] != passwordhash:
             msg = "El usuario y/o clave son incorrectos"
-            return render_template("login.html", user=user, msg=msg)
+            return render_template("index.html", user=user, msg=msg)
         else:
             accountdb.log_logins.insert({"account_id": acc[0]['_id'], "username": user, "timestamp": datetime.now()})
             session['username'] = user
