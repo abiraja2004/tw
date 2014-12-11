@@ -2,6 +2,7 @@
 import sys
 from twython import Twython, TwythonError
 from pymongo import MongoClient, DESCENDING
+from pymongo.errors import OperationFailure
 import bson
 from bson import ObjectId
 from bson.json_util import dumps
@@ -350,15 +351,30 @@ def topics():
 
 @app.route('/account_admin')
 def account_admin():
+    accounts = list(accountdb.accounts.find({}))
     account = getAccount(session['account_id'])
     campaign_id = request.args.get('campaign_id')    
     if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
-    accounts = accountdb.accounts.find({})
     custom_css= request.args.get("css", None)
+    collection_data = {}
+   
+    for acc in accounts:
+        for camp_id in acc['campaigns'].keys():
+            data={}
+            try:
+                data['stats'] = accountdb.command('collstats', 'tweets_%s' % camp_id)
+            except OperationFailure, e:
+                data['stats'] = {}
+            try:
+                data['indexes'] = accountdb['tweets_%s' % camp_id].index_information()
+            except OperationFailure, e:
+                data['indexes'] = {}
 
+            collection_data['tweets_%s' % camp_id] = data
+        
     logo = "logo.jpg"
     logo2 = None        
-    return render_template('app.html', custom_css = custom_css, content_template="account_admin.html", js="account_admin.js",account=account, accounts=list(accounts), user=getUser(account), campaign_id = campaign_id, logo=logo, logo2 = logo2,)
+    return render_template('app.html', custom_css = custom_css, content_template="account_admin.html", js="account_admin.js", collection_data = collection_data, account=account, accounts=list(accounts), user=getUser(account), campaign_id = campaign_id, logo=logo, logo2 = logo2,)
 
 @app.route('/api/account/campaign/topics/reassign')
 def reassign_topics():

@@ -13,7 +13,6 @@
 
 <!-- Main content -->
 <section class="content">
-
     <div class="row">
         <div class="col-md-12 accounts_section_container">
             <div class="box box-solid">
@@ -143,6 +142,25 @@
                                                                         <label>Nombre</label>
                                                                         <input type="text" fn="cname" class="form-control" placeholder="nombre de la campaña..." value="{{campaign['name']}}" onchange="$(this).closest('.campaign').find('.campaign_title').html($(this).val());" />
                                                                     </div>          
+                                                                    {% if "tweets_"+campaign_id in collection_data %}
+                                                                        <div class="form-group">
+                                                                            <label>Tweets: {{collection_data["tweets_"+campaign_id]['stats']['count']}}</label>
+                                                                        </div>                                                               
+                                                                        <div class="form-group">
+                                                                            <label>Tamaño en disco: {{collection_data["tweets_"+campaign_id]['stats']['storageSize']}} bytes</label>
+                                                                        </div>                                                                      
+                                                                        <div class="form-group">
+                                                                            <label>Numero de Indices: {{collection_data["tweets_"+campaign_id]['stats']['nindexes']}}</label>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <ol>
+                                                                            {% for idx_id, idx in collection_data["tweets_"+campaign_id]['indexes'].items() %}
+                                                                                <li>{{idx_id}}: {{idx['key']}}
+                                                                            {% endfor %}
+                                                                            </ol>
+                                                                       </div>
+                                                                    {% endif %}
+                                                                    
                                                                 </div>
                                                             </div>
                                                         </div>
