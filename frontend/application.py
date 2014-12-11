@@ -102,8 +102,11 @@ def contact_request():
 @app.route('/', methods=["GET", "POST"])
 def login():
     session['username'] = ''
+    template = "index.html"
+    print request.host
+    if request.host.find("001") >= 0: template = "login.html"
     if request.method == "GET":
-        return render_template("index.html")
+        return render_template(template)
     elif request.method == "POST":
         user = request.form["user"]
         password = request.form["password"]
@@ -112,7 +115,7 @@ def login():
         msg = ""
         if not acc.count() or acc[0]['users'][user]['password'] != passwordhash:
             msg = "El usuario y/o clave son incorrectos"
-            return render_template("index.html", user=user, msg=msg)
+            return render_template(template, user=user, msg=msg)
         else:
             accountdb.log_logins.insert({"account_id": acc[0]['_id'], "username": user, "timestamp": datetime.now()})
             session['username'] = user
