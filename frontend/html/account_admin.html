@@ -155,9 +155,18 @@
                                                                         <div class="form-group">
                                                                             <ol>
                                                                             {% for idx_id, idx in collection_data["tweets_"+campaign_id]['indexes'].items() %}
-                                                                                <li>{{idx_id}}: {{idx['key']}}
+                                                                                <li><label>{{idx_id}}: {{idx['key']}}</label></li>
                                                                             {% endfor %}
                                                                             </ol>
+                                                                            <span>
+                                                                            {% if 'x_created_at_1' not in collection_data["tweets_"+campaign_id]['indexes'] %}
+                                                                                <button type="button" class="btn btn-primary btn-sm" onclick="createTwDateIndex(this); return false;"><i class="fa fa-plus"></i> Crear Indice por Fechas</button>
+                                                                            {% endif %}
+                                                                            {% if 'text_text' not in collection_data["tweets_"+campaign_id]['indexes'] %}
+                                                                                <button type="button" class="btn btn-primary btn-sm" onclick="createTwTextIndex(this); return false;"><i class="fa fa-plus"></i> Crear Indice de Busqueda de Texto</button>
+                                                                            {% endif %}
+                                                                            </span>
+                                                                            
                                                                        </div>
                                                                     {% endif %}
                                                                     

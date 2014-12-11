@@ -349,6 +349,19 @@ def topics():
     restricted = request.args.get("restricted", "true") == "true"
     return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
 
+@app.route('/api/create_index', methods=['POST'])
+def create_index():
+    collection_name = request.form['collection_name']
+    fields = request.form['fields'].split("|")
+    d = []
+    for ff in fields:
+        f, o = ff.split(",")
+        if o in ("1", "-1"): o = int(o)
+        d.append((f, o))
+    res = accountdb[collection_name].ensure_index(d)
+    res = {"result": "OK"}
+    return flask.Response(dumps(res),  mimetype='application/json')
+
 @app.route('/account_admin')
 def account_admin():
     accounts = list(accountdb.accounts.find({}))
