@@ -17,7 +17,7 @@ def check_processes():
     processes = [("twfetch", None),
                 ("datacollection", "gnip"),
                 ("application", "frontend"),
-                ("geocoding", None)
+                #("geocoding", None)
                 ]
 
     for p in processes:
