@@ -2,6 +2,7 @@
 
 function dateRangeChanged()
 {
+    monitor_dateRangeChanged();
     search();
     //fetchTweetsCount('sentiment', {labelsFunction: chartLabels,colorsFunction: chartColors})
 }

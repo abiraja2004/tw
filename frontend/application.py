@@ -123,6 +123,16 @@ def login():
             session['account_id'] = str(acc[0]['_id'])
             return redirect('/app?account_id=%s' % acc[0]['_id']+ '&campaign_id=%s' % acc[0]['campaigns'].keys()[0])
     
+def getDateRange(request):
+    if 'startdate' in request.cookies and 'enddate' in request.cookies:
+        sd = datetime.strptime(request.cookies.get('startdate'), "%Y-%m-%d")
+        ed = datetime.strptime(request.cookies.get('enddate'), "%Y-%m-%d")
+    else:
+        datetime.today()
+        sd = datetime.today() - timedelta(days=3)
+        ed = datetime.today()
+    return (sd, ed)
+
 @app.route('/app')
 @app.route('/gm')
 def home():
@@ -158,7 +168,7 @@ def home():
         if brand['own_brand']: own_brands_list.append(brand['name'])
         if len(account['campaigns'][campaign_id]['brands'][bid]['products']):
             has_products = True
-    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", user=getUser(account), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list))            
+    return render_template(template, custom_css = custom_css, content_template=dashtemplate, js="dashboard.js", user=getUser(account), account=account, campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,has_products = has_products, own_brands_list = '|'.join(own_brands_list), daterange=getDateRange(request))            
 
 
 def get_analytics_credentials(account, campaign_id):
@@ -211,7 +221,7 @@ def campaigns():
         logo = "logoSony.jpg"
         logo2 = "logoLumia.jpg"
         
-    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="campaign.html", js="campaign.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, analytics_auth_url = analytics_auth_url, analytics_access = analytics_access, analytics_revoke_url= analytics_revoke_url, logo=logo, logo2 = logo2, daterange=getDateRange(request))
 
 @app.route('/polls')
 def polls():
@@ -230,7 +240,7 @@ def polls():
         logo = "logoSony.jpg"
         logo2 = "logoLumia.jpg"
         
-    return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, user=getUser(account), logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="polls.html", js="polls.js", account=account, user=getUser(account), logo=logo, logo2 = logo2, daterange=getDateRange(request))
 
 @app.route('/datacollections')
 def datacollections():
@@ -253,7 +263,7 @@ def datacollections():
     for dc_id in account['datacollections'].keys():
         records = accountdb['datacollection_%s' % dc_id].find({})
         data[dc_id] = records[:]
-    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, user=getUser(account), data=data, logo=logo, logo2 = logo2)
+    return render_template('app.html', custom_css = custom_css, content_template="datacollections.html", js="datacollections.js", account=account, user=getUser(account), data=data, logo=logo, logo2 = logo2, daterange=getDateRange(request))
 
 @app.route('/api/analytics/get_all_profiles')
 def analytics_get_all_profiles():
@@ -304,7 +314,7 @@ def sentiment():
     own_brands_list = []
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
-    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list))
+    return render_template('app.html', custom_css = custom_css, content_template="sentiment.html", js="sentiment.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), daterange=getDateRange(request))
 
 @app.route('/keywordsets')
 def keywordsets():
@@ -326,7 +336,7 @@ def keywordsets():
         logo2 = "logoLumia.jpg"
         
     restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="keywordsets.html", js="keywordset.js", keywordsets = list(keywordsets), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2,restricted=restricted, daterange=getDateRange(request))
 
 @app.route('/topics')
 def topics():
@@ -347,7 +357,7 @@ def topics():
         logo2 = "logoLumia.jpg"
         
     restricted = request.args.get("restricted", "true") == "true"
-    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted)
+    return render_template('app.html', custom_css = custom_css, content_template="topics.html", js="topic.js", topics = list(topics), account=account, user=getUser(account), campaign_id = campaign_id, campaign=account['campaigns'][campaign_id], logo=logo, logo2 = logo2, restricted=restricted, daterange=getDateRange(request))
 
 @app.route('/api/create_index', methods=['POST'])
 def create_index():
@@ -387,7 +397,7 @@ def account_admin():
         
     logo = "logo.jpg"
     logo2 = None        
-    return render_template('app.html', custom_css = custom_css, content_template="account_admin.html", js="account_admin.js", collection_data = collection_data, account=account, accounts=list(accounts), user=getUser(account), campaign_id = campaign_id, logo=logo, logo2 = logo2,)
+    return render_template('app.html', custom_css = custom_css, content_template="account_admin.html", js="account_admin.js", collection_data = collection_data, account=account, accounts=list(accounts), user=getUser(account), campaign_id = campaign_id, logo=logo, logo2 = logo2, daterange=getDateRange(request))
 
 @app.route('/api/account/campaign/topics/reassign')
 def reassign_topics():
@@ -1042,7 +1052,7 @@ def feeds_explorer():
         if brand['own_brand']: own_brands_list.append(brand['name'])
 
     topics = accountdb.topic.find({})[:]
-    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment, topics=topics)
+    return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment, topics=topics, daterange=getDateRange(request))
 
 @app.route('/api/feeds/search')
 def search_feeds():

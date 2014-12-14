@@ -16,6 +16,7 @@ $(function () {
 
 function dateRangeChanged()
 {
+    monitor_dateRangeChanged();
     account_id = $('[fn=a_id]').val();;
     campaign_id = $('[fn=c_id]').val();
     //brands_to_include = $('#brands_to_include').val();

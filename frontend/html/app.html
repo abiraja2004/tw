@@ -78,6 +78,9 @@
     <body class="skin-blue">
         <input type="hidden" fn="a_id" value="{{account['_id']}}"/>
         <input type="hidden" fn="c_id" value="{{campaign_id}}"/>
+        <input type="hidden" id="startdate" value="{{daterange[0].strftime('%Y-%m-%d')}}">
+        <input type="hidden" id="enddate" value="{{daterange[1].strftime('%Y-%m-%d')}}">
+        
     
         <!-- header logo: style can be found in header.less -->
         <header class="header">
@@ -330,8 +333,8 @@ $(function() {
         dateRangeChanged();
     });
     
-    $('#daterange').data('daterangepicker').startDate = moment().subtract('days', 3);
-    $('#daterange').data('daterangepicker').endDate = moment();
+    $('#daterange').data('daterangepicker').startDate = moment($('#startdate').val());
+    $('#daterange').data('daterangepicker').endDate = moment($('#enddate').val());
     $('#daterange').data('daterangepicker').updateInputText()
     dateRangeChanged();
 });

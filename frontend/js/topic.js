@@ -22,7 +22,7 @@ setupTypeahead($('.typeahead'));
 
 function dateRangeChanged()
 {
-
+    monitor_dateRangeChanged();
 }
 
 function setupTypeahead(tags)

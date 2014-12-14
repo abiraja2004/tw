@@ -2,6 +2,16 @@ var deb_var3 = null;
 tweets_count_group_by = 'day';
 brands_to_include = '';
 
+function monitor_dateRangeChanged()
+{
+    startend = getDateRange();
+    start = startend[0].format("YYYY-MM-DD");
+    end = startend[1].format("YYYY-MM-DD");
+    
+    document.cookie = "startdate="+start;
+    document.cookie = "enddate="+end;
+}
+
 function getDateRange()
 {
     return [$('#daterange').daterangepicker().data().daterangepicker.startDate, $('#daterange').daterangepicker().data().daterangepicker.endDate]; 
