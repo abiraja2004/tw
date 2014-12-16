@@ -1068,6 +1068,7 @@ def search_feeds():
     skip = int(request.args.get("skip", 0))
     limit = int(request.args.get("limit", 80))
     object_id = request.args.get("object_id", "")
+    count_only = bool(request.args.get("count_only", "false") == "true")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"feeds": []}
     if start and end and campaign_id:
@@ -1100,10 +1101,14 @@ def search_feeds():
             if not 'x_extracted_info' in docfilter: docfilter['x_extracted_info'] = {"$exists": True}
             if not '$elemMatch' in docfilter['x_extracted_info']: docfilter['x_extracted_info']['$elemMatch'] = {"confidence": {"$gt": 0}}
             docfilter['x_extracted_info']["$elemMatch"]["brand"] = {'$in': bti}
-        dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1)
-        if skip: dbtweets = dbtweets.skip(skip)
-        dbtweets = dbtweets.limit(limit)
-        res['feeds'].extend(dbtweets)
+        dbtweets = accountdb[collection_name].find(docfilter)
+        if count_only:
+            res['count'] = dbtweets.count()
+        else:
+            dbtweets.sort("x_created_at", -1)
+            if skip: dbtweets = dbtweets.skip(skip)
+            dbtweets = dbtweets.limit(limit)
+            res['feeds'].extend(dbtweets)
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/feeds/remove')

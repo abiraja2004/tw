@@ -38,8 +38,10 @@ var b = null;
                             <input type="text" id="search_text" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Buscar" onchange="searchTextChanged($(this).val())"/>
                             <div class="input-group-btn">
                                 <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
-                            </div>                                                    
-                        </div>                                            
+                                &nbsp;
+                                <button class="btn btn-sm btn-default" onclick="countResults();return false;"><i class="fa fa-tachometer"></i></button>                        
+                            </div>
+                        </div>                              
                     </div>                       
                     <div class="box-tools">
                         <div class="form-group pull-right" >

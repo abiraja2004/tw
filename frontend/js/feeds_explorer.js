@@ -62,8 +62,21 @@ function searchMore()
     search_extended(true);
 }
 
-function search_extended(more)
-{   
+function countResults()
+{
+    filterdict = makeFilterDict();
+    filterdict['count_only'] = "true";
+    $.ajax({
+        url: "/api/feeds/search", 
+        data: filterdict, 
+        type: "GET",
+    }).done(function (response) { 
+        alert("Cantidad de Feeds: " + response['count']);
+    });
+}
+
+function makeFilterDict()
+{
     account_id = $('[fn=a_id]').val();;
     campaign_id = $('[fn=c_id]').val();
     feedbox = $("#feed-box").addClass("loading_bottom");
@@ -76,6 +89,24 @@ function search_extended(more)
     startend = getDateRange();
     start = startend[0].format("YYYY-MM-DD");
     end = startend[1].format("YYYY-MM-DD");
+    text = $("#search_text").val();
+    filterdict = {"account_id": account_id, 
+            'campaign_id': campaign_id, 
+            'start': start, 
+            'end': end, 
+            'text': text,
+            'brands_to_include': brands_to_include,
+            'filter_product': filter_product,
+            'filter_country': filter_country,
+            'filter_sentiment': filter_sentiment,
+            'filter_topic': filter_topic,
+            'object_id': object_id
+    }
+    return filterdict;
+}
+
+function search_extended(more)
+{   
     if (more)
     {
         skip = $('#feed-box').children().length;
@@ -85,23 +116,12 @@ function search_extended(more)
         skip = 0;
     }
     limit = 20;
-    text = $("#search_text").val();
+    filterdict = makeFilterDict();
+    filterdict['skip'] = skip;
+    filterdict['limit'] = limit;
     $.ajax({
         url: "/api/feeds/search", 
-        data: {"account_id": account_id, 
-               'campaign_id': campaign_id, 
-               'start': start, 
-               'end': end, 
-               'text': text,
-               'brands_to_include': brands_to_include,
-               'filter_product': filter_product,
-               'filter_country': filter_country,
-               'filter_sentiment': filter_sentiment,
-               'filter_topic': filter_topic,
-               'skip': skip,
-               'limit': limit,
-               'object_id': object_id
-        }, 
+        data: filterdict, 
         type: "GET",
     }).done(function (response) { 
         updateFeedsContent(response, more)
