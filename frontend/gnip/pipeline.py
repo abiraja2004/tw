@@ -6,6 +6,7 @@ class Pipeline(object):
     REGISTERED_STAGES = []
     
     class Stage(object):
+        
         def processItem(self, item):
             return item
 
@@ -25,6 +26,7 @@ class Pipeline(object):
             self.next_queue = queues[1]
             self.errors_queue = queues[2]
             self.finish_flag = False
+            stage.items_processed = 0
 
         def stopWorking(self):
             self.source_queue.join()
@@ -41,6 +43,7 @@ class Pipeline(object):
                         self.errors_queue.put({"item": item, "error": error_string, "stage": self.__class__.__name__})
                         item = None
                         print error_string
+                    self.stage.items_processed += 1
                     self.source_queue.task_done()
                     if item: self.next_queue.put(item)
                 except Empty, e:
@@ -91,6 +94,7 @@ class Pipeline(object):
         for stage in self.stages:
             d = {}
             d['Stage Class'] = stage.__class__.__name__
+            d['Items Processed'] =  stage.items_processed
             d['Source Queue count'] = self.stage_queues[stage][0].qsize()
             d['Output Queue count'] = self.stage_queues[stage][1].qsize()
             res['Stages'].append(d)

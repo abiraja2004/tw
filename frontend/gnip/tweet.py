@@ -23,6 +23,8 @@ class Tweet(object):
             res.d['user']['profile_image_url_https'] = res.getUserProfileImageURL()
         if not 'text' in doc:  #xq se grabaro inicialmente algunos tweets sin estos campos
             res.d['text'] = res.getText()
+        if not 'x_coordinates' in doc:
+            res.d['x_coordinates'] = {"country": "", "country_code": "", "origin": ""}
         return res
 
     @classmethod
@@ -55,6 +57,18 @@ class Tweet(object):
     def getUserProfileImageURL(self):
         pass
     
+    def getCountryCode(self):
+        try:
+            return self.d['x_coordinates']['country_code']
+        except KeyError, e:
+            return ""
+
+    def getCountryName(self):
+        try:
+            return self.d['x_coordinates']['country']
+        except KeyError, e:
+            return ""
+    
 class GnipActivityTweet(Tweet):
     
     def __init__(self, activity):
@@ -67,6 +81,21 @@ class GnipActivityTweet(Tweet):
         self.d['user']['screen_name'] = self.getUsername()
         self.d['user']['profile_image_url_https'] = self.getUserProfileImageURL()
         self.d['text'] = self.getText()
+        self.d['x_coordinates'] = {}
+        try:
+            self.d['x_coordinates']['country_code'] = self.d['location']['twitter_country_code'].lower()
+            self.d['x_coordinates']['country'] = self.d['location']['country_code']
+            self.d['x_coordinates']['origin'] = "place"
+        except KeyError, e:
+            try:
+                self.d['x_coordinates']['country_code'] = self.d['gnip']['profileLocations'][0]['address']['countryCode'].lower()
+                self.d['x_coordinates']['country'] = self.d['gnip']['profileLocations'][0]['address']['country'].lower()
+                self.d['x_coordinates']['origin'] = "user.location"
+            except IndexError, e:
+                pass
+            except KeyError, e:
+                pass
+        
 
     def getUsername(self):
         return self.d['actor']['displayName']

@@ -51,16 +51,16 @@ def geolocate(account, cid):
     collection = monitor[collection_name]
     for f in collection.find({'x_coordinates': {"$exists": False}}):    
         loc = None
-        coordinates = f['coordinates']
+        coordinates = f.get('coordinates', None)
         origin = "coordinates"
         calculated_location = None
         if not coordinates:
             loc = None
         if not loc: 
-            loc = f['place']
+            loc = f.get('place', None)
             origin = "place"
         if not loc:
-            loc = f['user']['location']
+            loc = f.get('user', {}).get('location', '')
             origin = "user.location"
         if gr: print k, w, gr['requests'],
         try:
@@ -111,7 +111,7 @@ def geolocate(account, cid):
 
         country = None
         country_code = None            
-        if f['place'] and f['place']['country']:        
+        if f.get('place', None) and f.get('place', {}).get('country', None):        
             country = f['place']['country']
             country_code = f['place']['country_code']
             

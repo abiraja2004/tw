@@ -22,7 +22,8 @@ class TweetProcessStage_1(Pipeline.Stage):
         pprint (tweet.getExtractedInfo())
         #pprint(item['gnip']['matching_rules'])
         print
-        return tweet
+        if tweet.getExtractedInfo():
+            return tweet
 
 class TweetProcessStage_2(Pipeline.Stage):  #aca se aplica topic classifier
 
