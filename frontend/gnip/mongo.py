@@ -6,6 +6,7 @@ from pprint import pprint
 import time
 import threading
 from datetime import datetime, timedelta
+from tweet import Tweet
 
 class Product(object):
     
@@ -335,7 +336,31 @@ class MongoManager(object):
         if not max_age or not cls.cached_active_accounts or (datetime.now() - cls.cached_active_accounts['fetch_time'] > max_age):
             cls.cached_active_accounts = {'data': MongoIterator(list(cls.db.accounts.find({"$or": [{"active": True}, {"active": {"$exists": False}}]})), Account), 'fetch_time': datetime.now()}
         return cls.cached_active_accounts['data']
+    
+    @classmethod
+    def findTweets(cls, collection_name, **kwargs):
+        from tweet import Tweet
+        filters = kwargs.get("filters", {})
+        sort = kwargs.get("sort", ())
+        skip = kwargs.get("skip", None)
+        limit = kwargs.get("limit", None)
+        res = cls.db[collection_name].find(filters)
+        if sort: res.sort(*sort)
+        if skip is not None: res.skip(skip)
+        if limit is not None: res.limit(limit)
+        return MongoIterator(res, Tweet.createFromMongoDoc)
 
+    @classmethod
+    def countDocuments(cls, collection_name, **kwargs):
+        filters = kwargs.get("filters", {})
+        skip = kwargs.get("skip", None)
+        limit = kwargs.get("limit", None)
+        res = cls.db[collection_name].find(filters)
+        if skip is not None: res.skip(skip)
+        if limit is not None: res.limit(limit)
+        return res.count()
+    
+    
     @classmethod
     def getAccount(cls, **kwargs):
         if not kwargs: return None

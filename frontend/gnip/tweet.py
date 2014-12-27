@@ -15,6 +15,17 @@ class Tweet(object):
         return ("<Tweet (%s-%s) %s: %s>" % (self.getLanguage(), self.getTwitterLanguage(), self.getUsername(), self.getText()))
 
     @classmethod
+    def createFromMongoDoc(cls, doc):
+        res = GnipActivityTweet(doc)
+        if not 'user' in doc:  #xq se grabaro inicialmente algunos tweets sin estos campos
+            res.d['user'] = {}
+            res.d['user']['screen_name'] = res.getUsername()        
+            res.d['user']['profile_image_url_https'] = res.getUserProfileImageURL()
+        if not 'text' in doc:  #xq se grabaro inicialmente algunos tweets sin estos campos
+            res.d['text'] = res.getText()
+        return res
+
+    @classmethod
     def createFromRawGnipActivity(cls, activity):
         res = GnipActivityTweet(activity)
         res.normalize()
@@ -41,6 +52,9 @@ class Tweet(object):
     def getDictToSave(self):
         pass
     
+    def getUserProfileImageURL(self):
+        pass
+    
 class GnipActivityTweet(Tweet):
     
     def __init__(self, activity):
@@ -49,6 +63,10 @@ class GnipActivityTweet(Tweet):
         
     def normalize(self): #should only be called for activities that came directly from gnip, not from mongodb
         self.d['x_created_at'] = datetime.strptime(self.d['postedTime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        self.d['user'] = {}
+        self.d['user']['screen_name'] = self.getUsername()
+        self.d['user']['profile_image_url_https'] = self.getUserProfileImageURL()
+        self.d['text'] = self.getText()
 
     def getUsername(self):
         return self.d['actor']['displayName']
@@ -111,5 +129,10 @@ class GnipActivityTweet(Tweet):
     def getExtractedTopics(self):
         return self.d.get('x_extracted_topics', [])    
     
-    def getDictToSave(self):
+    def getUserProfileImageURL(self):
+        return self.d.get('actor', {}).get('image', '')
+    
+    def getDictionary(self):
         return self.d
+    
+    

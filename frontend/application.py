@@ -21,6 +21,7 @@ import analytics_api
 import httplib2
 import hashlib
 from base64 import b64encode, b64decode
+from gnip.mongo import MongoManager
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -511,26 +512,26 @@ def tweets_list():
     res = {"tweets": [], "mentions": 0}
     if start and end and campaign_id:
         collection_name = "tweets_%s" % campaign_id
-        print collection_name
         start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
         docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
         if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
-        dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
+        #dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
+        dbtweets = MongoManager.findTweets(collection_name, filters=docfilter, sort=("x_created_at", -1), skip=page*tweets_per_page, limit=tweets_per_page) 
         if not brands_to_include:
             if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                 for t in dbtweets:
-                    if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code'] != 'MX': continue
-                    res['tweets'].append(t)                    
+                    if 'x_coordinates' in t.d and t.d['x_coordinates'] and 'country_code' in t.d['x_coordinates'] and t.d['x_coordinates']['country_code'] != 'MX': continue
+                    res['tweets'].append(t.getDictionary())                    
             else:
-                res['tweets'].extend(dbtweets)  #esta sola linea es la que va cuando se saque la condicion de sivale
+                res['tweets'].extend([t.getDictionary() for t in dbtweets])  #esta sola linea es la que va cuando se saque la condicion de sivale
         else:
             bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
             for t in dbtweets:
                 if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
                     if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                         if 'x_coordinates' in t and t['x_coordinates'] and 'country_code' in t['x_coordinates'] and t['x_coordinates']['country_code'] != 'MX': continue
-                    res['tweets'].append(t)   #esta sola linea es la que va cuando se saque la condicion de sivale
+                    res['tweets'].append(t.getDictionary())   #esta sola linea es la que va cuando se saque la condicion de sivale
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
@@ -1101,14 +1102,15 @@ def search_feeds():
             if not 'x_extracted_info' in docfilter: docfilter['x_extracted_info'] = {"$exists": True}
             if not '$elemMatch' in docfilter['x_extracted_info']: docfilter['x_extracted_info']['$elemMatch'] = {"confidence": {"$gt": 0}}
             docfilter['x_extracted_info']["$elemMatch"]["brand"] = {'$in': bti}
-        dbtweets = accountdb[collection_name].find(docfilter)
+        #dbtweets = accountdb[collection_name].find(docfilter)
+        
         if count_only:
-            res['count'] = dbtweets.count()
+            res['count'] = MongoManager.countDocuments(collection_name, filters=docfilter)
         else:
-            dbtweets.sort("x_created_at", -1)
-            if skip: dbtweets = dbtweets.skip(skip)
-            dbtweets = dbtweets.limit(limit)
-            res['feeds'].extend(dbtweets)
+            skipfilter = None
+            if skip: filterfilter = skip
+            dbtweets = MongoManager.findTweets(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
+            res['feeds'].extend([t.getDictionary() for t in dbtweets])
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/feeds/remove')

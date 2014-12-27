@@ -41,7 +41,7 @@ class TweetSaveStage(Pipeline.Stage): #aca se graba en mongo en las campañas qu
         for pm in tweet.getExtractedInfo():
             cid = pm.get('campaign_id', None)
             if cid:
-                MongoManager.saveDocument("tweets_%s" % cid, tweet.getDictToSave())
+                MongoManager.saveDocument("tweets_%s" % cid, tweet.getDictionary())
                 pprint("tweet %s grabado" % tweet)
         #no devuelvo nada para que no quede encolado en la ultima queue para siempre y se llene la memoria
         return None
