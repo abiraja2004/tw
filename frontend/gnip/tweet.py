@@ -164,4 +164,6 @@ class GnipActivityTweet(Tweet):
     def getDictionary(self):
         return self.d
     
-    
+    def getHashtags(self):
+        hts = self.d.get('twitter_entities', {}).get('hashtags', [])
+        return set(["#"+x['text'] for x in hts])

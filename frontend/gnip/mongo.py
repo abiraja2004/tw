@@ -220,6 +220,9 @@ class Poll(object):
         self.id = id
         self.o = mongopoll
 
+    def getId(self):
+        return self.id
+    
     def __unicode__(self):
         return u"<Poll %s>" % self.getName()
     
@@ -276,9 +279,11 @@ class Account(object):
         return s    
     
     def getPollSearchHashtags(self):
-        s = set()
+        s = dict()
         for poll in self.getActivePolls():
-            s |= poll.getSearchHashtags()
+            for ht in poll.getSearchHashtags():
+                if ht not in s: s[ht] = []
+                s[ht].append(poll)
         return s     
     
 class MongoIterator(object):
@@ -309,6 +314,7 @@ class MongoManager(object):
 
     db = None
     cached_active_accounts = {}
+    cached_polls_by_hashtag = {}
     
     @classmethod
     def connect(cls):
@@ -385,6 +391,22 @@ class MongoManager(object):
         return kwset
 
     @classmethod
+    def getPollsByHashtag(cls, **kwargs):
+        #return [Account(acc) for acc in self.db.accounts.find({"$or": [{"active": True}, {"active": {"$exists": False}}]})]
+        max_age = kwargs.get('max_age', timedelta(seconds=0))
+        if not max_age or not cls.cached_polls_by_hashtag or (datetime.now() - cls.cached_polls_by_hashtag['fetch_time'] > max_age):
+            data={}
+            accounts = cls.getActiveAccounts(max_age = max_age)
+            for acc in accounts:
+                d = acc.getPollSearchHashtags()
+                for ht, polls in d.items():
+                    if ht not in data: data[ht] = []
+                    data[ht].extend(polls)
+            cls.cached_polls_by_hashtag = {'data': data, 'fetch_time': datetime.now()}
+        return cls.cached_polls_by_hashtag['data']
+        
+        
+    @classmethod
     def saveDocument(cls, collection_name, doc):
         print cls.db[collection_name].save(doc)
     
@@ -393,6 +415,8 @@ MongoManager.connect()
 
 if __name__ == "__main__":
     mm = MongoManager
+    print mm.getPollsByHashtag()
+    """
     beber = "5403eb34fbe4d07b0d73407f"
     futbol = "5403ebf0fbe4d07b0d734080"
     k = mm.getKeywordset(name=u"Fútbol")
@@ -412,3 +436,4 @@ if __name__ == "__main__":
     print mm.getSearchKeywords()
     print mm.getFollowAccounts()
     print mm.getPollSearchHashtags()
+    """

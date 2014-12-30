@@ -16,26 +16,38 @@ class TweetProcessStage_1(Pipeline.Stage):
     def processItem(self, item):
         accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
         tweet = Tweet.createFromRawGnipActivity(item)
-        pprint (tweet)
-        pprint (tweet.getExtractedInfo())
-        tweet.applyBrandClassifiers(ClassifierManager.getBrandClassifiers())
-        pprint (tweet.getExtractedInfo())
+        #pprint (tweet)
+        #pprint (tweet.getExtractedInfo())
+        tweet.applyBrandClassifiers(ClassifierManager.getBrandClassifiers()) ##FALTA AGREGAR TAMBIEN A LOS TWEETS QUE NO MATCHEAN PERO QUE SON UN USUARIO SEGUIDO POR LA MARCA
+        #pprint (tweet.getExtractedInfo())
         #pprint(item['gnip']['matching_rules'])
-        print
+        #print
         if tweet.getExtractedInfo():
             return tweet
 
-class TweetProcessStage_2(Pipeline.Stage):  #aca se aplica topic classifier
+class TweetProcessStage_2(Pipeline.Stage):  #aca se registran las menciones
+
+    def processItem(self, tweet):
+        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
+        #pprint (tweet.getExtractedTopics())
+        tweet.applyTopicClassifiers(ClassifierManager.getTopicClassifiers())
+        #pprint (tweet.getExtractedTopics())
+        return tweet
+    
+class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de polls
 
     
     def processItem(self, tweet):
-        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
-        pprint (tweet.getExtractedTopics())
-        tweet.applyTopicClassifiers(ClassifierManager.getTopicClassifiers())
-        pprint (tweet.getExtractedTopics())
+        polls_ht = MongoManager.getPollsByHashtag(max_age=timedelta(seconds=10))
+        print tweet.getHashtags()
+        for ht in tweet.getHashtags():
+            if ht in polls_ht:
+                for poll in polls_ht[ht]:
+                    MongoManager.saveDocument("polls_"+poll.getId(), tweet.getDictionary())
+                    pprint("grabando tweet para poll %s" % poll.getName())
         return tweet
 
-class TweetSaveStage(Pipeline.Stage): #aca se graba en mongo en las campañas que corresponda
+class TweetSaveForCampaignsStage(Pipeline.Stage): #aca se graba en mongo en las campañas que corresponda
 
     def processItem(self, tweet):
         
@@ -50,4 +62,5 @@ class TweetSaveStage(Pipeline.Stage): #aca se graba en mongo en las campañas qu
 
 
 def getPipelineStageClasses():
-    return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]
+    return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveForPolls, TweetSaveForCampaignsStage]
+    #return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]

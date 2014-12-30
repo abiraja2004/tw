@@ -1,6 +1,8 @@
 from utils import MyThread
 from Queue import Queue, Empty
+from pprint import pprint
 import traceback
+
 
 class Pipeline(object):
     REGISTERED_STAGES = []
@@ -42,7 +44,7 @@ class Pipeline(object):
                         error_string = traceback.format_exc()
                         self.errors_queue.put({"item": item, "error": error_string, "stage": self.__class__.__name__})
                         item = None
-                        print error_string
+                        pprint(error_string)
                     self.stage.items_processed += 1
                     self.source_queue.task_done()
                     if item: self.next_queue.put(item)

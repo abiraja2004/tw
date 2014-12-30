@@ -206,7 +206,7 @@ class BrandClassifier(object):
         for pattern, rule in self.brand_regexps:
             matches = pattern.finditer(text)
             for m in matches:
-                print pattern.pattern, m.groups()
+                #print pattern.pattern, m.groups()
                 pm = ProductMatch()
                 #print self.getBrandNormalizationDict()
                 #print 1,m.group("brand1"), m.group("product1")
