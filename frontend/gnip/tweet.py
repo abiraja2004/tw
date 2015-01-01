@@ -98,7 +98,7 @@ class GnipActivityTweet(Tweet):
         
 
     def getUsername(self):
-        return self.d['actor']['displayName']
+        return '@'+self.d['actor']['preferredUsername']
 
     def getText(self):
         return self.d['body']
@@ -124,40 +124,39 @@ class GnipActivityTweet(Tweet):
         except KeyError, e:
             return ''
         
-    def applyBrandClassifiers(self, bcs):
-        pms = {}
-        for bc in bcs:
-            if not bc.campaign_id in pms: pms[bc.campaign_id] = []
-            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(self.getText())])
-        for cid in pms.keys():
-            extracted_infos = pms.get(cid, [])
-            if extracted_infos:
-                extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
-                if extracted_infos[0]['confidence'] > 0:
-                    self.d['x_extracted_info'] = extracted_infos
-                            
-    def applyTopicClassifiers(self, tcs):                            
-        #solo aplico topics para las campañas que hayan matcheado el tweet y tengan x_extracted_info
-        for extracted_info in self.d.get('x_extracted_info', []):
-            cid = extracted_info['campaign_id']
-            tms = []
-            for topic_id, topic_classiffier in tcs.get(cid, {}).items():
-                tm = topic_classiffier.extract(self.getText())
-                if tm: tms.append(tm.getDictionary())
-            if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
-            self.d['x_extracted_topics'] = tms                            
-
+    def getSentiment(self):
+        return self.d.get("x_sentiment", '')
+    
+    def setSentiment(self, s):
+        self.d['x_sentiment'] = s
 
     def getMatchedCampaignIds(self):
         return [self.d.get('x_extracted_info', []).keys()]
-                            
 
+    def resetFollowAccountsMentionCount(self):
+        self.d['x_mentions_count'] = {}
+                            
+    def getFollowAccountsMentionCount(self):
+        return self.d.get('x_mentions_count', {})
+
+    def setFollowAccountsMentionCount(self, username, cnt):
+        try:
+            self.d['x_mentions_count'][username] = cnt
+        except KeyError, e:
+            self.d['x_mentions_count'] = {username: cnt}
+        
     def getExtractedInfo(self):
         return self.d.get('x_extracted_info', [])
+
+    def setExtractedInfo(self, pms):
+        self.d['x_extrated_info'] = pms
     
     def getExtractedTopics(self):
         return self.d.get('x_extracted_topics', [])    
     
+    def setExtractedTopics(self, tms):
+        self.d['x_extrated_topics'] = tms
+        
     def getUserProfileImageURL(self):
         return self.d.get('actor', {}).get('image', '')
     
@@ -167,3 +166,7 @@ class GnipActivityTweet(Tweet):
     def getHashtags(self):
         hts = self.d.get('twitter_entities', {}).get('hashtags', [])
         return set(["#"+x['text'] for x in hts])
+    
+    def getUserMentions(self):
+        um = self.d.get('twitter_entities', {}).get('user_mentions', [])
+        return dict([('@' + x['screen_name'], x['name']) for x in um])

@@ -56,7 +56,7 @@ class GnipStreamReceiver(MyThread):
         self.finish_flag = True
     
     def on_receive(self, data):
-        print "data received: ", len(data)
+        #print "data received: ", len(data)
         dd = ''.join([self.remainder, data]).rsplit(NEWLINE,1)
         if len(dd) > 1:
             [records, self.remainder] = dd

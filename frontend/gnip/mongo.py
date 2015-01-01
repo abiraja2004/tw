@@ -62,8 +62,14 @@ class Brand(object):
     def __repr__(self):
         return self.__unicode__()
 
+    def getId(self):
+        return self.id
+    
     def getName(self):
         return self.o.get('name', "")
+    
+    def isOwnBrand(self):
+        return self.o.get('own_brand', False)
     
     def getProducts(self):
         return [Product(id, prod) for id, prod in self.o.get('products', {}).items()]
@@ -315,6 +321,7 @@ class MongoManager(object):
     db = None
     cached_active_accounts = {}
     cached_polls_by_hashtag = {}
+    follow_accounts_by_campaign = {}
     
     @classmethod
     def connect(cls):
@@ -404,11 +411,29 @@ class MongoManager(object):
                     data[ht].extend(polls)
             cls.cached_polls_by_hashtag = {'data': data, 'fetch_time': datetime.now()}
         return cls.cached_polls_by_hashtag['data']
-        
-        
+
+    @classmethod
+    def getFollowAccountsbyCampaign(cls, **kwargs):
+        max_age = kwargs.get('max_age', timedelta(seconds=0))
+        if not max_age or not cls.follow_accounts_by_campaign or (datetime.now() - cls.follow_accounts_by_campaign['fetch_time'] > max_age):
+            data = {}
+            accounts = cls.getActiveAccounts(max_age = max_age)
+            s = {}
+            for acc in accounts:
+                for campaign in acc.getActiveCampaigns():
+                    for brand in campaign.getBrands():
+                        follow_accounts = brand.getFollowAccounts() 
+                        for fa in follow_accounts:
+                            if fa not in s: s[fa] = []
+                            s[fa].append({"cid": campaign.getId(), "bid": brand.getId(), "brand": brand.getName(), 'own_brand': brand.isOwnBrand()})
+            
+            cls.follow_accounts_by_campaign = {'data': s, 'fetch_time': datetime.now()}
+        return cls.follow_accounts_by_campaign['data']
+
+
     @classmethod
     def saveDocument(cls, collection_name, doc):
-        print cls.db[collection_name].save(doc)
+        return cls.db[collection_name].save(doc)
     
 MongoManager.connect()
 

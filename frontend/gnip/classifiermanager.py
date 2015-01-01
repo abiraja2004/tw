@@ -133,6 +133,7 @@ class ClassifierManager(object):
     
     @classmethod
     def getBrandClassifiers(cls):
+        #faltaria buffer por max_age
         o = cls()
         accounts = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
         rules = []
@@ -145,6 +146,7 @@ class ClassifierManager(object):
 
     @classmethod
     def getTopicClassifiers(cls):
+        #faltaria buffer por max_age
         #devuelve un diccionario con los topics x campania
         o = cls()
         res = {}

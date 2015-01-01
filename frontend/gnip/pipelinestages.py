@@ -6,40 +6,14 @@ from datetime import datetime, timedelta
 from pprint import pprint
 from tweet import Tweet
 from classifiermanager import ClassifierManager
+from brandclassifier import ProductMatch
 
-
-
-class TweetProcessStage_1(Pipeline.Stage):  
-    #aca se crea como tweet y se aplica brand classifier / recibe un dict y devuelve un tweet
-
-    
-    def processItem(self, item):
-        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
-        tweet = Tweet.createFromRawGnipActivity(item)
-        #pprint (tweet)
-        #pprint (tweet.getExtractedInfo())
-        tweet.applyBrandClassifiers(ClassifierManager.getBrandClassifiers()) ##FALTA AGREGAR TAMBIEN A LOS TWEETS QUE NO MATCHEAN PERO QUE SON UN USUARIO SEGUIDO POR LA MARCA
-        #pprint (tweet.getExtractedInfo())
-        #pprint(item['gnip']['matching_rules'])
-        #print
-        if tweet.getExtractedInfo():
-            return tweet
-
-class TweetProcessStage_2(Pipeline.Stage):  #aca se registran las menciones
-
-    def processItem(self, tweet):
-        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
-        #pprint (tweet.getExtractedTopics())
-        tweet.applyTopicClassifiers(ClassifierManager.getTopicClassifiers())
-        #pprint (tweet.getExtractedTopics())
-        return tweet
-    
 class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de polls
 
-    
-    def processItem(self, tweet):
+    def processItem(self, item):
         polls_ht = MongoManager.getPollsByHashtag(max_age=timedelta(seconds=10))
-        print tweet.getHashtags()
+        tweet = Tweet.createFromRawGnipActivity(item)
+        pprint(tweet)
         for ht in tweet.getHashtags():
             if ht in polls_ht:
                 for poll in polls_ht[ht]:
@@ -47,20 +21,69 @@ class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de 
                     pprint("grabando tweet para poll %s" % poll.getName())
         return tweet
 
-class TweetSaveForCampaignsStage(Pipeline.Stage): #aca se graba en mongo en las campañas que corresponda
+class TweetProcessCampaign(Pipeline.Stage):  
+    #aca se crea como tweet y se aplica brand classifier / recibe un dict y devuelve un tweet
 
+    
     def processItem(self, tweet):
+        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
+        #pprint (tweet)
+        #pprint (tweet.getExtractedInfo())
+        follow_accounts= MongoManager.getFollowAccountsbyCampaign(max_age=timedelta(seconds=10))
+        bcs = ClassifierManager.getBrandClassifiers() #esto tendria que esta cacheado tambien en classifiermanager
+        tcs = None
+        pms = self.getBrandClassifiersByCampaign(tweet, bcs, follow_accounts) ##FALTA AGREGAR TAMBIEN A LOS TWEETS QUE NO MATCHEAN PERO QUE SON DE UN USUARIO SEGUIDO POR LA MARCA
         
-        for pm in tweet.getExtractedInfo():
-            cid = pm.get('campaign_id', None)
-            if cid:
-                MongoManager.saveDocument("tweets_%s" % cid, tweet.getDictionary())
-                pprint("tweet %s grabado" % tweet)
-        #no devuelvo nada para que no quede encolado en la ultima queue para siempre y se llene la memoria
-        return None
+        for cid, pmlist in pms.items():
+            if tcs is None: tcs = ClassifierManager.getTopicClassifiers()
+            tms = self.getTopicClassifiers(tweet, cid, tcs)
+            tweet.setExtractedTopics(tms)
+            tweet.setExtractedInfo(pmlist)
+            tweet.resetFollowAccountsMentionCount()
+            user_mentions = tweet.getUserMentions()
+            for fa in follow_accounts:
+                if fa in user_mentions:
+                    for fainfo in follow_accounts[fa]:
+                        if fainfo['cid'] == cid:
+                            tweet.setFollowAccountsMentionCount(fa, 1)
+            MongoManager.saveDocument("tweets_%s" % cid, tweet.getDictionary())
+            
+        return None #no devuelvo nada para que no se acumulen los tweets en la ultima lista y se sature la memoria            
+
+
+    def getBrandClassifiersByCampaign(self, tweet, bcs, follow_accounts):
+        pms = {}
+        for bc in bcs:
+            if not bc.campaign_id in pms: pms[bc.campaign_id] = []
+            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(tweet.getText())])
+        if tweet.getUsername() in follow_accounts:
+            for fainfo in follow_accounts[tweet.getUsername()]:
+                pm = ProductMatch()
+                pm.brand = fainfo['brand']
+                pm.campaign_id = fainfo['cid']
+                pm.confidence = 5
+                pms[pm.campaign_id].append(pm.getDictionary())
+        for cid, pmlist in pms.items():
+            pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
+            if not pms[cid] or pms[cid][0]['confidence'] < 0:
+                del pms[cid]
+        return pms
+
+                            
+    def getTopicClassifiers(self, tweet, campaign_id, tcs):                            
+        #solo aplico topics para las campañas que hayan matcheado el tweet y tengan x_extracted_info
+        tms = []
+        for topic_id, topic_classiffier in tcs.get(campaign_id, {}).items():
+            tm = topic_classiffier.extract(tweet.getText())
+            if tm: tms.append(tm.getDictionary())
+        if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
+        return tms
+
+    
+
 
 
 
 def getPipelineStageClasses():
-    return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveForPolls, TweetSaveForCampaignsStage]
+    return [TweetSaveForPolls, TweetProcessCampaign]
     #return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]

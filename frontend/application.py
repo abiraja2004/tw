@@ -747,6 +747,7 @@ def save_campaign():
     campaign['analytics']['credentials'] = credentials
     
     #traigo los ids de las cuentas a seguir  // Esto solo habria que hacerlo si el campo follow_accounts fue modificado!!!
+    ## ESTO YA NO ES NECESARIO!
     t = Twython("1qxRMuTzu2I7BP7ozekfRw", "whQFHN8rqR78L6su6U32G6TPT7e7W2vCouR4inMfM", "2305874377-TTmvLjLuP8aq8q2bT7GPJsOjG9n6uYLAA0tvsYU", "iy4SYpkHK26Zyfr9RhYSGOLVtd9eMNF6Ebl2p552gF4vL")    
     for bid, brand in campaign['brands'].items():
         follow_ids = []
@@ -757,7 +758,8 @@ def save_campaign():
                     except TwythonError, e:
                         return flask.Response(json.dumps({"result": "error", "error": "twitter account error", "message": "No se pudo identificar el id de la cuenta a seguir: %s en la marca: %s" % (kw, brand.get("name", ""))}),  mimetype='application/json')
         campaign['brands'][bid]['follow_account_ids'] = ','.join(follow_ids)
-        
+    ## ESTO YA NO ES NECESARIO!
+    
     campaign['syncversion'] = int(campaign.get('syncversion',1))+1
     account['campaigns'][data['campaign_id']] = campaign        
     accountdb.accounts.save(account)
