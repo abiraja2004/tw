@@ -17,7 +17,7 @@ class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de 
         for ht in tweet.getHashtags():
             if ht in polls_ht:
                 for poll in polls_ht[ht]:
-                    MongoManager.saveDocument("polls_"+poll.getId(), tweet.getDictionary())
+                    MongoManager.saveDocument("polls_" + poll.getId(), tweet.getDictionary())
                     pprint("grabando tweet para poll %s" % poll.getName())
         return tweet
 

@@ -67,7 +67,7 @@ class GnipRulesManager(object):
         mongo_rules = self.generateGnipRulesFromMongo()
         
         for r in mongo_rules:
-            r['value'] = "(%s) (twitter_lang:es)" % r['value'] #AGREGO FILTRO POR LANG:ES en todas las reglas
+            r['value'] = "(%s) (twitter_lang:es) -is:retweet" % r['value'] #AGREGO FILTRO POR LANG:ES en todas las reglas
         
         mongo_rule_values = set([r['value'] for r in mongo_rules])
         

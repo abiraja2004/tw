@@ -22,6 +22,8 @@ import httplib2
 import hashlib
 from base64 import b64encode, b64decode
 from gnip.mongo import MongoManager
+from pprint import pprint
+from gnip.summarizer import Summarizer
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -61,6 +63,7 @@ app.jinja_options['extensions'].append('jinja2.ext.do')
 app.secret_key = '34fwfwesg4jkebgbywhn56&&fdw3g][]d'
 compress.init_app(app)
 
+summarizer = Summarizer()
 
 def onRemoteServer():
     return server_mode == SERVER_REMOTE
@@ -548,6 +551,7 @@ def tweets_tag_sentiment():
 
 @app.route('/api/tweets/count')
 def tweets_count():
+    print 1, datetime.now()
     start = request.args.get("start", "")
     end = request.args.get("end", "")
     group_by = request.args.get("group_by", "day")
@@ -556,12 +560,17 @@ def tweets_count():
     brands_to_include = request.args.get("brands_to_include", "")
     res = {'timerange': []}
     if start and end and campaign_id:
-        account = getAccount(account_id)
-        accs = getCampaignFollowAccounts(account, campaign_id)
+        print 2, datetime.now()
+        account = MongoManager.getAccount(id=account_id)
+        campaign = account.getCampaign(id=campaign_id)
+        print 3, datetime.now()
+        #accs = getCampaignFollowAccounts(account.getId(), campaign_id)
+        accs = campaign.getFollowAccounts()
+        print 4, datetime.now()
         collection_name = "tweets_%s" % campaign_id
         bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
-        end = datetime.strptime(end + "T23:59:59", "%Y-%m-%dT%H:%M:%S")
+        end = datetime.strptime(end + "T00:00:00", "%Y-%m-%dT%H:%M:%S") + timedelta(days=1)
         timerange = []
         params = {}
         timeformat = ""
@@ -576,11 +585,17 @@ def tweets_count():
             timeformat = "%Y-%m-%dT00:00:00Z"
         delta = timedelta(**params)
         d = start
+        print 5, datetime.now()
         while d <= end:
             timerange.append(d.strftime("%Y-%m-%dT%H:00:00Z"))
             d = d + delta
+        print 6, datetime.now()
         res['timerange'] = timerange
-        dbtweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
+        #dbtweets = MongoManager.findTweets(collection_name, filters={ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
+        
+        #accountdb[collection_name].find(, {'_id': 0, 'x_coordinates': 1, 'x_sentiment': 1, 'x_extracted_info': 1, 'x_extracted_topics': 1, 'user': 1, 'x_mentions_count': 1, 'retweet_count': 1, 'favorite_count':  1, 'x_created_at': 1})
+        print 7, datetime.now()
+        
         res['brand'] = {}
         res['product'] = {}
         res['sentiment'] = {}
@@ -593,24 +608,32 @@ def tweets_count():
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['topic'] = {}
-
-        polls = {}
-        if 'polls' in account:
-            polls = account['polls']
+        print campaign, campaign.getId(), start, end
+        rrr = summarizer.getSummarizedData(campaign, start, end)
+        pprint(rrr)
+        if rrr:
+            rrr = summarizer.aggregate(rrr)
+            res['stats'] = rrr['stats']
+        polls = account.getActivePolls()
         poll_hashtags = {}
-        for poll_id, poll in polls.items():
-            poll['data'] = {}
-            for ht in poll['hashtags'].split(","):
-                ht = ht.strip()
-                if not ht: continue
+        print 8, datetime.now()
+        for poll in polls:
+            poll_id = poll.getId()
+            data = {}
+            for ht in poll.getOptionHashtags():
                 if not ht in poll_hashtags: poll_hashtags[ht] = []
                 poll_hashtags[ht].append(poll_id)
-                poll['data'][ht] = {'total': 0}
-            res['polls'][poll_id] = poll
-        for poll_id, poll in polls.items():
+                data[ht] = {'total': 0} 
+            d = poll.getDictionary()
+            d['data'] = data
+            res['polls'][poll_id] = d
+            
+        print 9, datetime.now()
+        for poll in polls:
+            poll_id = poll.getId()
             collection_name = "polls_%s" % poll_id
             polltweets = accountdb[collection_name].find({ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
-            options = [x.strip() for x in poll['hashtags'].split(",") if x.strip()]
+            options = poll.getOptionHashtags()
             for tweet in polltweets:
                 if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                     if 'x_coordinates' in tweet and tweet['x_coordinates'] and 'country_code' in tweet['x_coordinates'] and tweet['x_coordinates']['country_code'] != 'MX': continue                
@@ -619,12 +642,11 @@ def tweets_count():
                         if ("#" + ht['text']) in options:
                             res['polls'][poll_id]['data']['#'+ht['text']]['total'] += 1
                 
-                
-        datacollections = {}
-        if 'datacollections' in account:
-            datacollections = account['datacollections']
+        print 10, datetime.now()
+        datacollections = account.getActiveDataCollections()
 
-        for datacollection_id, datacollection in datacollections.items():
+        for datacollection in datacollections:
+            datacollection_id = datacollection.getId()
             datacollection['data'] = {}
             for field in datacollection['fields']:
                 datacollection['data'][field['name']] = {}
@@ -638,12 +660,18 @@ def tweets_count():
                         else:
                             datacollection['data'][field['name']][dcitem['fields'][field['name']]]['total'] += 1
             res['datacollections'][datacollection_id] = datacollection    
-
+        print 11, datetime.now()
+        #pprint(dbtweets.explain())
+        #dbtweets = list(dbtweets)
+        print 12, datetime.now()
+        cc = 0
+        """
         for tweet in dbtweets:
+            cc += 1
             if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
                 if 'x_coordinates' in tweet and tweet['x_coordinates'] and 'country_code' in tweet['x_coordinates'] and tweet['x_coordinates']['country_code'] != 'MX': continue                
             
-            pms = tweet.get('x_extracted_info', [])
+            pms = tweet.getExtractedInfo()
             if brands_to_include:
                 if not [pm for pm in pms if pm['brand'] in bti]: continue
             if pms:
@@ -664,35 +692,34 @@ def tweets_count():
                         res['product'][p][key] = 1
                     else:
                         res['product'][p][key] += 1   
-            if 'x_sentiment' in tweet:
-                if not tweet['x_sentiment'] in res['sentiment']: res['sentiment'][tweet['x_sentiment']] = {"total": 0}
-                d = tweet['x_created_at']
+            if tweet.getSentiment():
+                if not tweet.getSentiment() in res['sentiment']: res['sentiment'][tweet.getSentiment()] = {"total": 0}
+                d = tweet.getCreatedDate()
                 key = d.strftime(timeformat)
-                res['sentiment'][tweet['x_sentiment']]['total'] += 1
-                if not key in res['sentiment'][tweet['x_sentiment']]:
-                    res['sentiment'][tweet['x_sentiment']][key] = 1
+                res['sentiment'][tweet.getSentiment()]['total'] += 1
+                if not key in res['sentiment'][tweet.getSentiment()]:
+                    res['sentiment'][tweet.getSentiment()][key] = 1
                 else:
-                    res['sentiment'][tweet['x_sentiment']][key] += 1                   
+                    res['sentiment'][tweet.getSentiment()][key] += 1                   
             res['stats']['total_tweets'] += 1                    
-            if 'x_extracted_topics' in tweet:
-                for k in tweet['x_extracted_topics']:
-                    if not k['topic_name'] in res['topic']: res['topic'][k['topic_name']] = {'total': 0}
-                    res['topic'][k['topic_name']]['total'] += 1
-            if 'x_mentions_count' in tweet:
-                for k,v in tweet['x_mentions_count'].items():
-                    if k in accs:
-                        res['stats']['mentions']['total'] += 1
-                        res['stats']['mentions']['accounts'][k] += 1
-            if 'user' in tweet and 'screen_name' in tweet['user']:
-                if ('@' + tweet['user']['screen_name']) in accs:
-                    res['stats']['own_tweets']['total'] += 1
-                    res['stats']['own_tweets']['accounts']['@' + tweet['user']['screen_name']] += 1
-                    if 'retweet_count' in tweet:
-                        res['stats']['own_tweets']['retweets']['total'] += int(tweet['retweet_count'])
-                        res['stats']['own_tweets']['retweets']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['retweet_count'])
-                    if 'favorite_count' in tweet:
-                        res['stats']['own_tweets']['favorites']['total'] += int(tweet['favorite_count'])
-                        res['stats']['own_tweets']['favorites']['accounts']['@' + tweet['user']['screen_name']] += int(tweet['favorite_count'])
+            for k in tweet.getExtractedTopics():
+                if not k['topic_name'] in res['topic']: res['topic'][k['topic_name']] = {'total': 0}
+                res['topic'][k['topic_name']]['total'] += 1
+            for k,v in tweet.getFollowAccountsMentionCount().items():
+                if k in accs:
+                    res['stats']['mentions']['total'] += 1
+                    res['stats']['mentions']['accounts'][k] += 1
+            if tweet.getUsername() in accs:
+                res['stats']['own_tweets']['total'] += 1
+                res['stats']['own_tweets']['accounts'][tweet.getUsername()] += 1
+                if tweet.getRetweetsCount():
+                    res['stats']['own_tweets']['retweets']['total'] += tweet.getRetweetsCount()
+                    res['stats']['own_tweets']['retweets']['accounts'][tweet.getUsername()] += tweet.getRetweetsCount()
+                if tweet.getFavoritesCount():
+                    res['stats']['own_tweets']['favorites']['total'] += tweet.getFavoritesCount()
+                    res['stats']['own_tweets']['favorites']['accounts'][tweet.getUsername()] += tweet.getFavoritesCount()
+        """
+        print 13, datetime.now(), cc
     return flask.Response(dumps(res),  mimetype='application/json')
 
 
@@ -775,10 +802,11 @@ def save_account():
     print data
     print data['account']['campaigns']
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
+    if not account: account = {'campaigns': {}, 'users': {}, 'name': data['account']['name']}
     for campaign_id, campaign in data['account']['campaigns'].items():
         if campaign_id not in account['campaigns']:
             account['campaigns'][campaign['_id']] = campaign
-            
+     
     for username, user in data['account']['users'].items():
         
         if username in account['users'] and not user['password']:

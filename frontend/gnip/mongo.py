@@ -211,6 +211,9 @@ class Campaign(object):
     def getBrands(self):
         return [Brand(id, prod) for id, prod in self.o.get('brands', {}).items()]
 
+    def getOwnBrands(self):
+        return [Brand(id, brand) for id, brand in self.o.get('brands', {}).items() if brand.get('own_brand', True)]
+
     def getTopics(self):
         return [Topic(id, topic) for id, topic in self.o.get('topics', {}).items()]
     
@@ -219,6 +222,20 @@ class Campaign(object):
         for b in self.getBrands():
             s |= b.getFollowAccounts()
         return s
+    
+    def getOwnFollowAccounts(self):
+        s = set()
+        for b in self.getOwnBrands():
+            s |= b.getFollowAccounts()
+        return s    
+
+class DataCollection(object):
+    
+    def __init__(self, id, mongodc):
+        self.id = id
+        self.o = mongodc
+        
+        
 
 class Poll(object):
     
@@ -250,6 +267,9 @@ class Poll(object):
         else:    
             return set([x.strip() for x in self.getOptionHashtags()])
     
+    def getDictionary(self):
+        return self.o
+    
 class Account(object):
     
     def __init__(self, mongoaccount):
@@ -272,10 +292,13 @@ class Account(object):
 
     def getActivePolls(self):
         return [Poll(id, poll) for id, poll in self.o.get('polls', {}).items() if poll.get("active", True)]
+
+    def getActiveDataCollections(self):
+        return [DataCollection(id, dc) for id, dc in self.o.get('datacollections', {}).items() if dc.get("active", True)]
     
     def getCampaign(self, **kwargs):
         if 'id' in kwargs:
-            return Campaign(self.o['campaigns'][kwargs['id']])
+            return Campaign(kwargs['id'], self.o['campaigns'][kwargs['id']])
         return None
     
     def getFollowAccounts(self):
@@ -314,7 +337,8 @@ class MongoIterator(object):
         return datetime.now() - self.created
 
 
-
+    def count(self):
+        return self.collection.count()
     
 class MongoManager(object):
 
@@ -349,10 +373,18 @@ class MongoManager(object):
         if not max_age or not cls.cached_active_accounts or (datetime.now() - cls.cached_active_accounts['fetch_time'] > max_age):
             cls.cached_active_accounts = {'data': MongoIterator(list(cls.db.accounts.find({"$or": [{"active": True}, {"active": {"$exists": False}}]})), Account), 'fetch_time': datetime.now()}
         return cls.cached_active_accounts['data']
-    
+
     @classmethod
-    def findTweets(cls, collection_name, **kwargs):
-        from tweet import Tweet
+    def findOne(cls, collection_name, **kwargs):
+        filters = kwargs.get("filters", {})
+        sort = kwargs.get("sort", ())
+        skip = kwargs.get("skip", None)
+        limit = kwargs.get("limit", None)
+        res = cls.db[collection_name].find_one(filters)
+        return res
+
+    @classmethod
+    def find(cls, collection_name, **kwargs):
         filters = kwargs.get("filters", {})
         sort = kwargs.get("sort", ())
         skip = kwargs.get("skip", None)
@@ -361,7 +393,18 @@ class MongoManager(object):
         if sort: res.sort(*sort)
         if skip is not None: res.skip(skip)
         if limit is not None: res.limit(limit)
-        return MongoIterator(res, Tweet.createFromMongoDoc)
+        return res
+
+    @classmethod
+    def remove(cls, collection_name, **kwargs):
+        filters = kwargs.get("filters", {})
+        res = cls.db[collection_name].remove(filters)
+        return res
+    
+    @classmethod
+    def findTweets(cls, collection_name, **kwargs):
+        from tweet import Tweet
+        return MongoIterator(cls.find(collection_name, **kwargs), Tweet.createFromMongoDoc)
 
     @classmethod
     def countDocuments(cls, collection_name, **kwargs):
@@ -373,13 +416,19 @@ class MongoManager(object):
         if limit is not None: res.limit(limit)
         return res.count()
     
-    
+    @classmethod
+    def getSummarizedTweetInfo(cls, campaign):
+        res = cls.db["summarized_tweets_%s" % campaign.getId()].find() ##luego habria que agregarle alguna clase de filtros por fecha
+        return res
+        
     @classmethod
     def getAccount(cls, **kwargs):
         if not kwargs: return None
         d = {}
         if 'id' in kwargs:
             d['_id'] = ObjectId(kwargs['id'])
+        if 'name' in kwargs:
+            d['name'] = kwargs['name']
         return Account(cls.db.accounts.find_one(d))  
     
     @classmethod

@@ -17,7 +17,7 @@ class Tweet(object):
     @classmethod
     def createFromMongoDoc(cls, doc):
         res = GnipActivityTweet(doc)
-        if not 'user' in doc:  #xq se grabaro inicialmente algunos tweets sin estos campos
+        if not 'user' in doc:  #xq se grabaron inicialmente algunos tweets sin estos campos
             res.d['user'] = {}
             res.d['user']['screen_name'] = res.getUsername()        
             res.d['user']['profile_image_url_https'] = res.getUserProfileImageURL()
@@ -81,6 +81,8 @@ class GnipActivityTweet(Tweet):
         self.d['user']['screen_name'] = self.getUsername()
         self.d['user']['profile_image_url_https'] = self.getUserProfileImageURL()
         self.d['text'] = self.getText()
+        self.d['favorite_count'] = self.getFavoritesCount()
+        self.d['retweet_count'] = self.getRetweetsCount()
         self.d['x_coordinates'] = {}
         try:
             self.d['x_coordinates']['country_code'] = self.d['location']['twitter_country_code'].lower()
@@ -98,11 +100,17 @@ class GnipActivityTweet(Tweet):
         
 
     def getUsername(self):
-        return '@'+self.d['actor']['preferredUsername']
+        try:
+            return '@'+self.d['actor']['preferredUsername']
+        except KeyError, e:
+            return '@'+self.d['user']['screen_name']
 
     def getText(self):
-        return self.d['body']
-        
+        try:
+            return self.d['body']
+        except KeyError, e:
+            self.d['text']
+            
     def getCreatedDate(self):
         return self.d['x_created_at']
     
@@ -170,3 +178,9 @@ class GnipActivityTweet(Tweet):
     def getUserMentions(self):
         um = self.d.get('twitter_entities', {}).get('user_mentions', [])
         return dict([('@' + x['screen_name'], x['name']) for x in um])
+    
+    def getFavoritesCount(self):
+        return self.d.get('favoritesCount', 0)
+    
+    def getRetweetsCount(self):
+        return self.d.get('retweetCount', 0)    
