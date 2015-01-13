@@ -14,12 +14,20 @@ def check_processes():
     24065 pts/1    Sl     0:14 /usr/bin/python application.py --auth
     25372 pts/1    S+     0:00 grep --color=auto python"""
 
-    processes = [("twfetch", None),
+#    processes = [("twfetch", None),
                 ("datacollection", "gnip"),
                 ("application", "frontend"),
                 #("geocoding", None)
                 ]
 
+    processes = [("gnip", "gnip"),
+                 ("rules_manager", "gnip"),
+                 ("summarizer", "gnip"),
+                ("datacollection", "gnip"),
+                ("application", "frontend"),
+                #("geocoding", None)
+                ]
+    
     for p in processes:
         if r.find("python %s.py" % p[0]) < 0:
             start_process(p)
