@@ -46,7 +46,7 @@ class Product(object):
         if self.keywordsets is None:
             self.keywordsets = []
             for kwset in self.o.get('keyword_sets', []):
-                self.keyworsets.append(MongoManager.getKeywordset(id=str(kwset['_id'])))        
+                self.keywordsets.append(MongoManager.getKeywordset(id=str(kwset['_id'])))        
         return self.keywordsets    
 
 class Brand(object):
