@@ -20,7 +20,7 @@ def check_processes():
                 #("geocoding", None)
 #                ]
 
-    processes = [("gnip", "gnip"),
+    processes = [("gnip", "frontend/gnip"),
                  ("rules_manager", "frontend/gnip"),
                  ("summarizer", "frontend/gnip"),
                 ("datacollection", "gnip"),
