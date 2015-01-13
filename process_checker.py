@@ -15,10 +15,10 @@ def check_processes():
     25372 pts/1    S+     0:00 grep --color=auto python"""
 
 #    processes = [("twfetch", None),
-                ("datacollection", "gnip"),
-                ("application", "frontend"),
+#                ("datacollection", "gnip"),
+#                ("application", "frontend"),
                 #("geocoding", None)
-                ]
+#                ]
 
     processes = [("gnip", "gnip"),
                  ("rules_manager", "gnip"),
