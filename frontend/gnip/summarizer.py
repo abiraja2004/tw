@@ -247,7 +247,7 @@ class Summarizer(object):
 if __name__ == '__main__':
     #campaign = MongoManager.getAccount(name='Danone').getActiveCampaigns()[0]
     summarizer = Summarizer()
-    summarizer.start()
+    summarizer.start(None, True)
     exit(0)
     #d = SumDict({'a': 1, 'b':2, 'c': 'pablo', 'd': SumDict({'aa': 4})})
     #d2 = SumDict({'a': 10, 'b':20, 'c': 'pablo', 'd': SumDict({'aa': 40})})
