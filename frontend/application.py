@@ -868,6 +868,9 @@ def server_status():
     from subprocess import PIPE
     output = subprocess.Popen('ps ax | grep python', shell=True, stdout=PIPE).stdout.read()
     processes = {}
+    processes['Gnip Twitter fetcher service'] = output.find("python gnip.py") >= 0
+    processes['Summarizer'] = output.find("python summarizer.py") >= 0
+    processes['Gnip Rules Manager'] = output.find("python rules_manager.py") >= 0
     processes['FLASK Web Server'] = output.find("python application.py") >= 0
     processes['Google Geocoding Service'] = output.find("python geocoding.py") >= 0
     processes['Gnip Datacollection Service'] = output.find("python datacollection.py") >= 0
