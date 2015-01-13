@@ -608,12 +608,17 @@ def tweets_count():
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['topic'] = {}
-        print campaign, campaign.getId(), start, end
+        print 7.5, campaign, campaign.getId(), start, end
         rrr = summarizer.getSummarizedData(campaign, start, end)
-        pprint(rrr)
+        print 7.6, campaign, campaign.getId(), start, end
+        #pprint(rrr)
         if rrr:
-            rrr = summarizer.aggregate(rrr)
+            rrr = summarizer.aggregate(rrr, group_by)
             res['stats'] = rrr['stats']
+            res['sentiment'] = rrr['sentiment']
+            res['brand'] = rrr['brand']
+            res['product'] = rrr['product']
+            res['topic'] = rrr['topic']
         polls = account.getActivePolls()
         poll_hashtags = {}
         print 8, datetime.now()

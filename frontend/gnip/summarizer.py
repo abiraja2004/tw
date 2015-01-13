@@ -29,7 +29,7 @@ class Summarizer(object):
 
     def getCurrentSummarizationEnd(self):
         end = datetime.utcnow()
-        if end.minute < 15: end = end - timedelta(hours=1)
+        if end.minute < 7: end = end - timedelta(hours=1)
         end = end.replace(minute=0, second=0, microsecond=0)
         return end
     
@@ -98,6 +98,9 @@ class Summarizer(object):
             data['stats']['own_tweets']['favorites']  = SumDict({'total': 0, 'accounts': SumDict([(a,0) for a in own_fa])})
             data['stats']['mentions']  = SumDict({'total': 0, 'accounts': SumDict([(a,0) for a in own_fa])})
             data['sentiment'] = SumDict()
+            data['brand'] = SumDict()
+            data['product'] = SumDict()
+            data['topic'] = SumDict()
             timerange.append(data)
             d = d + interval
             
@@ -119,25 +122,49 @@ class Summarizer(object):
                     if t.getSentiment():
                         if not t.getSentiment() in interv['sentiment']: interv['sentiment'][t.getSentiment()] = {"total": 0}
                         interv['sentiment'][t.getSentiment()]['total'] += 1
+                    pms = t.getExtractedInfo()
+                    if pms:
+                        pm = pms[0]
+                        try:
+                            interv['brand'][pm['brand']] += 1
+                        except KeyError,e: 
+                            interv['brand'][pm['brand']] = 1
+                        if pm['product']: 
+                            p = pm['brand'] + "/" + pm['product']
+                            try:
+                                interv['product'][p] += 1
+                            except KeyError, e:
+                                interv['product'][p] = 1                        
+                    for k in t.getExtractedTopics():
+                        try:
+                            interv['topic'][k['topic_name']]['total'] += 1
+                        except KeyError, e:
+                            interv['topic'][k['topic_name']] = {'total': 1}
         return timerange
     
     def getSummarizedData(self, campaign, start, end):
+        print "A", datetime.now()
         collection_name = 'summarized_tweets_%s' % campaign.getId()
         res = MongoManager.find(collection_name, filters={'start': {"$gte": start}, 'end': {"$lte": end}})
+        print "B", datetime.now()
         #timerange = [SumDict(r) for r in res]
         timerange = list(res)
+        
+        print "C", datetime.now(), len(timerange)
         if timerange and timerange[-1]['end'] < end:
+            print "D", datetime.now()
             d = self.calculateSummarizedIntervals(campaign, timerange[-1]['end'], end, end - timerange[-1]['end'])
+            print "E", datetime.now()
             for k in d:
                 k['calculated'] = True
             timerange.extend(d)
-        for r in timerange:
-            print r['start'], r['end'], r['stats']['total_tweets'], r.get('calculated', '')
-        
+        #for r in timerange:
+        #    print r['start'], r['end'], r['stats']['total_tweets'], r['sentiment'], r.get('calculated', '')
+        print "F", datetime.now()
         return timerange
 
             
-    def aggregate(self, data):
+    def aggregate(self, data, group_by):
         def toZero(d):
             for k,v in d.items():
                 if isinstance(v, (dict, SumDict)):
@@ -146,11 +173,51 @@ class Summarizer(object):
                     d[k] = 0
             return d
 
+        if group_by == "day":
+            params = {"days": 1}
+            timeformat = "%Y-%m-%dT00:00:00Z"
+        elif group_by == "hour":
+            params = {"hours": 1}
+            timeformat = "%Y-%m-%dT%H:00:00Z"
+        elif group_by == "week":
+            params = {"weeks": 1}
+            timeformat = "%Y-%m-%dT00:00:00Z"
+        delta = timedelta(**params)
+
         res = SumDict(deepcopy(data[0]))
+        pprint(res)
+        start = res['start']
+        end = data[-1]['end']
         res = toZero(res)
+        res['brand_2'] = {}
+        res['product_2'] = {}
         
         for r in data:
             res = res + r
+            key = r['start'].strftime(timeformat)
+            for sent, q in r['sentiment'].items():
+                try:
+                    res['sentiment'][sent][key] += r['sentiment'][sent]['total']
+                except KeyError,e:
+                    if key not in res['sentiment'][sent]: res['sentiment'][sent][key] = r['sentiment'][sent]['total']
+            for brand, q in r['brand'].items():
+                if not brand in res['brand_2']: res['brand_2'][brand] = {}
+                try:
+                    res['brand_2'][brand][key] += r['brand'][brand]
+                except KeyError,e:
+                    if key not in res['brand_2'][brand]: res['brand_2'][brand][key] = r['brand'][brand]
+            for product, q in r['product'].items():
+                if not product in res['product_2']: res['product_2'][product] = {}
+                try:
+                    res['product_2'][product][key] += r['product'][product]
+                except KeyError,e:
+                    if key not in res['product_2'][product]: res['product_2'][product][key] = r['product'][product]
+        res['brand'] = res['brand_2']
+        del res['brand_2']
+        res['product'] = res['product_2']
+        del res['product_2']        
+        res['start'] = start
+        res['end'] = end
         return res
         """
         res={}
@@ -178,21 +245,21 @@ class Summarizer(object):
 
 
 if __name__ == '__main__':
-    campaign = MongoManager.getAccount(name='IAE').getActiveCampaigns()[0]
+    campaign = MongoManager.getAccount(name='Danone').getActiveCampaigns()[0]
     summarizer = Summarizer()
-    summarizer.start(campaign, True)
-    exit(0)
+    summarizer.start(campaign, False)
+    #exit(0)
     #d = SumDict({'a': 1, 'b':2, 'c': 'pablo', 'd': SumDict({'aa': 4})})
     #d2 = SumDict({'a': 10, 'b':20, 'c': 'pablo', 'd': SumDict({'aa': 40})})
     #pprint(summarizer.aggregate([d,d2]))
     #exit(0)
     
     
-    records = summarizer.getSummarizedData(campaign, datetime(2014,12,1,0), datetime(2014,12,2,0))
-    #pprint(records)
-    r = summarizer.aggregate(records)
+    records = summarizer.getSummarizedData(campaign, datetime(2015,01,1,0), datetime(2015,01,12,0))
+    pprint(records)
+    r = summarizer.aggregate(records, 'day')
     pprint(r)
-    print campaign.getId()
+    #print campaign.getId()
     #summarizer.start()
     """
     print summarizer.getCurrentSummarizationEnd()
