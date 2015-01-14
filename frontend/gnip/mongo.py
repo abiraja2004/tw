@@ -346,13 +346,14 @@ class MongoManager(object):
     cached_active_accounts = {}
     cached_polls_by_hashtag = {}
     follow_accounts_by_campaign = {}
+    global_trend_stop_words = {}
     
     @classmethod
     def connect(cls):
         parser = argparse.ArgumentParser()
         parser.add_argument('--auth', action="store_true", default=False)
         parser.add_argument('--host', default='')
-        args = parser.parse_args()
+        args, unknown = parser.parse_known_args()
         dbuser = "monitor"
         dbpasswd = "monitor678"
         if args.host:
@@ -429,7 +430,9 @@ class MongoManager(object):
             d['_id'] = ObjectId(kwargs['id'])
         if 'name' in kwargs:
             d['name'] = kwargs['name']
-        return Account(cls.db.accounts.find_one(d))  
+        acc = cls.db.accounts.find_one(d)
+        if acc: return Account(acc)    
+        return None
     
     @classmethod
     def getKeywordset(cls, **kwargs):
@@ -479,6 +482,20 @@ class MongoManager(object):
             cls.follow_accounts_by_campaign = {'data': s, 'fetch_time': datetime.now()}
         return cls.follow_accounts_by_campaign['data']
 
+
+    @classmethod
+    def getGlobalTrendStopWords(cls, language,  **kwargs):
+        max_age = kwargs.get('max_age', timedelta(seconds=0))
+        if not max_age or not cls.global_trend_stop_words.get(language, None) or (datetime.now() - cls.cls.global_trend_stop_words[language]['fetch_time'] > max_age):
+            res = MongoManager.findOne("global_trend_stop_words", filters={"lang": language})
+            if not res:
+                res = {'lang': language, 'words': []}
+            cls.global_trend_stop_words[language] = {'data': res, 'fetch_time': datetime.now()}
+        return cls.global_trend_stop_words[language]['data']
+
+    @classmethod
+    def saveGlobalTrendStopWords(cls, doc):
+        MongoManager.saveDocument("global_trend_stop_words", doc)
 
     @classmethod
     def saveDocument(cls, collection_name, doc):

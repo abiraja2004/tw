@@ -1,3 +1,5 @@
+#encoding: utf-8
+import argparse
 from mongo import MongoManager
 from pprint import pprint
 from datetime import datetime, timedelta
@@ -5,6 +7,8 @@ import time
 import numbers
 from collections import Counter
 from copy import deepcopy
+import re
+import sys
 
 class SumDict(dict):
     
@@ -27,22 +31,35 @@ class SumDict(dict):
             
 class Summarizer(object):
 
+    global_trend_stop_words = {}
+    
+    @classmethod
+    def getGlobalTrendStopWords(cls, language,  **kwargs):
+        max_age = kwargs.get('max_age', timedelta(seconds=0))
+        if not max_age or not cls.global_trend_stop_words.get(language, None) or (datetime.now() - cls.global_trend_stop_words[language]['fetch_time'] > max_age):
+            cls.global_trend_stop_words[language] = {'data': set(MongoManager.getGlobalTrendStopWords(language)['words']), 'fetch_time': datetime.now()}
+        return cls.global_trend_stop_words[language]['data']
+
     def getCurrentSummarizationEnd(self):
         end = datetime.utcnow()
         if end.minute < 7: end = end - timedelta(hours=1)
         end = end.replace(minute=0, second=0, microsecond=0)
         return end
     
-    def start(self, only_campaign=None, regenerate_all=False):
+    def clearSummarization(self, campaign):
+        MongoManager.remove('summarized_tweets_%s' % campaign.getId())
         
+    def start(self, **kwargs):
+        only_campaign= kwargs.get('campaign', None)
+        regenerate_all = kwargs.get('regenerate', False)
         while True:
             end = self.getCurrentSummarizationEnd()
             for account in MongoManager.getActiveAccounts(max_age=timedelta(hours=1)):
                 for campaign in account.getActiveCampaigns():
                     if only_campaign and only_campaign.getId() != campaign.getId(): continue
                     if regenerate_all:
+                        self.clearSummarization(campaign)
                         collection_name = 'tweets_%s' % campaign.getId()
-                        MongoManager.remove('summarized_tweets_%s' % campaign.getId())
                         res = MongoManager.findTweets(collection_name, sort=("x_created_at", 1), limit=1)
                         if res.count():
                             lsd = res[0]['x_created_at'].replace(minute=0, second=0, microsecond=0)
@@ -69,9 +86,17 @@ class Summarizer(object):
             if res.count():
                 return res[0]['x_created_at'].replace(minute=0, second=0, microsecond=0)
             return datetime.now().replace(minute=0, second=0, microsecond=0)
+    
+    def getWordsList(self, text):
+        text = re.sub("[:.,(){}!?¿/&%$#]", " ", text)
+        return text.split()
 
+    def getTrendWordsSynonyms(self, campaign):
+        return {'vende': 'vender', 'vendiendo': 'vender', 'vendo': 'vender'}
     
-    
+    def getTrendStopWords(self, campaign):
+        return self.__class__.getGlobalTrendStopWords("es", max_age=timedelta(seconds=20))
+
         
     def summarize(self, campaign, start, end, interval, tweetlist=None):
         collection_name = 'summarized_tweets_%s' % campaign.getId()
@@ -83,6 +108,8 @@ class Summarizer(object):
 
     def calculateSummarizedIntervals(self, campaign, start, end, interval, tweetlist=None):
         pprint("summarizing tweets for campaign %s between %s and %s" % (campaign.getName(), start, end))
+        synonyms = self.getTrendWordsSynonyms(campaign)
+        trend_stop_words_set = self.getTrendStopWords(campaign)
         collection_name = 'summarized_tweets_%s' % campaign.getId()
         if tweetlist is None:
             tweetlist = MongoManager.findTweets("tweets_%s" % campaign.getId(), filters={"retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
@@ -101,6 +128,7 @@ class Summarizer(object):
             data['brand'] = SumDict()
             data['product'] = SumDict()
             data['topic'] = SumDict()
+            data['words'] = SumDict()
             timerange.append(data)
             d = d + interval
             
@@ -140,31 +168,30 @@ class Summarizer(object):
                             interv['topic'][k['topic_name']]['total'] += 1
                         except KeyError, e:
                             interv['topic'][k['topic_name']] = {'total': 1}
+                    for word in self.getWordsList(t.getText()):
+                        if word in trend_stop_words_set: continue
+                        word = word.lower()
+                        nword = synonyms.get(word, word)
+                        data['words'][nword] = data['words'].get(nword, 0) + 1
         return timerange
     
     def getSummarizedData(self, campaign, start, end):
-        print "A", datetime.now()
         collection_name = 'summarized_tweets_%s' % campaign.getId()
         res = MongoManager.find(collection_name, filters={'start': {"$gte": start}, 'end': {"$lte": end}})
-        print "B", datetime.now()
         #timerange = [SumDict(r) for r in res]
         timerange = list(res)
         
-        print "C", datetime.now(), len(timerange)
         if timerange and timerange[-1]['end'] < end:
-            print "D", datetime.now()
             d = self.calculateSummarizedIntervals(campaign, timerange[-1]['end'], end, end - timerange[-1]['end'])
-            print "E", datetime.now()
-            for k in d:
-                k['calculated'] = True
+            #for k in d:
+            #    k['calculated'] = True
             timerange.extend(d)
         #for r in timerange:
         #    print r['start'], r['end'], r['stats']['total_tweets'], r['sentiment'], r.get('calculated', '')
-        print "F", datetime.now()
         return timerange
 
             
-    def aggregate(self, data, group_by):
+    def aggregate(self, campaign, data, group_by):
         def toZero(d):
             for k,v in d.items():
                 if isinstance(v, (dict, SumDict)):
@@ -185,7 +212,6 @@ class Summarizer(object):
         delta = timedelta(**params)
 
         res = SumDict(deepcopy(data[0]))
-        pprint(res)
         start = res['start']
         end = data[-1]['end']
         res = toZero(res)
@@ -215,7 +241,9 @@ class Summarizer(object):
         res['brand'] = res['brand_2']
         del res['brand_2']
         res['product'] = res['product_2']
-        del res['product_2']        
+        del res['product_2']
+        res['words'] = SumDict([(x,y) for x,y in res['words'].items() if x not in self.getTrendStopWords(campaign)])
+        res['words'] = sorted(res['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)
         res['start'] = start
         res['end'] = end
         return res
@@ -245,28 +273,33 @@ class Summarizer(object):
 
 
 if __name__ == '__main__':
-    #campaign = MongoManager.getAccount(name='Danone').getActiveCampaigns()[0]
-    summarizer = Summarizer()
-    summarizer.start(None, False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--regenerate', action="store_true", default=False)
+    parser.add_argument('--account', default=None)
+    parser.add_argument('--list', action="store_true", default=False)
+    parser.add_argument('--start', default=None)
+    parser.add_argument('--end', default=None)
+    parser.add_argument('--clear', action="store_true", default=False)
+    args, known = parser.parse_known_args()
+    campaign = None
+    if args.account:
+        account = MongoManager.getAccount(name=args.account)
+        if not account:
+            pprint("Account %s not found" % args.account)
+            exit(1)
+        campaign = account.getActiveCampaigns()[0]    
+    
+    summarizer = Summarizer()    
+    if not args.list and not args.clear:
+        summarizer.start(campaign=campaign, regenerate=args.regenerate)
+    elif args.clear and campaign:
+        summarizer.clearSummarization(campaign)
+    elif campaign and args.start and args.end:
+        print args
+        start = datetime.strptime(args.start, "%Y-%m-%dT%H")
+        end = datetime.strptime(args.end, "%Y-%m-%dT%H")
+        records = summarizer.calculateSummarizedIntervals(campaign,start,end,timedelta(hours=1))    
+        pprint(records)
+        res = summarizer.aggregate(campaign, records, 'day')
+        pprint(res)
     exit(0)
-    #d = SumDict({'a': 1, 'b':2, 'c': 'pablo', 'd': SumDict({'aa': 4})})
-    #d2 = SumDict({'a': 10, 'b':20, 'c': 'pablo', 'd': SumDict({'aa': 40})})
-    #pprint(summarizer.aggregate([d,d2]))
-    #exit(0)
-    
-    
-    records = summarizer.getSummarizedData(campaign, datetime(2015,01,1,0), datetime(2015,01,12,0))
-    pprint(records)
-    r = summarizer.aggregate(records, 'day')
-    pprint(r)
-    #print campaign.getId()
-    #summarizer.start()
-    """
-    print summarizer.getCurrentSummarizationEnd()
-    
-    
-    pprint(summarizer.getLastSummarizedDate(campaign))
-    
-    summarizer.summarize(MongoManager.getAccount(name='Sony').getActiveCampaigns()[0], datetime(2015,1,8,0), datetime(2015,1,8,1), timedelta(hours=1), None)
-    
-    """

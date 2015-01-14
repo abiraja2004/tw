@@ -29,7 +29,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
-args = parser.parse_args()
+args, known = parser.parse_known_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
 if args.host:
@@ -78,7 +78,7 @@ def root():
 """
 
 
-def getUser(account):
+def getUser(account=None):
     if not account:
         if 'account_id' in session: account = getAccount(session['account_id'])
     if account and 'username' in session and 'users' in account: return account['users'].get(session['username'], None)
@@ -560,13 +560,10 @@ def tweets_count():
     brands_to_include = request.args.get("brands_to_include", "")
     res = {'timerange': []}
     if start and end and campaign_id:
-        print 2, datetime.now()
         account = MongoManager.getAccount(id=account_id)
         campaign = account.getCampaign(id=campaign_id)
-        print 3, datetime.now()
         #accs = getCampaignFollowAccounts(account.getId(), campaign_id)
         accs = campaign.getFollowAccounts()
-        print 4, datetime.now()
         collection_name = "tweets_%s" % campaign_id
         bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
         start = datetime.strptime(start + "T00:00:00", "%Y-%m-%dT%H:%M:%S")
@@ -585,16 +582,13 @@ def tweets_count():
             timeformat = "%Y-%m-%dT00:00:00Z"
         delta = timedelta(**params)
         d = start
-        print 5, datetime.now()
         while d <= end:
             timerange.append(d.strftime("%Y-%m-%dT%H:00:00Z"))
             d = d + delta
-        print 6, datetime.now()
         res['timerange'] = timerange
         #dbtweets = MongoManager.findTweets(collection_name, filters={ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
         
         #accountdb[collection_name].find(, {'_id': 0, 'x_coordinates': 1, 'x_sentiment': 1, 'x_extracted_info': 1, 'x_extracted_topics': 1, 'user': 1, 'x_mentions_count': 1, 'retweet_count': 1, 'favorite_count':  1, 'x_created_at': 1})
-        print 7, datetime.now()
         
         res['brand'] = {}
         res['product'] = {}
@@ -608,20 +602,19 @@ def tweets_count():
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['topic'] = {}
-        print 7.5, campaign, campaign.getId(), start, end
+        res['words'] = {}
         rrr = summarizer.getSummarizedData(campaign, start, end)
-        print 7.6, campaign, campaign.getId(), start, end
         #pprint(rrr)
         if rrr:
-            rrr = summarizer.aggregate(rrr, group_by)
+            rrr = summarizer.aggregate(campaign, rrr, group_by)
             res['stats'] = rrr['stats']
             res['sentiment'] = rrr['sentiment']
             res['brand'] = rrr['brand']
             res['product'] = rrr['product']
             res['topic'] = rrr['topic']
+            res['words'] = rrr['words']
         polls = account.getActivePolls()
         poll_hashtags = {}
-        print 8, datetime.now()
         for poll in polls:
             poll_id = poll.getId()
             data = {}
@@ -633,7 +626,6 @@ def tweets_count():
             d['data'] = data
             res['polls'][poll_id] = d
             
-        print 9, datetime.now()
         for poll in polls:
             poll_id = poll.getId()
             collection_name = "polls_%s" % poll_id
@@ -647,7 +639,6 @@ def tweets_count():
                         if ("#" + ht['text']) in options:
                             res['polls'][poll_id]['data']['#'+ht['text']]['total'] += 1
                 
-        print 10, datetime.now()
         datacollections = account.getActiveDataCollections()
 
         for datacollection in datacollections:
@@ -665,11 +656,8 @@ def tweets_count():
                         else:
                             datacollection['data'][field['name']][dcitem['fields'][field['name']]]['total'] += 1
             res['datacollections'][datacollection_id] = datacollection    
-        print 11, datetime.now()
         #pprint(dbtweets.explain())
         #dbtweets = list(dbtweets)
-        print 12, datetime.now()
-        cc = 0
         """
         for tweet in dbtweets:
             cc += 1
@@ -724,7 +712,6 @@ def tweets_count():
                     res['stats']['own_tweets']['favorites']['total'] += tweet.getFavoritesCount()
                     res['stats']['own_tweets']['favorites']['accounts'][tweet.getUsername()] += tweet.getFavoritesCount()
         """
-        print 13, datetime.now(), cc
     return flask.Response(dumps(res),  mimetype='application/json')
 
 
@@ -1065,6 +1052,20 @@ def logs_login():
     for doc in docs:
         lines.append("%s: %s  --  %s" % (doc['timestamp'], doc['account_id'], doc['username']))
     return "<br>".join(lines)
+
+@app.route('/api/trends/global/stopwords/add', methods=["POST"])
+def global_trends_stop_words_add():
+    user = getUser()
+    if user and user['access'] == 'admin':
+        lang = request.form["lang"]
+        word = request.form["word"]
+        if lang and word:
+            sw = MongoManager.getGlobalTrendStopWords(lang)
+            sw['words'].append(word)
+            sw['words'] = list(set(sw['words'])) #para eliminar cualquier posible duplicado
+            MongoManager.saveGlobalTrendStopWords(sw)
+        return "OK"        
+    return 'ACCESS ERROR'
 
 @app.route('/feeds_explorer')
 def feeds_explorer():

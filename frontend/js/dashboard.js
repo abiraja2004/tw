@@ -43,6 +43,7 @@ function updateAggregatedInformation()
     params.push([updateTweetCountLineChart, ['product']]);
     params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}, sentimentClick]]);
     params.push([updateTweetCountPieChart, ['topic']]);
+    params.push([updateWordTrendChart, ['words']]);
     params.push([updateIndicators]);
     //params.push([updatePollsPieCharts, ['polls']]);
     //params.push([updateDataCollectionPieCharts, ['datacollections']]);
@@ -97,6 +98,53 @@ function updateDataCollectionPieCharts(data)
     }
 }
 
+function trendWordClicked(word)
+{
+    if (confirm("Desea eliminar la palabra " + word + " de TODAS las tendencias?"))
+    {
+        $.ajax({
+            url: "/api/trends/global/stopwords/add", 
+            data: {word: word, lang: "es"}, 
+            type: "POST",
+        }).done(function (response) {
+            if (response == 'OK')
+            {
+                alert("Hecho.")
+            }
+            else
+            {
+                alert(response);
+            }
+        });   
+    }
+}
+
+function updateWordTrendChart(data)
+{
+    $('#word-trend-chart').html('');
+    if ($.isEmptyObject(data['words'])) return;
+    deb_var = data['words'];
+    var y = 3;
+    full_width = 300;
+    max_freq = data['words'][0][1];        
+    html = '<svg preserveAspectRatio="xMidYMid" viewBox="0 0 320 470" width="215" height="'+full_width+'">';
+    
+    for (var i = 0; i<data['words'].length; i++)
+    {
+        word = data['words'][i][0];
+        freq = data['words'][i][1];        
+        bar_width = 300 * freq / max_freq;
+        html = html + '<g class="bar" transform="translate(0,'+y+')" style="fill-opacity: 1;" onclick="trendWordClicked(\''+word+'\');">';
+        html = html + '<rect width="'+bar_width+'" style="fill: #3B6C51;" height="29"></rect>';
+        html = html + '<text style="fill: white;" x="5" y="14.5" dy=".35em" text-anchor="start">'+word+'</text>';
+        html = html + '<text class="value" x="258" y="14.5" dy=".35em" text-anchor="start">'+freq+'</text>';
+        html = html + '</g>';
+        y = y + 34;
+        if (i > 12) break;
+    }
+    html = html + '</svg>';
+    $('#word-trend-chart').html(html);
+}
 function updateIndicators(data)
 {
     $('#total_tweets').html(''+data['stats']['total_tweets']);

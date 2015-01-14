@@ -109,7 +109,7 @@ class GnipActivityTweet(Tweet):
         try:
             return self.d['body']
         except KeyError, e:
-            self.d['text']
+            return self.d['text']
             
     def getCreatedDate(self):
         return self.d['x_created_at']
