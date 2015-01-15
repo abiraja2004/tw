@@ -1056,7 +1056,7 @@ def logs_login():
 @app.route('/api/trends/global/stopwords/add', methods=["POST"])
 def global_trends_stop_words_add():
     user = getUser()
-    if user and user['access'] == 'admin':
+    if user and user.get('access', 'basic') == 'admin':
         lang = request.form["lang"]
         word = request.form["word"]
         if lang and word:
