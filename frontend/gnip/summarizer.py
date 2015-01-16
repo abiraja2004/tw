@@ -173,14 +173,22 @@ class Summarizer(object):
                         word = word.lower()
                         nword = synonyms.get(word, word)
                         data['words'][nword] = data['words'].get(nword, 0) + 1
+                   #hay que dejar solo 100 elementos
         return timerange
     
     def getSummarizedData(self, campaign, start, end):
         collection_name = 'summarized_tweets_%s' % campaign.getId()
-        res = MongoManager.find(collection_name, filters={'start': {"$gte": start}, 'end': {"$lte": end}})
+        print 41, datetime.now()
+        res = MongoManager.find(collection_name, filters={'start': {"$gte": start, "$lte": end}, 'end': {"$lte": end}}, sort=('start',1))
+        pprint(res.explain())
+        print 43, datetime.now()
         #timerange = [SumDict(r) for r in res]
         timerange = list(res)
-        
+        print 44, datetime.now()
+        for r in timerange:
+            print r['start'], r['end'], r['stats']['total_tweets'], r['sentiment'], r.get('calculated', '')
+        print 44, datetime.now()
+        print timerange[-1]['end'], end
         if timerange and timerange[-1]['end'] < end:
             d = self.calculateSummarizedIntervals(campaign, timerange[-1]['end'], end, end - timerange[-1]['end'])
             #for k in d:
@@ -188,6 +196,7 @@ class Summarizer(object):
             timerange.extend(d)
         #for r in timerange:
         #    print r['start'], r['end'], r['stats']['total_tweets'], r['sentiment'], r.get('calculated', '')
+        print 45, datetime.now()
         return timerange
 
             
@@ -210,40 +219,58 @@ class Summarizer(object):
             params = {"weeks": 1}
             timeformat = "%Y-%m-%dT00:00:00Z"
         delta = timedelta(**params)
-
+        print 51, datetime.now()
         res = SumDict(deepcopy(data[0]))
         start = res['start']
         end = data[-1]['end']
         res = toZero(res)
         res['brand_2'] = {}
         res['product_2'] = {}
-        
+        print 52, datetime.now(), len(data)
+        k = 0
         for r in data:
+            k += 1
+
+            print 521, datetime.now(), k, len(res['words']), len(r['words'])
+            if len(r['words']) > 100: 
+                r['words'] = SumDict(sorted(r['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)[:100])
+            print 5211, datetime.now(), k, len(res['words']), len(r['words'])
+            if len(res['words']) > 150: 
+                res['words'] = SumDict(sorted(res['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)[:100])
+            print 5212, datetime.now(), k, len(res['words']), len(r['words'])
             res = res + r
+            print 522, datetime.now()
+
             key = r['start'].strftime(timeformat)
             for sent, q in r['sentiment'].items():
                 try:
                     res['sentiment'][sent][key] += r['sentiment'][sent]['total']
                 except KeyError,e:
                     if key not in res['sentiment'][sent]: res['sentiment'][sent][key] = r['sentiment'][sent]['total']
+            print 523, datetime.now()
             for brand, q in r['brand'].items():
                 if not brand in res['brand_2']: res['brand_2'][brand] = {}
                 try:
                     res['brand_2'][brand][key] += r['brand'][brand]
                 except KeyError,e:
                     if key not in res['brand_2'][brand]: res['brand_2'][brand][key] = r['brand'][brand]
+            print 524, datetime.now(), k
             for product, q in r['product'].items():
                 if not product in res['product_2']: res['product_2'][product] = {}
                 try:
                     res['product_2'][product][key] += r['product'][product]
                 except KeyError,e:
                     if key not in res['product_2'][product]: res['product_2'][product][key] = r['product'][product]
+        print 53, datetime.now()
         res['brand'] = res['brand_2']
         del res['brand_2']
         res['product'] = res['product_2']
         del res['product_2']
+        print 54, datetime.now()
         res['words'] = SumDict([(x,y) for x,y in res['words'].items() if x not in self.getTrendStopWords(campaign)])
+        print 55, datetime.now()
         res['words'] = sorted(res['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)
+        print 56, datetime.now()
         res['start'] = start
         res['end'] = end
         return res
@@ -294,11 +321,11 @@ if __name__ == '__main__':
         summarizer.start(campaign=campaign, regenerate=args.regenerate)
     elif args.clear and campaign:
         summarizer.clearSummarization(campaign)
-    elif campaign and args.start and args.end:
+    elif args.list and campaign and args.start and args.end:
         print args
         start = datetime.strptime(args.start, "%Y-%m-%dT%H")
         end = datetime.strptime(args.end, "%Y-%m-%dT%H")
-        records = summarizer.calculateSummarizedIntervals(campaign,start,end,timedelta(hours=1))    
+        records = summarizer.getSummarizedData(campaign,start,end)    
         pprint(records)
         res = summarizer.aggregate(campaign, records, 'day')
         pprint(res)

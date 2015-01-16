@@ -560,6 +560,7 @@ def tweets_count():
     brands_to_include = request.args.get("brands_to_include", "")
     res = {'timerange': []}
     if start and end and campaign_id:
+        print 2, datetime.now()
         account = MongoManager.getAccount(id=account_id)
         campaign = account.getCampaign(id=campaign_id)
         #accs = getCampaignFollowAccounts(account.getId(), campaign_id)
@@ -589,7 +590,7 @@ def tweets_count():
         #dbtweets = MongoManager.findTweets(collection_name, filters={ "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}})
         
         #accountdb[collection_name].find(, {'_id': 0, 'x_coordinates': 1, 'x_sentiment': 1, 'x_extracted_info': 1, 'x_extracted_topics': 1, 'user': 1, 'x_mentions_count': 1, 'retweet_count': 1, 'favorite_count':  1, 'x_created_at': 1})
-        
+        print 3, datetime.now()
         res['brand'] = {}
         res['product'] = {}
         res['sentiment'] = {}
@@ -603,16 +604,21 @@ def tweets_count():
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['topic'] = {}
         res['words'] = {}
+        print 4, datetime.now()
         rrr = summarizer.getSummarizedData(campaign, start, end)
         #pprint(rrr)
         if rrr:
+            print 5, datetime.now()
             rrr = summarizer.aggregate(campaign, rrr, group_by)
+            print 6, datetime.now()
             res['stats'] = rrr['stats']
             res['sentiment'] = rrr['sentiment']
             res['brand'] = rrr['brand']
             res['product'] = rrr['product']
             res['topic'] = rrr['topic']
             res['words'] = rrr['words']
+            if len(res['words']) > 100: res['words'] = res['words'][:100]
+        print 7, datetime.now()
         polls = account.getActivePolls()
         poll_hashtags = {}
         for poll in polls:
@@ -712,6 +718,7 @@ def tweets_count():
                     res['stats']['own_tweets']['favorites']['total'] += tweet.getFavoritesCount()
                     res['stats']['own_tweets']['favorites']['accounts'][tweet.getUsername()] += tweet.getFavoritesCount()
         """
+        print 8, datetime.now()
     return flask.Response(dumps(res),  mimetype='application/json')
 
 

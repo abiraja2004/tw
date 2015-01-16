@@ -136,7 +136,7 @@ function updateWordTrendChart(data)
         bar_width = 300 * freq / max_freq;
         html = html + '<g class="bar" transform="translate(0,'+y+')" style="fill-opacity: 1;" onclick="trendWordClicked(\''+word+'\');">';
         html = html + '<rect width="'+bar_width+'" style="fill: #3B6C51;" height="29"></rect>';
-        html = html + '<text style="fill: white;" x="5" y="14.5" dy=".35em" text-anchor="start">'+word+'</text>';
+        html = html + '<text style="fill: black;" x="5" y="14.5" dy=".35em" text-anchor="start">'+word+'</text>';
         html = html + '<text class="value" x="258" y="14.5" dy=".35em" text-anchor="start">'+freq+'</text>';
         html = html + '</g>';
         y = y + 34;
