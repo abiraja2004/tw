@@ -1,4 +1,4 @@
-from gnip import GnipManager
+from gnip import GnipTwitterManager, GnipCollectionManager
 from mongo import MongoManager
 from pprint import pprint
 from utils import MyThread
@@ -11,14 +11,13 @@ from classifiermanager import ClassifierManager
 
 
 
-class GnipRulesManager(object):
+class GnipTwitterRulesManager(object):
     
     def __init__(self):
         pass
     
     def generateGnipRulesFromMongo(self):
         accounts = MongoManager.getActiveAccounts()
-        print accounts.getAge()
         rules = []
         for acc in accounts:
             for camp in acc.getActiveCampaigns():
@@ -60,7 +59,7 @@ class GnipRulesManager(object):
         UN = 'federicog@promored.mx'
         PWD = 'ladedarin'
         ACCOUNT = 'promored'
-        rm = GnipManager(ACCOUNT, UN, PWD)    
+        rm = GnipTwitterManager(ACCOUNT, UN, PWD)    
 
         current_gnip_rules = rm.getRules()
         current_gnip_rule_values = set([r['value'] for r in current_gnip_rules])
@@ -84,7 +83,50 @@ class GnipRulesManager(object):
             
         if rulesToAdd: rm.addRules(rulesToAdd)        
         if rulesToRemove: rm.deleteRules(rulesToRemove)
+
+
         
+class GnipCollectionRulesManager(object):
+    
+    def __init__(self):
+        pass
+    
+    def generateGnipRulesFromMongo(self):
+        accounts = MongoManager.getActiveAccounts()
+        rules = []
+        for acc in accounts:
+            for camp in acc.getActiveCampaigns():
+                for fp in camp.getFacebookFanpages():
+                    rules.append({"value": fp, "tag": "%s/%s/%s" % (acc.getName(), camp.getName(), fp)})
+        return rules
+    
+    
+    def updateGnipRules(self):
+        UN = 'pablobesada'
+        PWD = 'pdbpdb'
+        ACCOUNT = 'promored'
+        rm = GnipCollectionManager(ACCOUNT, UN, PWD)    
+
+        current_gnip_rules = rm.getRules()
+        current_gnip_rule_values = set([r['value'] for r in current_gnip_rules])
+        mongo_rules = self.generateGnipRulesFromMongo()
+                
+        mongo_rule_values = set([r['value'] for r in mongo_rules])
+        
+        rulesToRemove = [r for r in current_gnip_rules if r['value'] not in mongo_rule_values]
+        rulesToAdd = [r for r in mongo_rules if r['value'] not in current_gnip_rule_values]
+        
+        if rulesToAdd:
+            print "Rules to ADD:"
+            pprint(rulesToAdd)
+
+        if rulesToRemove:
+            print "Rules to DELETE:"
+            pprint(rulesToRemove)
+            
+        if rulesToAdd: rm.addRules(rulesToAdd)        
+        if rulesToRemove: rm.deleteRules(rulesToRemove)
+
 
 class RulesMonitor(MyThread):
     INSTANCE = None
@@ -93,8 +135,9 @@ class RulesMonitor(MyThread):
         MyThread.__init__(self)
         self.finish_flag = False
         RulesMonitor.INSTANCE = self
-        self.gnipRulesManager = GnipRulesManager()
-
+        self.gnipTwitterRulesManager = GnipTwitterRulesManager()
+        self.gnipCollectionRulesManager = GnipCollectionRulesManager()
+        
     @classmethod
     def getInstance(cls):
         return cls.INSTANCE
@@ -106,7 +149,8 @@ class RulesMonitor(MyThread):
     def run(self):
         print "Rules monitor running..."
         while not self.finish_flag:
-            self.gnipRulesManager.updateGnipRules()
+            self.gnipTwitterRulesManager.updateGnipRules()
+            self.gnipCollectionRulesManager.updateGnipRules()
             time.sleep(RulesMonitor.CHECK_PERIOD)
 
     

@@ -227,7 +227,12 @@ class Campaign(object):
         s = set()
         for b in self.getOwnBrands():
             s |= b.getFollowAccounts()
-        return s    
+        return s
+
+    def getFacebookFanpages(self):
+        res = [fp.strip() for fp in self.o.get("facebook_fanpages", "").split() if fp.strip()]
+        return res
+    
 
 class DataCollection(object):
     
@@ -235,8 +240,15 @@ class DataCollection(object):
         self.id = id
         self.o = mongodc
         
-        
+    def getId(self):
+        return self.id        
 
+    def getDictionary(self):
+        return self.o
+    
+    def getFields(self):
+        return self.o.get('fields', [])
+    
 class Poll(object):
     
     def __init__(self, id, mongopoll):

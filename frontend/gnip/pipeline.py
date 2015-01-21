@@ -5,7 +5,6 @@ import traceback
 
 
 class Pipeline(object):
-    REGISTERED_STAGES = []
     
     class Stage(object):
         

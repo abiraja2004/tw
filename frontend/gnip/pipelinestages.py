@@ -84,6 +84,10 @@ class TweetProcessCampaign(Pipeline.Stage):
 
 
 
-def getPipelineStageClasses():
+def getPipelineTwitterStageClasses():
     return [TweetSaveForPolls, TweetProcessCampaign]
     #return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]
+    
+def getPipelineCollectionStageClasses():
+    return [TweetSaveForPolls, TweetProcessCampaign]
+    

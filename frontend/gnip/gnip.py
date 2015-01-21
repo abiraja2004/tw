@@ -150,17 +150,17 @@ class GnipStreamReceiver(MyThread):
                     
         
         
-class GnipManager(object):
+class GnipTwitterManager(object):
     def __init__(self,accountname, username, password):
         self.accountname = accountname
         self.username = username
         self.password = password
         self.pipeline = Pipeline()
-        for plsc in pipelinestages.getPipelineStageClasses():
+        for plsc in pipelinestages.getPipelineTwitterStageClasses():
             self.pipeline.appendStage(plsc())
         #self.pipeline.appendStage(Pipeline.Stage())
         self.extractor = None
-        self.gniprules = gnip_rules.GnipRules(accountname, username, password)
+        self.gniprules = gnip_rules.GnipTwitterRules(accountname, username, password)
         
         
     def startWorking(self):
@@ -196,15 +196,66 @@ class GnipManager(object):
         res = {}
         res['Pipeline'] = self.pipeline.getStats()
         return res
+
+
+class GnipCollectionManager(object):
+
+            
+    def __init__(self,accountname, username, password):
+        self.accountname = accountname
+        self.username = username
+        self.password = password
+        self.pipeline = Pipeline()
+        for plsc in pipelinestages.getPipelineCollectionStageClasses():
+            self.pipeline.appendStage(plsc())
+        #self.pipeline.appendStage(Pipeline.Stage())
+        self.extractor = None
+        self.gniprules = gnip_rules.GnipCollectionRules(accountname, username, password)
         
         
+    def startWorking(self):
+        self.pipeline.startWorking()        
+        URL = "https://stream.gnip.com:443/accounts/%s/publishers/twitter/streams/track/prod.json" %(self.accountname)
+        self.extractor = GnipStreamReceiver(URL, self.username, self.password, self.pipeline.getSourceQueue())        
+        self.extractor.start()
+
+    def stopWorking(self):
+        if self.extractor: 
+            self.extractor.stopWorking()
+            self.extractor.join()
+            self.extractor = None
+        self.pipeline.stopWorking()
+    
+    
+    def getRules(self):
+        return self.gniprules.getRules()['rules']
+
+    def addRules(self, rules):
+        self.gniprules.initLocalRules()
+        for r in rules:
+            self.gniprules.appendLocalRule(r['value'], r.get('tag', None))
+        self.gniprules.createGnipRules()
+
+    def deleteRules(self, rules):
+        self.gniprules.initLocalRules()
+        for r in rules:
+            self.gniprules.appendLocalRule(r['value'], r.get('tag', None))
+        self.gniprules.deleteGnipRules()
+        
+    def getStats(self):
+        res = {}
+        res['Pipeline'] = self.pipeline.getStats()
+        return res()      
+        
+    
+    
 if __name__ == "__main__":
 # Note: this automatically reconnects to the stream upon being disconnected
     
     UN = 'federicog@promored.mx'
     PWD = 'ladedarin'
     ACC = 'promored'
-    gm = GnipManager(ACC, UN, PWD)    
+    gm = GnipTwitterManager(ACC, UN, PWD)    
     gm.startWorking()
     try:    
         while True:

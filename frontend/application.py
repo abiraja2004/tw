@@ -648,20 +648,22 @@ def tweets_count():
         datacollections = account.getActiveDataCollections()
 
         for datacollection in datacollections:
-            datacollection_id = datacollection.getId()
-            datacollection['data'] = {}
-            for field in datacollection['fields']:
-                datacollection['data'][field['name']] = {}
+            datacollection_id = datacollection.getId()            
+            data = {}
+            for field in datacollection.getFields():
+                data[field['name']] = {}
             
             for dcitem in accountdb['datacollection_%s' % datacollection_id].find({}): #habria que filtrar por fecha??
-                for field in datacollection['fields']:
+                for field in datacollection.getFields():
                     if field['type'] != "combobox": continue #por ahora solo cuento los comboboxes
                     if field['name'] in dcitem['fields']:
-                        if dcitem['fields'][field['name']] not in datacollection['data'][field['name']]:
-                            datacollection['data'][field['name']][dcitem['fields'][field['name']]] = {'total': 1}
+                        if dcitem['fields'][field['name']] not in data[field['name']]:
+                            data[field['name']][dcitem['fields'][field['name']]] = {'total': 1}
                         else:
-                            datacollection['data'][field['name']][dcitem['fields'][field['name']]]['total'] += 1
-            res['datacollections'][datacollection_id] = datacollection    
+                            data[field['name']][dcitem['fields'][field['name']]]['total'] += 1
+            d = datacollection.getDictionary()
+            d['data'] = data
+            res['datacollections'][datacollection_id] = d
         #pprint(dbtweets.explain())
         #dbtweets = list(dbtweets)
         """

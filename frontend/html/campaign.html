@@ -39,6 +39,7 @@
                                     <input type="text" fn="cname" class="form-control" placeholder="nombre de la campaña..." value="{{campaign['name']}}" onchange="$('#campaign_title').html($(this).val());" />
                                     <div><label><input type="checkbox" fn="cactive" {{checked(campaign['active'])}} /> Campaña activa</label></div>
                                     <div><label><input type="checkbox" fn="cuse_geolocation" {{checked(campaign['use_geolocation'])}} /> Usar geolocalizacion</label></div>
+                                    <div><label>Fanpages de Facebook a monitorear (una por linea) <textarea type="checkbox" fn="cfacebook_fanpages" style="width: 400px; height: 100px;">{{campaign['facebook_fanpages']}}</textarea></label></div>
                                 </div>
                             </div>
                         </form>
