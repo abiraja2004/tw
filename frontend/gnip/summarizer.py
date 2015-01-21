@@ -56,6 +56,7 @@ class Summarizer(object):
             end = self.getCurrentSummarizationEnd()
             for account in MongoManager.getActiveAccounts(max_age=timedelta(hours=1)):
                 for campaign in account.getActiveCampaigns():
+                    MongoManager.ensureIndex('summarized_tweets_%s' % campaign.getId(), [("start", 1)])
                     if only_campaign and only_campaign.getId() != campaign.getId(): continue
                     if regenerate_all:
                         self.clearSummarization(campaign)

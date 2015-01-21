@@ -512,6 +512,10 @@ class MongoManager(object):
     @classmethod
     def saveDocument(cls, collection_name, doc):
         return cls.db[collection_name].save(doc)
+
+    @classmethod
+    def ensureIndex(cls, collection_name, index):
+        return cls.db[collection_name].ensure_index(index)
     
 MongoManager.connect()
 

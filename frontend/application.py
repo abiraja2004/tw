@@ -396,8 +396,19 @@ def account_admin():
                 data['indexes'] = accountdb['tweets_%s' % camp_id].index_information()
             except OperationFailure, e:
                 data['indexes'] = {}
-
             collection_data['tweets_%s' % camp_id] = data
+            
+            data = {}
+            try:
+                data['stats'] = accountdb.command('collstats', 'summarized_tweets_%s' % camp_id)
+            except OperationFailure, e:
+                data['stats'] = {}
+            try:
+                data['indexes'] = accountdb['summarized_tweets_%s' % camp_id].index_information()
+            except OperationFailure, e:
+                data['indexes'] = {}
+                
+            collection_data['summarized_tweets_%s' % camp_id] = data
         
     logo = "logo.jpg"
     logo2 = None        
