@@ -233,7 +233,10 @@ class Campaign(object):
         res = [fp.strip() for fp in self.o.get("facebook_fanpages", "").split() if fp.strip()]
         return res
     
-
+    def getForums(self):
+        res = [fp.strip() for fp in self.o.get("forums", "").split() if fp.strip()]
+        return res
+    
 class DataCollection(object):
     
     def __init__(self, id, mongodc):
@@ -418,6 +421,11 @@ class MongoManager(object):
     def findTweets(cls, collection_name, **kwargs):
         from tweet import Tweet
         return MongoIterator(cls.find(collection_name, **kwargs), Tweet.createFromMongoDoc)
+
+    @classmethod
+    def findFeeds(cls, collection_name, **kwargs):
+        from feed import FeedEntry
+        return MongoIterator(cls.find(collection_name, **kwargs), FeedEntry.createFromMongoDoc)
 
     @classmethod
     def countDocuments(cls, collection_name, **kwargs):

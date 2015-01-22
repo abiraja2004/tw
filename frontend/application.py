@@ -548,6 +548,38 @@ def tweets_list():
                     res['tweets'].append(t.getDictionary())   #esta sola linea es la que va cuando se saque la condicion de sivale
     return flask.Response(dumps(res),  mimetype='application/json')
 
+@app.route('/api/feeds/list')
+def feeds_list():
+    start = request.args.get("start", "")
+    end = request.args.get("end", "")
+    page = int(request.args.get('page',"1"))-1
+    tweets_per_page = int(request.args.get('tpp',"20"))
+    campaign_id = request.args.get("campaign_id", "")
+    brands_to_include = request.args.get("brands_to_include", "")
+    include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_feeds", "true") == "true")
+    res = {"feeds": []}
+    if start and end and campaign_id:
+        collection_name = "feeds_%s" % campaign_id
+        start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+        docfilter = { "x_created_at": {"$gte": start, "$lte": end}}
+        if not include_sentiment_tagged_tweets: docfilter['x_sentiment'] = {"$exists": False}
+        #dbtweets = accountdb[collection_name].find(docfilter).sort("x_created_at", -1).skip(page*tweets_per_page).limit(tweets_per_page) 
+        dbtweets = MongoManager.findFeeds(collection_name, filters=docfilter, sort=("x_created_at", -1), skip=page*tweets_per_page, limit=tweets_per_page) 
+        if not brands_to_include:
+            if campaign_id == '5410f5a52e61d7162c700232': #SiVale:
+                for t in dbtweets:
+                    if 'x_coordinates' in t.d and t.d['x_coordinates'] and 'country_code' in t.d['x_coordinates'] and t.d['x_coordinates']['country_code'] != 'MX': continue
+                    res['feeds'].append(t.getDictionary())                    
+            else:
+                res['feeds'].extend([t.getDictionary() for t in dbtweets])  #esta sola linea es la que va cuando se saque la condicion de sivale
+        else:
+            bti = [x.strip() for x in brands_to_include.split("|") if x.strip()]
+            for t in dbtweets:
+                if 'x_extracted_info' in t and [pm for pm in t['x_extracted_info'] if pm['brand'] in bti]:
+                    res['feeds'].append(t.getDictionary())   #esta sola linea es la que va cuando se saque la condicion de sivale
+    return flask.Response(dumps(res),  mimetype='application/json')
+
 @app.route('/api/tweets/tag/sentiment', methods=['POST'])
 def tweets_tag_sentiment():
     sent = request.form["sentiment"]

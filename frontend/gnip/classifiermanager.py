@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 from mongo import MongoManager
 from datetime import timedelta
 from brandclassifier import BrandClassifier
@@ -143,6 +145,16 @@ class ClassifierManager(object):
         for r in rules:
             res.append(o.generateBrandClassifier(r))
         return res
+    
+    @classmethod
+    def getCampaignBrandClassifiers(cls, account, campaign):
+        #faltaria buffer por max_age
+        o = cls()
+        rules = o.getCampaignRules(campaign.getId(), campaign, account)
+        res = []
+        for r in rules:
+            res.append(o.generateBrandClassifier(r))
+        return res    
 
     @classmethod
     def getTopicClassifiers(cls):
@@ -159,12 +171,15 @@ class ClassifierManager(object):
                 for topic in topics:
                     #topic['_id'] = topic.getId() ###ESTO VA???
                     res[campaign.getId()][topic.getId()] = o.generateTopicClassifier(topic)
-                        
-        #los topics globales por ahora quedan desactivados
-        """
-        topics = monitor.topic.find({})
-        res = []
-        for topicdoc in topics:
-            res.append(generateTopicClassifier(topicdoc))
-        """
+        return res
+
+    @classmethod
+    def getCampaignTopicClassifiers(cls, campaign):
+        #devuelve un diccionario con los topics para la campaña solicitada
+        o = cls()
+        res = {}
+        topics = campaign.getTopics()
+        for topic in topics:
+            #topic['_id'] = topic.getId() ###ESTO VA???
+            res[topic.getId()] = o.generateTopicClassifier(topic)
         return res

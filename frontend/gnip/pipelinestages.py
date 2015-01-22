@@ -26,7 +26,7 @@ class TweetProcessCampaign(Pipeline.Stage):
 
     
     def processItem(self, tweet):
-        accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10))
+        #accs = MongoManager.getActiveAccounts(max_age=timedelta(seconds=10)) // ES NECESARIO?? LO COMENTO POR AHORA
         #pprint (tweet)
         #pprint (tweet.getExtractedInfo())
         follow_accounts= MongoManager.getFollowAccountsbyCampaign(max_age=timedelta(seconds=10))
@@ -81,13 +81,53 @@ class TweetProcessCampaign(Pipeline.Stage):
 
     
 
+class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos de feeds
 
+    def processItem(self, feed):
+        #pprint (tweet)
+        #pprint (tweet.getExtractedInfo())
+        bcs = ClassifierManager.getCampaignBrandClassifiers(feed.account, feed.campaign) #esto tendria que esta cacheado tambien en classifiermanager
+        tcs = None
+        pms = self.getBrandClassifiersByCampaign(feed.getText(), bcs) ##FALTA AGREGAR TAMBIEN A LOS TWEETS QUE NO MATCHEAN PERO QUE SON DE UN USUARIO SEGUIDO POR LA MARCA
+        #print "processing feed:", feed
+        for cid, pmlist in pms.items():
+            if tcs is None: tcs = ClassifierManager.getCampaignTopicClassifiers(feed.campaign)
+            tms = self.getTopicClassifiers(feed.getText(), cid, tcs)
+            feed.setExtractedTopics(tms)
+            feed.setExtractedInfo(pmlist)
+            mongores = MongoManager.saveDocument("feeds_%s" % cid, feed.getDictionary())
+            pprint(mongores)
+            print "saving feed:", feed
+            
+        return None #no devuelvo nada para que no se acumulen los feeds en la ultima lista y se sature la memoria            
 
+    def getTopicClassifiers(self, text, campaign_id, tcs):                            
+        #solo aplico topics para las campañas que hayan matcheado el tweet y tengan x_extracted_info
+        tms = []
+        for topic_id, topic_classiffier in tcs.get(campaign_id, {}).items():
+            tm = topic_classiffier.extract(text)
+            if tm: tms.append(tm.getDictionary())
+        if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
+        return tms
 
+    def getBrandClassifiersByCampaign(self, text, bcs):
+        pms = {}
+        for bc in bcs:
+            if not bc.campaign_id in pms: pms[bc.campaign_id] = []
+            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(text)])
+        for cid, pmlist in pms.items():
+            pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
+            if not pms[cid] or pms[cid][0]['confidence'] < 0:
+                del pms[cid]
+        return pms
+    
 def getPipelineTwitterStageClasses():
     return [TweetSaveForPolls, TweetProcessCampaign]
     #return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]
     
 def getPipelineCollectionStageClasses():
-    return [TweetSaveForPolls, TweetProcessCampaign]
+    return []
+
+def getPipelineFeedStageClasses():
+    return [FeedProcessCampaign]
     

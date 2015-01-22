@@ -153,6 +153,7 @@ function saveCampaign()
     campaign['syncversion'] = $("#syncversion").val();
     campaign['use_geolocation'] = $("[fn=cuse_geolocation]").is(':checked');
     campaign['facebook_fanpages'] = $("[fn=cfacebook_fanpages]").val();
+    campaign['forums'] = $("[fn=cforums]").val();
     campaign['brands'] = {}
     campaign['topics'] = {}
     campaign['analytics'] = {}

@@ -2,7 +2,7 @@ var deb_var=null;
 var deb_var2=null;
 
 $(function () {   
-    $('#tweet-box,#fb_posts-box').slimScroll({height: '705px'});
+    $('#tweet-box,#feed-box,#fb_posts-box').slimScroll({height: '705px'});
     tweets_count_group_by = "day";
     $(".tweet_count_group_by").click(function (e) { 
         tweets_count_group_by = $(this).attr('group_by') 
@@ -17,6 +17,7 @@ $(function () {
     $(".brands_to_include").click(function (e) {
         brands_to_include = $(this).attr('brands_to_include') 
         fetchTweets(account_id, campaign_id, true);
+        fetchFeeds(account_id, campaign_id, true);
         fetchFBPosts(account_id, campaign_id);
         updateAggregatedInformation();
     });    
@@ -30,6 +31,7 @@ function dateRangeChanged()
     campaign_id = $('[fn=c_id]').val();
     
     fetchTweets(account_id, campaign_id, true);
+    fetchFeeds(account_id, campaign_id, true);
     fetchFBPosts(account_id, campaign_id);
     updateAggregatedInformation();
     fetchAnalyticsSessions();

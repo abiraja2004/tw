@@ -45,6 +45,21 @@ function fetchTweets(account_id, campaign_id, include_sentiment_tagged_tweets)
     });
 }
 
+function fetchFeeds(account_id, campaign_id, include_sentiment_tagged_feeds)
+{   
+    feedbox = $("#feed-box").addClass("loading");
+    startend = getDateRange();
+    start = startend[0].format("YYYY-MM-DD");
+    end = startend[1].format("YYYY-MM-DD");
+
+    $.ajax({
+        url: "/api/feeds/list", 
+        data: {"account_id": account_id, 'campaign_id': campaign_id, 'start': start, 'end': end, 'include_sentiment_tagged_feeds': include_sentiment_tagged_feeds, 'brands_to_include': brands_to_include}, 
+        type: "GET",
+    }).done(function (response) { 
+        updateFeedBox(response)
+    });
+}
 
 function updateTweetBox(response)
 {
@@ -121,6 +136,77 @@ function updateTweetBox(response)
         tweetbox.append(tweettag);
     }
     tweetbox = $("#tweet-box").removeClass("loading");
+    //$('#mentions_indicator').html(''+mentions);
+}
+
+function updateFeedBox(response)
+{
+    deb_var3 = response['feeds'];
+    tweets = response['feeds'];
+    //mentions = 0;
+    html = $('#feed_model').html();
+    tweetbox = $("#feed-box");
+    tweetbox.html("");    
+    sents = {'+': 'pos', '-':'neg', '=':'neu', '?': 'irr'}
+    colors = {'+': 'green', '-':'red', '=':'yellow', '?': 'gray'}
+    account_id = $('[fn=a_id]').val();
+    campaign_id = $('[fn=c_id]').val();
+    
+    for (var i=0;i<tweets.length;i++)
+    {
+        tweet = tweets[i];
+        sent = '';
+        color= 'white';
+        if ('x_sentiment' in tweet) 
+        {
+            sent = sents[tweet['x_sentiment']];
+            color = colors[tweet['x_sentiment']];
+        }
+        brand = '';
+        product = '';
+        confidence = '';
+        //if ('x_mentions_count' in tweet)
+        //{
+        //    for (m in tweet['x_mentions_count']) mentions = mentions + tweet['x_mentions_count'][m];
+        //}
+        if ('x_extracted_info' in tweet && tweet['x_extracted_info'].length > 0)
+        {
+                brand = tweet['x_extracted_info'][0]['brand'];
+                product = tweet['x_extracted_info'][0]['product'];
+                confidence = tweet['x_extracted_info'][0]['confidence'];
+        }
+        topicshtml = "";
+        br = "<br>";
+        if ('x_extracted_topics' in tweet && tweet['x_extracted_topics'].length > 0)
+        {
+            for (var j=0;j<tweet['x_extracted_topics'].length; j++)
+            {
+                topic = tweet['x_extracted_topics'][j];
+                topicshtml = topicshtml + br + '<small class="badge pull-left bg-aqua">'+topic['topic_name'] + ' (' + topic['confidence'] + ')</small> ';
+                br = "";
+            }
+        }
+        
+        //tweet_url = "https://www.twitter.com/" + tweet['user']['screen_name'] + "/status/" + tweet['id_str'];
+        //user_url = "https://www.twitter.com/" + tweet['user']['screen_name'];
+        tweet_date = new Date(tweet['x_created_at']['$date'])
+        //feeds_explorer_url = '/feeds_explorer?account_id='+account_id+"&campaign_id="+campaign_id+'&object_id='+tweet['_id']['$oid'];
+        tweettag = $(html.replace("%%_id%%", tweet['_id'])
+                    .replace("%%created_at%%", tweet_date)
+                    .replace("%%username%%", tweet['author'])
+                    .replace("%%link%%", tweet['link'])
+                    .replace("%%text%%", tweet['text'])
+                    .replace("%%sentiment%%", sent)
+                    .replace("%%sentiment_color%%", color)
+                    .replace("%%brand%%", brand)
+                    .replace("%%product%%", product)
+                    .replace("%%confidence%%", confidence)
+                    .replace("%%topics%%", topicshtml)
+                    );    
+        
+        tweetbox.append(tweettag);
+    }
+    tweetbox = $("#feed-box").removeClass("loading");
     //$('#mentions_indicator').html(''+mentions);
 }
 

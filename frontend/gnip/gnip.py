@@ -191,7 +191,7 @@ class GnipTwitterManager(object):
         for r in rules:
             self.gniprules.appendLocalRule(r['value'], r.get('tag', None))
         self.gniprules.deleteGnipRules()
-        
+
     def getStats(self):
         res = {}
         res['Pipeline'] = self.pipeline.getStats()
