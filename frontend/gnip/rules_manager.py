@@ -97,7 +97,8 @@ class GnipCollectionRulesManager(object):
         for acc in accounts:
             for camp in acc.getActiveCampaigns():
                 for fp in camp.getFacebookFanpages():
-                    rules.append({"value": fp, "tag": "%s/%s/%s" % (acc.getName(), camp.getName(), fp)})
+                    #rules.append({"value": fp, "tag": "%s/%s/%s" % (acc.getName(), camp.getName(), fp)})
+                    rules.append({"value": fp, "tag": None})
         return rules
     
     
@@ -149,7 +150,7 @@ class RulesMonitor(MyThread):
     def run(self):
         print "Rules monitor running..."
         while not self.finish_flag:
-            self.gnipTwitterRulesManager.updateGnipRules()
+            #self.gnipTwitterRulesManager.updateGnipRules()
             self.gnipCollectionRulesManager.updateGnipRules()
             time.sleep(RulesMonitor.CHECK_PERIOD)
 

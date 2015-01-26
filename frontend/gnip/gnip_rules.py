@@ -8,6 +8,7 @@ import sys
 import re
 import codecs
 import time
+from pprint import pprint
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -390,9 +391,10 @@ class GnipCollectionRules(object):
                     req = RequestWithMethod(self.url, 'POST', data=json.dumps(rs))
                     req.add_header('Content-type', 'application/json')
                     req.add_header("Authorization", "Basic %s" % self.base64string)  
+                    pprint(json.dumps(rs))
                     response = urllib2.urlopen(req)
                     res += response.read()
-                    print res
+                    print "123", res
                     if cnt%5 == 0:
                         time.sleep(5) # no more than 5 per 5 seconds
                 self.setResponse("%d rules created, %s"%(self.size(),res))

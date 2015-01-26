@@ -847,6 +847,7 @@ def save_account():
     print data['account']['campaigns']
     account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
     if not account: account = {'campaigns': {}, 'users': {}, 'name': data['account']['name']}
+    if not 'users' in account: account['users'] = {}
     for campaign_id, campaign in data['account']['campaigns'].items():
         if campaign_id not in account['campaigns']:
             account['campaigns'][campaign['_id']] = campaign
