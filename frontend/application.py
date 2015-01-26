@@ -911,6 +911,7 @@ def server_status():
     processes['Gnip Twitter fetcher service'] = output.find("python gnip.py") >= 0
     processes['Summarizer'] = output.find("python summarizer.py") >= 0
     processes['Gnip Rules Manager'] = output.find("python rules_manager.py") >= 0
+    processes['Forums Monitor Service'] = output.find("python feed.py") >= 0
     processes['FLASK Web Server'] = output.find("python application.py") >= 0
     processes['Google Geocoding Service'] = output.find("python geocoding.py") >= 0
     processes['Gnip Datacollection Service'] = output.find("python datacollection.py") >= 0
