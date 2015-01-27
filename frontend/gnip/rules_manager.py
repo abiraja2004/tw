@@ -150,7 +150,7 @@ class RulesMonitor(MyThread):
     def run(self):
         print "Rules monitor running..."
         while not self.finish_flag:
-            #self.gnipTwitterRulesManager.updateGnipRules()
+            self.gnipTwitterRulesManager.updateGnipRules()
             self.gnipCollectionRulesManager.updateGnipRules()
             time.sleep(RulesMonitor.CHECK_PERIOD)
 
