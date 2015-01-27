@@ -925,7 +925,8 @@ def server_status():
 
     storage = subprocess.Popen('df -h', shell=True, stdout=PIPE).stdout.read().decode("utf-8")
 
-    return render_template('server_status.html', processes=processes, storage=storage)
+    backups = subprocess.Popen('ls -lh /mnt/volume1/backups', shell=True, stdout=PIPE).stdout.read().decode("utf-8")
+    return render_template('server_status.html', processes=processes, storage=storage, backups=backups)
 
 @app.route("/api/account/topic/save", methods=['POST'])
 def save_topic():
