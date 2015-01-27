@@ -24,7 +24,7 @@ def check_processes():
                  ("rules_manager", "frontend/gnip"),
                  ("summarizer", "frontend/gnip"),
                  ("feed", "frontend/gnip"),
-                ("datacollection", "gnip"),
+                #("datacollection", "gnip"),
                 ("application", "frontend"),
                 #("geocoding", None)
                 ]
