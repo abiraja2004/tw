@@ -120,13 +120,25 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
             if not pms[cid] or pms[cid][0]['confidence'] < 0:
                 del pms[cid]
         return pms
+
+
+class DataCollectionActivityProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos de feeds
+
+    def processItem(self, entry):
+        campaigns = entry['campaigns']
+        del entry['campaigns']
+        for campaign in campaigns:
+            collection_name = "fb_posts_%s" % campaign.getId()
+            pprint("saving entry to campaign %s" % campaign.getName())
+            MongoManager.saveDocument(collection_name, entry)
+            
     
 def getPipelineTwitterStageClasses():
     return [TweetSaveForPolls, TweetProcessCampaign]
     #return [TweetProcessStage_1, TweetProcessStage_2, TweetSaveStage]
     
 def getPipelineCollectionStageClasses():
-    return []
+    return [DataCollectionActivityProcessCampaign]
 
 def getPipelineFeedStageClasses():
     return [FeedProcessCampaign]

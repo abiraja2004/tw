@@ -15,6 +15,12 @@ from pipeline import Pipeline
 import pipelinestages
 from select import select
 import pycurl
+from xml.sax import make_parser, parse, parseString
+from xml.sax.handler import ContentHandler
+from xml.sax.xmlreader import IncrementalParser
+from datetime import datetime, timedelta
+from mongo import MongoManager
+
 
 # Tune CHUNKSIZE as needed.  The CHUNKSIZE is the size of compressed data read
 # For high volume streams, use large chuck sizes, for low volume streams, decrease
@@ -26,7 +32,7 @@ NEWLINE = '\r\n'
 err_lock = Lock()
 
         
-class GnipStreamReceiver(MyThread):
+class GnipTwitterStreamReceiver(MyThread):
     class procEntry(MyThread):
         def __init__(self, buf, queue):
             self.buf = buf
@@ -60,7 +66,7 @@ class GnipStreamReceiver(MyThread):
         dd = ''.join([self.remainder, data]).rsplit(NEWLINE,1)
         if len(dd) > 1:
             [records, self.remainder] = dd
-            GnipStreamReceiver.procEntry(records, self.queue).start()
+            GnipTwitterStreamReceiver.procEntry(records, self.queue).start()
         else:
             self.remainder = dd[0]
         
@@ -76,79 +82,7 @@ class GnipStreamReceiver(MyThread):
             conn.perform()    
         except pycurl.error, e:
             pass
-        
-    def run2(self):
-        print "en el run"
-        HEADERS = { 'Accept': 'application/json',
-                'Connection': 'Keep-Alive',
-                'Accept-Encoding' : 'gzip',
-                'Authorization' : 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password))  }
-        
-        print "antes del request"
-        req = urllib2.Request(self.url, headers=HEADERS)
-        print "antes del urlopen"
-        response = urllib2.urlopen(req, timeout=(1+GNIPKEEPALIVE))
-        print "antes del decompressobj"
-        # header -  print response.info()
-        decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
-        remainder = ''
-        print "antes del while"
-        while not self.finish_flag:
-            print "antes del read"
-            chunk = response.read(CHUNKSIZE)
-            print "chunk: ", len(chunk)
-            tmp = decompressor.decompress(chunk)
-            if tmp == '':
-                print "tmp == '', saliendo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-                print
-                print
-                #return
-            else:
-                dd = ''.join([remainder, tmp]).rsplit(NEWLINE,1)
-                if len(dd) > 1:
-                    [records, remainder] = dd
-                    #print "records: %s, remainder %s" % (len(records), len(remainder))
-                    GnipStreamReceiver.procEntry(records, self.queue).start()
-                else:
-                    remainder = dd[0]
-                    #print "remainder: %s" % len(remainder)
-        
-        """
-        req = urllib2.Request(self.url, headers=HEADERS)
-        response = urllib2.urlopen(req, timeout=(1+GNIPKEEPALIVE))
-        # header -  print response.info()
-        decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
-        remainder = ''
-        chunk = ''
-        while not self.finish_flag:
-            while not self.finish_flag:
-                try:
-                    c = response.read(1)
-                    chunk += c
-                    print len(chunk), 
-                    pprint(chunk)
-                    if not c or len(chunk) >= CHUNKSIZE: break                    
-                except Exception ,e:
-                    print e
-            if chunk and len(chunk) >= CHUNKSIZE:
-                print 
-                tmp = decompressor.decompress(chunk)
-                print "chunk length: %s,  tmp: %s, unconsumed: %s" % (len(chunk), len(tmp), len(decompressor.unconsumed_tail))
-                chunk = ''
-                if tmp != '':
-                    dd = ''.join([remainder, tmp]).rsplit(NEWLINE,1)
-                    if len(dd) > 1:
-                        [records, remainder] = dd
-                        print "records: %s, remainder %s" % (len(records), len(remainder))
-                        GnipStreamReceiver.procEntry(records, self.queue).start()
-                    else:
-                        remainder = dd[0]
-                        print "remainder: %s" % len(remainder)
-                else:
-                    print "tmp == ''"
-        """
-                    
-        
+
         
 class GnipTwitterManager(object):
     def __init__(self,accountname, username, password):
@@ -166,7 +100,7 @@ class GnipTwitterManager(object):
     def startWorking(self):
         self.pipeline.startWorking()        
         URL = "https://stream.gnip.com:443/accounts/%s/publishers/twitter/streams/track/prod.json" %(self.accountname)        
-        self.extractor = GnipStreamReceiver(URL, self.username, self.password, self.pipeline.getSourceQueue())        
+        self.extractor = GnipTwitterStreamReceiver(URL, self.username, self.password, self.pipeline.getSourceQueue())        
         self.extractor.start()
 
     def stopWorking(self):
@@ -198,8 +132,119 @@ class GnipTwitterManager(object):
         return res
 
 
-class GnipCollectionManager(object):
+class DataCollectionActivityHandler(ContentHandler):
+    cached_fanpage_to_campaigns = None
+    fanpage_to_campaigns_max_age = timedelta(seconds=10)
+    
+    entry_basic_tags = ("id","created", "published", "updated", "title")
+    entry_composed_tags = {"source/gnip:rule": "rule", "activity:object/link[rel=alternate]": {"activity:link:alternate": "href"}, "activity:object/link[rel=via]": {"activity:link:via": "href"}, "activity:object/activity:object-type": "activity:type", "author/name": "author:name", "author/uri": "author:uri", "activity:object/id": "activity:id", "activity:object/title": "activity:title", "activity:object/content": "activity:content"}
+    
+    def __init__(self, queue):
+        self.entries = []
+        self.entry = None
+        self.activity = None
+        self.tagpath = []
+        self.refreshURL = ""
+        self.queue = queue
+    
+    def startElement(self, name, attrs):    
+        if name == "results": 
+            self.refreshURL = attrs['refreshURL']
+            return
+        if name == "root": return
+        self.tagpath.append(name)
+        comp_path = '/'.join(self.tagpath[1:])
+        if comp_path == "activity:object/link":
+            name = "link[rel=%s]" % attrs['rel']
+            self.tagpath[-1] = name
+            comp_path = '/'.join(self.tagpath[1:])
+        if name == "entry":
+            self.entry = {}
+        if name == "activity:object":
+            self.activity = {}
+        elif name in self.entry_basic_tags and len(self.tagpath) >= 2 and self.tagpath[-2] == "entry":
+            self.entry[name] = ""
+        elif comp_path in self.entry_composed_tags:
+            if isinstance(self.entry_composed_tags[comp_path], basestring):
+                self.entry[self.entry_composed_tags[comp_path]] = ""
+            elif isinstance(self.entry_composed_tags[comp_path], dict):
+                self.entry[self.entry_composed_tags[comp_path].keys()[0]] = attrs[self.entry_composed_tags[comp_path].values()[0]]
+                
+    def characters(self, content):
+        if not self.tagpath: return
+        comp_path = '/'.join(self.tagpath[1:])
+        if self.tagpath[-1] in self.entry_basic_tags and len(self.tagpath) >= 2 and self.tagpath[-2] == "entry":
+            self.entry[self.tagpath[-1]] += content
+        elif comp_path in self.entry_composed_tags:
+            if isinstance(self.entry_composed_tags[comp_path], basestring):
+                self.entry[self.entry_composed_tags[comp_path]] += content
+            
+    def endElement(self, name):
+        if name == "results": return
+        self.tagpath.pop()
+        if name == "entry":
+            self.entry['x_created_at'] = datetime.strptime(self.entry['created'], "%Y-%m-%dT%H:%M:%S+00:00")            
+            self.entry['campaigns'] = self.__class__.getFanpageToCampaignsDict().get(self.entry.get('rule', ''), [])
+            self.queue.put(self.entry)
+            self.entry = None
 
+
+    @classmethod
+    def getFanpageToCampaignsDict(cls):
+        if not cls.fanpage_to_campaigns_max_age or not cls.cached_fanpage_to_campaigns or (datetime.now() - cls.cached_fanpage_to_campaigns['fetch_time'] > cls.fanpage_to_campaigns_max_age):        
+            print "refetching fanpages to campagins dict"
+            accounts = MongoManager.getActiveAccounts()
+            data = {}
+            for acc in accounts:
+                for camp in acc.getActiveCampaigns():
+                    for fp in camp.getFacebookFanpages():
+                        if fp not in data: data[fp] = []
+                        data[fp].append(camp)
+            cls.cached_fanpage_to_campaigns = {'data': data, 'fetch_time': datetime.now()}
+        return cls.cached_fanpage_to_campaigns['data']
+            
+
+class GnipDataCollectionStreamReceiver(MyThread):
+    
+    def __init__(self, url, username, password, queue):
+        MyThread.__init__(self)
+        self.url = url
+        self.username = username
+        self.password = password
+        self.queue = queue
+        self.finish_flag = False
+        self.remainder = ''
+
+    def stopWorking(self):
+        self.finish_flag = True
+    
+    def run(self):
+        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        passman.add_password(None, self.url, self.username, self.password)
+        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        opener = urllib2.build_opener(authhandler)
+        urllib2.install_opener(opener)
+        request = urllib2.urlopen(self.url, None, 1)
+        handler = DataCollectionActivityHandler(self.queue)
+        parser = make_parser()
+        parser.setContentHandler(handler)
+        s = ""
+        parser.feed("<root>")
+        while not self.finish_flag:
+            try:
+                s = s + request.read(1)
+            except ssl.SSLError, e:
+                print s,
+                parser.feed(s)
+                s = ""
+                #print "timeout"
+                pass #timeout
+            except KeyboardInterrupt, e:
+                break
+        return
+
+
+class GnipCollectionManager(object):
             
     def __init__(self,accountname, username, password):
         self.accountname = accountname
@@ -215,8 +260,8 @@ class GnipCollectionManager(object):
         
     def startWorking(self):
         self.pipeline.startWorking()        
-        URL = "https://stream.gnip.com:443/accounts/%s/publishers/twitter/streams/track/prod.json" %(self.accountname)
-        self.extractor = GnipStreamReceiver(URL, self.username, self.password, self.pipeline.getSourceQueue())        
+        URL = "https://%s.gnip.com/data_collectors/1/stream.xml" %(self.accountname)
+        self.extractor = GnipDataCollectionStreamReceiver(URL, self.username, self.password, self.pipeline.getSourceQueue())        
         self.extractor.start()
 
     def stopWorking(self):
@@ -245,27 +290,36 @@ class GnipCollectionManager(object):
     def getStats(self):
         res = {}
         res['Pipeline'] = self.pipeline.getStats()
-        return res()      
+        return res
         
-    
-    
+
 if __name__ == "__main__":
 # Note: this automatically reconnects to the stream upon being disconnected
+    
+    UN = 'pablobesada'
+    PWD = 'pdbpdb'
+    ACC = 'promored'
+    gcm = GnipCollectionManager(ACC, UN, PWD)    
+    gcm.startWorking()
     
     UN = 'federicog@promored.mx'
     PWD = 'ladedarin'
     ACC = 'promored'
-    gm = GnipTwitterManager(ACC, UN, PWD)    
-    gm.startWorking()
+    gtm = GnipTwitterManager(ACC, UN, PWD)    
+    gtm.startWorking()
+    
     try:    
         while True:
-            #pprint.pprint(gm.getStats())
+            #pprint(gcm.getStats())
             time.sleep(1)
     except KeyboardInterrupt, e:
         print "Terminando.\n"
-        gm.stopWorking()
-        pprint(gm.getStats())
+        gcm.stopWorking()
+        gtm.stopWorking()
+        pprint(gcm.getStats())
+        pprint(gtm.getStats())
         print "Terminado.\n"
         MyThread.checkFinalization()
 
-    sys.exit(0)
+    sys.exit(0)    
+    
