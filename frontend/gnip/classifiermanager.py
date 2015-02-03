@@ -82,12 +82,12 @@ class ClassifierManager(object):
         return regexp
 
     def getBrandRegexpFromRule(self, br, rule):
-        rule = rule.replace("[m]", "[M]")
+        rule = rule.replace("[m]", "[M]").strip()
         brand_regexp = self.genEntityRegexp("BLD", br.name, 0, br.synonyms)
         return "(?:\\A|\\Z|\\W)" + rule.replace(" ", "\\W+").replace("[M]", brand_regexp) + "(?:\\A|\\Z|\\W)"
     
     def getProductRegexpFromRule(self, br, pr, pr_number, rule):
-        rule = rule.replace("[m]", "[M]").replace("[p]", "[P]")
+        rule = rule.replace("[m]", "[M]").replace("[p]", "[P]").strip()
         brand_regexp = self.genEntityRegexp("BLD", br.name, 0, br.synonyms)
         product_regexp = self.genEntityRegexp("PLD", pr.name, pr_number, pr.synonyms)
         return "(?:\\A|\\Z|\\W)" + rule.replace(" ", "\\W+").replace("[M]", brand_regexp).replace("[P]", product_regexp) + "(?:\\A|\\Z|\\W)"
@@ -183,3 +183,7 @@ class ClassifierManager(object):
             #topic['_id'] = topic.getId() ###ESTO VA???
             res[topic.getId()] = o.generateTopicClassifier(topic)
         return res
+
+
+    
+    

@@ -295,7 +295,6 @@ class GnipCollectionManager(object):
 
 if __name__ == "__main__":
 # Note: this automatically reconnects to the stream upon being disconnected
-    
     UN = 'pablobesada'
     PWD = 'pdbpdb'
     ACC = 'promored'

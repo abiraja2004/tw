@@ -33,7 +33,7 @@ class TweetProcessCampaign(Pipeline.Stage):
         bcs = ClassifierManager.getBrandClassifiers() #esto tendria que esta cacheado tambien en classifiermanager
         tcs = None
         pms = self.getBrandClassifiersByCampaign(tweet, bcs, follow_accounts) ##FALTA AGREGAR TAMBIEN A LOS TWEETS QUE NO MATCHEAN PERO QUE SON DE UN USUARIO SEGUIDO POR LA MARCA
-        
+        #pprint(pms)
         for cid, pmlist in pms.items():
             if tcs is None: tcs = ClassifierManager.getTopicClassifiers()
             tms = self.getTopicClassifiers(tweet, cid, tcs)
@@ -54,6 +54,7 @@ class TweetProcessCampaign(Pipeline.Stage):
     def getBrandClassifiersByCampaign(self, tweet, bcs, follow_accounts):
         pms = {}
         for bc in bcs:
+            #pprint((bc.name, bc.rule, bc.campaign_name))
             if not bc.campaign_id in pms: pms[bc.campaign_id] = []
             pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(tweet.getText())])
         if tweet.getUsername() in follow_accounts:
@@ -97,7 +98,7 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
             feed.setExtractedInfo(pmlist)
             mongores = MongoManager.saveDocument("feeds_%s" % cid, feed.getDictionary())
             pprint(mongores)
-            print "saving feed:", feed
+            #print "saving feed:", feed
             
         return None #no devuelvo nada para que no se acumulen los feeds en la ultima lista y se sature la memoria            
 
