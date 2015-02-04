@@ -174,6 +174,7 @@ function saveCampaign()
         brand['synonyms'] = tagbrand.find("[fn=bsynonyms]").val();
         brand['follow_accounts'] = tagbrand.find("[fn=bfollow_accounts]").val();
         brand['own_brand'] = (tagbrand.find("[fn=bown_brand]:checked").val() != 'false');
+        brand['score_threshold'] = tagbrand.find("[fn=bscore_threshold]").val();
         brand['identification_rules'] = []
         tags = tagbrand.find("[fn=brule]");
         for (j=1;j<tags.length;j++)

@@ -107,6 +107,9 @@ class Brand(object):
                     raise
         return self.keywordsets
     
+    def getScoreThreshold(self):
+        return self.o.get("score_threshold", 0)
+    
 class Topic(object):
     
     def __init__(self, id, mongotopic):

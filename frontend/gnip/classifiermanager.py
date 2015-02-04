@@ -53,6 +53,7 @@ class ClassifierManager(object):
         bc.account_name = br.account_name
         bc.campaign_id = br.campaign_id
         bc.campaign_name = br.campaign_name
+        bc.score_threshold = br.score_threshold
         bc.name = {br.name: br.synonyms}
         bc.brand_confidence_clues = self.genClassifierClues(br.keywords)
         for kws in br.keyword_sets:
@@ -115,6 +116,7 @@ class ClassifierManager(object):
         br.keywords = brand.getKeywords()
         br.keyword_sets = brand.getKeywordsets()
         br.rules = brand.getIdentificationRules()
+        br.score_threshold = brand.getScoreThreshold()
         for prod in brand.getProducts():
             br.children.append(self.getProductRules(prod))
         return br

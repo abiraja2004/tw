@@ -118,7 +118,7 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
             pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(text)])
         for cid, pmlist in pms.items():
             pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
-            if not pms[cid] or pms[cid][0]['confidence'] < 0:
+            if not pms[cid] or pms[cid][0]['confidence'] < bc.score_threshold:
                 del pms[cid]
         return pms
 

@@ -131,7 +131,9 @@
                                     <div class="form-group">
                                         <label>Cuentas a monitorear</label>
                                         <input type="text" class="form-control" placeholder="cuentas a monitorear separadas con coma (ej. @twitter, @linux)... " value="{{brand['follow_accounts']}}" fn="bfollow_accounts" />
-                                    </div>                                          
+                                        <label>Valor minimo de matching</label>
+                                        <input type="number" value="{{brand.get('score_threshold', 0)}}" fn="bscore_threshold"/>
+                                    </div>
                                     <div class="form-group">
                                         <div class="radio">
                                             <label>
