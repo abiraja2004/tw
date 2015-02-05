@@ -234,7 +234,7 @@ class GnipDataCollectionStreamReceiver(MyThread):
             try:
                 s = s + request.read(1)
             except ssl.SSLError, e:
-                print s,
+                #print s,
                 parser.feed(s)
                 s = ""
                 #print "timeout"

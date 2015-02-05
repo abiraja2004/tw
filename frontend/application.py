@@ -200,10 +200,9 @@ def campaigns():
     FLOW = OAuth2WebServerFlow(client_id='442071031907-0ce0m652985ra8030e9n8nfrogk5o6tr.apps.googleusercontent.com',
                            client_secret='43Bf_67s6E9PXIJe4ZY5fUSC',
                            scope='https://www.googleapis.com/auth/analytics.readonly',
-                           redirect_uri='http://%s:5001/oauth2callback' % server_domain)    
+                           redirect_uri='http://%s:5001/oauth2callback' % server_domain)    #HABRIA QUE SACAR EL PUERTO 5001!
     analytics_credentials = get_analytics_credentials(account, campaign_id)
     analytics_access = bool(analytics_credentials)
-    print "CCCCCCCCCCCCCCCCC"
     analytics_auth_url = FLOW.step1_get_authorize_url()+ "&state=" + b64encode("%s,%s" % (campaign_id,account['_id']))
     analytics_revoke_url = ""
     if analytics_credentials:

@@ -18,7 +18,7 @@ class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de 
             if ht in polls_ht:
                 for poll in polls_ht[ht]:
                     MongoManager.saveDocument("polls_" + poll.getId(), tweet.getDictionary())
-                    pprint("grabando tweet para poll %s" % poll.getName())
+                    #pprint("grabando tweet para poll %s" % poll.getName())
         return tweet
 
 class TweetProcessCampaign(Pipeline.Stage):  
@@ -46,6 +46,8 @@ class TweetProcessCampaign(Pipeline.Stage):
                     for fainfo in follow_accounts[fa]:
                         if fainfo['cid'] == cid:
                             tweet.setFollowAccountsMentionCount(fa, 1)
+            #pprint(pmlist)                                                        
+            #pprint("saving tweet to campaign %s" % cid)                            
             MongoManager.saveDocument("tweets_%s" % cid, tweet.getDictionary())
             
         return None #no devuelvo nada para que no se acumulen los tweets en la ultima lista y se sature la memoria            
@@ -56,7 +58,7 @@ class TweetProcessCampaign(Pipeline.Stage):
         for bc in bcs:
             #pprint((bc.name, bc.rule, bc.campaign_name))
             if not bc.campaign_id in pms: pms[bc.campaign_id] = []
-            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(tweet.getText())])
+            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(tweet.getText()) if pm.confidence >= float(bc.score_threshold)])
         if tweet.getUsername() in follow_accounts:
             for fainfo in follow_accounts[tweet.getUsername()]:
                 pm = ProductMatch()
@@ -65,9 +67,10 @@ class TweetProcessCampaign(Pipeline.Stage):
                 pm.confidence = 5
                 pms[pm.campaign_id].append(pm.getDictionary())
         for cid, pmlist in pms.items():
-            pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
-            if not pms[cid] or pms[cid][0]['confidence'] < 0:
-                del pms[cid]
+            if not pms[cid]:
+                del pms[cid]    
+            else:
+                pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
         return pms
 
                             
@@ -97,7 +100,7 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
             feed.setExtractedTopics(tms)
             feed.setExtractedInfo(pmlist)
             mongores = MongoManager.saveDocument("feeds_%s" % cid, feed.getDictionary())
-            pprint(mongores)
+            #pprint(mongores)
             #print "saving feed:", feed
             
         return None #no devuelvo nada para que no se acumulen los feeds en la ultima lista y se sature la memoria            
@@ -115,11 +118,12 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
         pms = {}
         for bc in bcs:
             if not bc.campaign_id in pms: pms[bc.campaign_id] = []
-            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(text)])
+            pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(text) if pm.confidence >= float(bc.score_threshold)])
         for cid, pmlist in pms.items():
-            pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
-            if not pms[cid] or pms[cid][0]['confidence'] < bc.score_threshold:
-                del pms[cid]
+            if not pms[cid]:
+                del pms[cid]    
+            else:
+                pms[cid].sort(key=lambda x: x['confidence'], reverse=True)
         return pms
 
 
@@ -130,7 +134,7 @@ class DataCollectionActivityProcessCampaign(Pipeline.Stage):  #aca se graba en l
         del entry['campaigns']
         for campaign in campaigns:
             collection_name = "fb_posts_%s" % campaign.getId()
-            pprint("saving entry to campaign %s" % campaign.getName())
+            #pprint("saving entry to campaign %s" % campaign.getName())
             MongoManager.saveDocument(collection_name, entry)
             
     
