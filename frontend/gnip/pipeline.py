@@ -77,8 +77,9 @@ class Pipeline(object):
 
     def stopWorking(self):
         for stage in self.stages:
-            self.stage_threads[stage].stopWorking()
-            self.stage_threads[stage].join()
+            if self.stage_threads[stage].isAlive():
+                self.stage_threads[stage].stopWorking()
+                self.stage_threads[stage].join()
             
     """
     def join(self):

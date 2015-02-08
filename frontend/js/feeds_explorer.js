@@ -100,7 +100,8 @@ function makeFilterDict()
             'filter_country': filter_country,
             'filter_sentiment': filter_sentiment,
             'filter_topic': filter_topic,
-            'object_id': object_id
+            'object_id': object_id,
+            'feed_source': 'twitter'
     }
     return filterdict;
 }
@@ -178,6 +179,17 @@ function updateFeedsContent(response, more)
         
         feed_url = "https://www.twitter.com/" + feed['user']['screen_name'] + "/status/" + feed['id_str'];
         user_url = "https://www.twitter.com/" + feed['user']['screen_name'];
+        profile_image_url = "src='#'";
+        profile_image_style="width: 48px; height: 48px;"
+        if ('profile_image_url_https' in feed['user'])
+        {
+            profile_image_url = "src='"+feed['user']['profile_image_url_https']+"'";
+        }
+        else
+        {
+            //profile_image_style = profile_image_style  + " display: none;";
+        }
+        
         feed_date = new Date(feed['x_created_at']['$date'])
         country = '';
         if ('x_coordinates' in feed && feed['x_coordinates'] != null) country = feed['x_coordinates']['country'];
@@ -191,7 +203,8 @@ function updateFeedsContent(response, more)
                     .replace("%%brand%%", brand)
                     .replace("%%product%%", product)
                     .replace("%%confidence%%", confidence)
-                    .replace("%%user.profile_image_url%%", "src='"+feed['user']['profile_image_url_https']+"'")                    
+                    .replace("%%user.profile_image_url%%", profile_image_url)                    
+                    .replace("%%profile_image_style%%", profile_image_style)                    
                     .replace("%%topics%%", topicshtml)
                     .replace("%%feed_url%%", feed_url)
                     .replace("%%user_profile_url%%", user_url)

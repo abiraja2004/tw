@@ -240,6 +240,23 @@ class Campaign(object):
         res = [fp.strip() for fp in self.o.get("forums", "").split() if fp.strip()]
         return res
     
+    def getHistoryFetchedForums(self):
+        return self.o.get("history_fetched_forums", [])
+
+    def addHistoryFetchedForum(self, forum):
+        s = set(self.getHistoryFetchedForums())
+        s.add(forum)
+        self.o['history_fetched_forums'] = list(s)
+
+    def getSyncVersion(self):
+        return self.o.get('syncversion',1)
+
+    def incrementSyncVersion(self):
+        self.o['syncversion'] = self.getSyncVersion() + 1
+        
+    def getDictionary(self):
+        return self.o        
+    
 class DataCollection(object):
     
     def __init__(self, id, mongodc):
@@ -332,6 +349,9 @@ class Account(object):
                 if ht not in s: s[ht] = []
                 s[ht].append(poll)
         return s     
+
+    def getDictionary(self):
+        return self.o
     
 class MongoIterator(object):
     
@@ -528,6 +548,16 @@ class MongoManager(object):
     def ensureIndex(cls, collection_name, index):
         return cls.db[collection_name].ensure_index(index)
     
+    @classmethod
+    def saveCampaign(cls, account, campaign):
+        acc = MongoManager.getAccount(id=account.getId())
+        oldcamp = acc.getCampaign(id=campaign.getId())
+        if oldcamp.getSyncVersion() != campaign.getSyncVersion():
+            return False
+        campaign.incrementSyncVersion()
+        acc.getDictionary()['campaigns'][campaign.getId()] = campaign.getDictionary()
+        return cls.saveDocument("accounts", acc.getDictionary())
+        
 MongoManager.connect()
 
 

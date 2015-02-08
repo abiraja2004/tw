@@ -144,7 +144,7 @@
                                                                     </div>          
                                                                     {% if "tweets_"+campaign_id in collection_data %}
                                                                         <div class="form-group">
-                                                                            <label>Tweets: {{collection_data["tweets_"+campaign_id]['stats']['count']}}</label>
+                                                                            <label><b>Tweets: {{collection_data["tweets_"+campaign_id]['stats']['count']}}</b></label>
                                                                         </div>                                                               
                                                                         <div class="form-group">
                                                                             <label>Tamaño en disco: {{collection_data["tweets_"+campaign_id]['stats']['storageSize']}} bytes</label>
@@ -170,7 +170,7 @@
                                                                     {% endif %}
                                                                     {% if "summarized_tweets_"+campaign_id in collection_data %}
                                                                         <div class="form-group">
-                                                                            <label>Tweets: {{collection_data["summarized_tweets_"+campaign_id]['stats']['count']}}</label>
+                                                                            <label><b>Tweets Sumarizados: {{collection_data["summarized_tweets_"+campaign_id]['stats']['count']}}</b></label>
                                                                         </div>                                                               
                                                                         <div class="form-group">
                                                                             <label>Tamaño en disco: {{collection_data["summarized_tweets_"+campaign_id]['stats']['storageSize']}} bytes</label>
@@ -190,7 +190,35 @@
                                                                             {% endif %}
                                                                             </span>    
                                                                         </div>
-                                                                    {% endif %}                                                                   
+                                                                    {% endif %}  
+                                                                    
+                                                                    {% if "feeds_"+campaign_id in collection_data %}
+                                                                        <div class="form-group">
+                                                                            <label><b>Feeds: {{collection_data["feeds_"+campaign_id]['stats']['count']}}</b></label>
+                                                                        </div>                                                               
+                                                                        <div class="form-group">
+                                                                            <label>Tamaño en disco: {{collection_data["feeds_"+campaign_id]['stats']['storageSize']}} bytes</label>
+                                                                        </div>                                                                      
+                                                                        <div class="form-group">
+                                                                            <label>Numero de Indices: {{collection_data["feeds_"+campaign_id]['stats']['nindexes']}}</label>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <ol>
+                                                                            {% for idx_id, idx in collection_data["feeds_"+campaign_id]['indexes'].items() %}
+                                                                                <li><label>{{idx_id}}: {{idx['key']}}</label></li>
+                                                                            {% endfor %}
+                                                                            </ol>
+                                                                            <span>
+                                                                            {% if 'x_created_at_1' not in collection_data["feeds_"+campaign_id]['indexes'] %}
+                                                                                <button type="button" class="btn btn-primary btn-sm" onclick="createFeedDateIndex(this); return false;"><i class="fa fa-plus"></i> Crear Indice por Fechas</button>
+                                                                            {% endif %}
+                                                                            {% if 'text_text' not in collection_data["feeds_"+campaign_id]['indexes'] %}
+                                                                                <button type="button" class="btn btn-primary btn-sm" onclick="createFeedTextIndex(this); return false;"><i class="fa fa-plus"></i> Crear Indice de Busqueda de Texto</button>
+                                                                            {% endif %}
+                                                                            </span>    
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    
                                                                 </div>
                                                             </div>
                                                         </div>

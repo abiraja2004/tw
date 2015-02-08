@@ -405,9 +405,19 @@ def account_admin():
             try:
                 data['indexes'] = accountdb['summarized_tweets_%s' % camp_id].index_information()
             except OperationFailure, e:
-                data['indexes'] = {}
-                
+                data['indexes'] = {}                
             collection_data['summarized_tweets_%s' % camp_id] = data
+
+            data = {}
+            try:
+                data['stats'] = accountdb.command('collstats', 'feeds_%s' % camp_id)
+            except OperationFailure, e:
+                data['stats'] = {}
+            try:
+                data['indexes'] = accountdb['feeds_%s' % camp_id].index_information()
+            except OperationFailure, e:
+                data['indexes'] = {}                
+            collection_data['feeds_%s' % camp_id] = data
         
     logo = "logo.jpg"
     logo2 = None        
@@ -1153,6 +1163,7 @@ def search_feeds():
     start = request.args.get("start", "")
     end = request.args.get("end", "")
     text= request.args.get("text", "")
+    feed_source = request.args.get("feed_source", "twitter")
     campaign_id = request.args.get("campaign_id", "")
     brands_to_include = request.args.get("brands_to_include", "")
     filter_product = request.args.get("filter_product", "")
@@ -1166,7 +1177,6 @@ def search_feeds():
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"feeds": []}
     if start and end and campaign_id:
-        collection_name = "tweets_%s" % campaign_id
         start = datetime.strptime(start + " 00:00:00", "%Y-%m-%d %H:%M:%S")
         end = datetime.strptime(end + " 23:59:59", "%Y-%m-%d %H:%M:%S")
         docfilter = { "retweeted_status": {"$exists": False}, "x_created_at": {"$gte": start, "$lte": end}}
@@ -1197,13 +1207,26 @@ def search_feeds():
             docfilter['x_extracted_info']["$elemMatch"]["brand"] = {'$in': bti}
         #dbtweets = accountdb[collection_name].find(docfilter)
         
-        if count_only:
-            res['count'] = MongoManager.countDocuments(collection_name, filters=docfilter)
-        else:
-            skipfilter = None
-            if skip: filterfilter = skip
-            dbtweets = MongoManager.findTweets(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
-            res['feeds'].extend([t.getDictionary() for t in dbtweets])
+        if feed_source == "twitter":
+            collection_name = "tweets_%s" % campaign_id        
+            if count_only:
+                res['count'] = MongoManager.countDocuments(collection_name, filters=docfilter)
+            else:
+                skipfilter = None
+                if skip: filterfilter = skip
+                dbtweets = MongoManager.findTweets(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
+                #dbtweets = MongoManager.findFeeds(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
+                res['feeds'].extend([t.getDictionary() for t in dbtweets])
+        elif feed_source == "forums":
+            collection_name = "feeds_%s" % campaign_id        
+            if count_only:
+                res['count'] = MongoManager.countDocuments(collection_name, filters=docfilter)
+            else:
+                skipfilter = None
+                if skip: filterfilter = skip
+                dbtweets = MongoManager.findFeeds(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
+                res['feeds'].extend([t.getDictionary() for t in dbtweets])
+            
     return flask.Response(dumps(res),  mimetype='application/json')
 
 @app.route('/api/feeds/remove')

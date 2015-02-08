@@ -86,6 +86,30 @@ function createTwTextIndex(tag)
         });   
 }
 
+function createFeedDateIndex(tag)
+{
+    campaign_id = $(tag).closest("[fn=c_id").attr("id");
+    $.ajax({
+            url: "/api/create_index", 
+            data: {"collection_name": "feeds_"+campaign_id, "fields": "x_created_at,1"}, 
+            type: "POST",
+        }).done(function (response) {
+            alert(response['result'])
+        });   
+}
+
+function createFeedTextIndex(tag)
+{
+    campaign_id = $(tag).closest("[fn=c_id").attr("id");
+    $.ajax({
+            url: "/api/create_index", 
+            data: {"collection_name": "feeds_"+campaign_id, "fields": "text,text"}, 
+            type: "POST",
+        }).done(function (response) {
+            alert(response['result'])
+        });
+}
+
 function saveAccount(button)
 {
     container = $(button).closest(".account").find(".account_container");

@@ -86,9 +86,10 @@ class TweetProcessCampaign(Pipeline.Stage):
     
 
 class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos de feeds
-
+    APPLY_BRAND_FILTERS = False
+    
     def processItem(self, feed):
-        #pprint (tweet)
+        #pprint (feed)
         #pprint (tweet.getExtractedInfo())
         bcs = ClassifierManager.getCampaignBrandClassifiers(feed.account, feed.campaign) #esto tendria que esta cacheado tambien en classifiermanager
         tcs = None
@@ -99,9 +100,10 @@ class FeedProcessCampaign(Pipeline.Stage):  #aca se graba en las base de datos d
             tms = self.getTopicClassifiers(feed.getText(), cid, tcs)
             feed.setExtractedTopics(tms)
             feed.setExtractedInfo(pmlist)
-            mongores = MongoManager.saveDocument("feeds_%s" % cid, feed.getDictionary())
-            #pprint(mongores)
-            #print "saving feed:", feed
+        if not self.APPLY_BRAND_FILTERS or feed.getExtractedInfo():                
+            mongores = MongoManager.saveDocument("feeds_%s" % feed.campaign.getId(), feed.getDictionary())
+            #print "mongo result: ", mongores
+            
             
         return None #no devuelvo nada para que no se acumulen los feeds en la ultima lista y se sature la memoria            
 
@@ -147,4 +149,8 @@ def getPipelineCollectionStageClasses():
 
 def getPipelineFeedStageClasses():
     return [FeedProcessCampaign]
+
+def getPipelineHistoryFeedStageClasses():
+    return [FeedProcessCampaign]
+
     
