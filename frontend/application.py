@@ -911,26 +911,40 @@ def save_keywordset():
     accountdb.keywordset.save(kwset)
     return flask.Response(json.dumps({}),  mimetype='application/json')
 
+@app.route("/api/server/killprocess", methods=['GET'])
+def kill_process():
+    import subprocess
+    from subprocess import PIPE    
+    output = subprocess.Popen('kill -9 %s' % request.args.get("pid"), shell=True, stdout=PIPE).stdout.read()
+    return server_status()
+
 @app.route("/api/server/status", methods=['GET'])
 def server_status():
+    
+    def findProcessPID(matchstr, output):
+        if output.find(matchstr) >= 0:
+            return [ln for ln in output.split("\n") if ln.find(matchstr) >= 0][0].strip().split()[0]
+        return -1            
+
     import subprocess
     from subprocess import PIPE
     output = subprocess.Popen('ps ax | grep python', shell=True, stdout=PIPE).stdout.read()
+    
     processes = {}
-    processes['Gnip Twitter & Facebook fetcher service'] = output.find("python gnip.py") >= 0
-    processes['Summarizer'] = output.find("python summarizer.py") >= 0
-    processes['Gnip Rules Manager'] = output.find("python rules_manager.py") >= 0
-    processes['Forums Monitor Service'] = output.find("python feed.py") >= 0
-    processes['FLASK Web Server'] = output.find("python application.py") >= 0
-    processes['Google Geocoding Service'] = output.find("python geocoding.py") >= 0
+    processes['Gnip Twitter & Facebook fetcher service'] = findProcessPID("python gnip.py", output)
+    processes['Summarizer'] = findProcessPID("python summarizer.py", output)
+    processes['Gnip Rules Manager'] = findProcessPID("python rules_manager.py", output)
+    processes['Forums Monitor Service'] = findProcessPID("python feed.py", output)
+    processes['FLASK Web Server'] = findProcessPID("python application.py", output)
+    processes['Google Geocoding Service'] = findProcessPID("python geocoding.py", output)
     #processes['Gnip Datacollection Service'] = output.find("python datacollection.py") >= 0
-    processes['Twitter API Connection Service'] = output.find("python twfetch.py") >= 0
+    processes['Twitter API Connection Service'] = findProcessPID("python twfetch.py", output)
     
     output = subprocess.Popen('ps ax | grep uwsgi', shell=True, stdout=PIPE).stdout.read()
-    processes['UWSGI Service'] = output.find("uwsgi uwsgi.ini") >= 0
+    processes['UWSGI Service'] = findProcessPID("uwsgi uwsgi.ini", output)
 
     output = subprocess.Popen('ps ax | grep nginx', shell=True, stdout=PIPE).stdout.read()
-    processes['NGINX Service'] = output.find("nginx: master process") >= 0
+    processes['NGINX Service'] = findProcessPID("nginx: master process", output)
 
     storage = subprocess.Popen('df -h', shell=True, stdout=PIPE).stdout.read().decode("utf-8")
 

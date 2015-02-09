@@ -17,7 +17,10 @@
 <table>
 {% for p,s in processes.items() %}
 <tr>
-<td>{{p}}</td><td><span class="status_{{s}}">{{ {True: 'OK', False: 'NOT RUNNING!'}[s] }}</span></td>
+<td>{{p}}</td><td><span class="status_{{s>=0}}">{{ {True: 'OK', False: 'NOT RUNNING!'}[s>=0] }}</span></td>
+{% if s >= 0 %}
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/api/server/killprocess?pid={{s}}">RESTART</a></td>
+{% endif %}
 </tr>
 {% endfor %}
 </table>
