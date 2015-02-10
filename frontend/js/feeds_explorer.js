@@ -1,4 +1,7 @@
-
+$('input:checkbox').on('ifChanged', function () {
+    search();
+});
+//$('input#source_twitter,input#source_facebook,input#source_forums')
 
 function dateRangeChanged()
 {
@@ -101,7 +104,9 @@ function makeFilterDict()
             'filter_sentiment': filter_sentiment,
             'filter_topic': filter_topic,
             'object_id': object_id,
-            'feed_source': 'twitter'
+            'source_twitter': $('#source_twitter').is(":checked"),
+            'source_facebook': $('#source_facebook').is(":checked"),
+            'source_forums': $('#source_forums').is(":checked"),
     }
     return filterdict;
 }
@@ -181,6 +186,8 @@ function updateFeedsContent(response, more)
         user_url = "https://www.twitter.com/" + feed['user']['screen_name'];
         profile_image_url = "src='#'";
         profile_image_style="width: 48px; height: 48px;"
+        title = "";
+        display_title ="none";
         if ('profile_image_url_https' in feed['user'])
         {
             profile_image_url = "src='"+feed['user']['profile_image_url_https']+"'";
@@ -189,7 +196,16 @@ function updateFeedsContent(response, more)
         {
             //profile_image_style = profile_image_style  + " display: none;";
         }
-        
+        if (feed['x_feed_type'] == 'facebook')
+        {
+            title = feed['activity:link:via'];
+            display_title ="block";
+        }            
+        else if (feed['x_feed_type'] == 'forum')
+        {
+            title = feed['link'];
+            display_title ="block";
+        }                    
         feed_date = new Date(feed['x_created_at']['$date'])
         country = '';
         if ('x_coordinates' in feed && feed['x_coordinates'] != null) country = feed['x_coordinates']['country'];
@@ -210,6 +226,8 @@ function updateFeedsContent(response, more)
                     .replace("%%user_profile_url%%", user_url)
                     .replace("%%user_profile_url%%", user_url)
                     .replace("%%country%%", country)
+                    .replace("%%title%%", title)
+                    .replace("%%display_title%%", display_title)
                     );    
         
         feedbox.append(feedtag);

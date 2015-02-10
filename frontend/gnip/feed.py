@@ -30,6 +30,7 @@ class FeedEntry(object):
         fe.d['author'] = entry.author
         fe.d['_id'] = entry.id
         fe.d['reply_to_id'] = entry.get('thr_in-reply-to', None)
+        fe.d['x_feed_type'] = 'forum'
         return fe
 
     @classmethod
@@ -37,6 +38,8 @@ class FeedEntry(object):
         fe = cls()
         fe.d = doc
         fe.d['user'] = {'screen_name': fe.getUsername()}
+        if not 'x_feed_type' in fe.d:
+            fe.d['x_feed_type'] = 'forum'
         return fe        
 
     def __unicode__(self):

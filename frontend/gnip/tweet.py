@@ -25,6 +25,8 @@ class Tweet(object):
             res.d['text'] = res.getText()
         if not 'x_coordinates' in doc:
             res.d['x_coordinates'] = {"country": "", "country_code": "", "origin": ""}
+        if not 'x_feed_type' in res.d:
+            res.d['x_feed_type'] = 'twitter'            
         return res
 
     @classmethod
@@ -77,6 +79,7 @@ class GnipActivityTweet(Tweet):
         
     def normalize(self): #should only be called for activities that came directly from gnip, not from mongodb
         self.d['x_created_at'] = datetime.strptime(self.d['postedTime'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        self.d['x_feed_type'] = 'twitter'
         self.d['user'] = {}
         self.d['user']['screen_name'] = self.getUsername()
         self.d['user']['profile_image_url_https'] = self.getUserProfileImageURL()

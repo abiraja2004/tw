@@ -441,6 +441,11 @@ class MongoManager(object):
         return res
     
     @classmethod
+    def findFBPosts(cls, collection_name, **kwargs):
+        from facebook import FBPost
+        return MongoIterator(cls.find(collection_name, **kwargs), FBPost.createFromMongoDoc)
+
+    @classmethod
     def findTweets(cls, collection_name, **kwargs):
         from tweet import Tweet
         return MongoIterator(cls.find(collection_name, **kwargs), Tweet.createFromMongoDoc)
