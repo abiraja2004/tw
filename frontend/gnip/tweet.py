@@ -27,6 +27,9 @@ class Tweet(object):
             res.d['x_coordinates'] = {"country": "", "country_code": "", "origin": ""}
         if not 'x_feed_type' in res.d:
             res.d['x_feed_type'] = 'twitter'            
+        if not 'x_extracted_info' in res.d and 'x_extrated_info' in res.d:
+            res.d['x_extracted_info'] = res.d['x_extrated_info']
+            del res.d['x_extrated_info']
         return res
 
     @classmethod
@@ -157,10 +160,13 @@ class GnipActivityTweet(Tweet):
             self.d['x_mentions_count'] = {username: cnt}
         
     def getExtractedInfo(self):
-        return self.d.get('x_extracted_info', [])
+        try:
+            self.d.get('x_extracted_info')
+        except KeyError, e:
+            self.d.get('x_extrated_info', []) #algunos tweets se grabaron sin la c!!!
 
     def setExtractedInfo(self, pms):
-        self.d['x_extrated_info'] = pms
+        self.d['x_extracted_info'] = pms
     
     def getExtractedTopics(self):
         return self.d.get('x_extracted_topics', [])    

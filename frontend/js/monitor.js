@@ -141,7 +141,7 @@ function updateTweetBox(response)
 
 function updateFeedBox(response)
 {
-    deb_var3 = response['feeds'];
+    deb_var2 = response['feeds'];
     tweets = response['feeds'];
     //mentions = 0;
     html = $('#feed_model').html();

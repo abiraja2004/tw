@@ -240,7 +240,7 @@ var item;
 function removeFeed(btn)
 {
     if (!window.confirm("Estás seguro que quieres eliminar el tweet?")) return 
-    account_id = $('[fn=a_id]').val();;
+    account_id = $('[fn=a_id]').val();
     campaign_id = $('[fn=c_id]').val();    
     item = $(btn).closest(".item");
     feed_object_id = item.find("input[name=id]").val();
