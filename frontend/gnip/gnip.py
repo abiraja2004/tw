@@ -20,6 +20,8 @@ from xml.sax.handler import ContentHandler
 from xml.sax.xmlreader import IncrementalParser
 from datetime import datetime, timedelta
 from mongo import MongoManager
+import httplib
+import traceback
 
 
 # Tune CHUNKSIZE as needed.  The CHUNKSIZE is the size of compressed data read
@@ -239,6 +241,10 @@ class GnipDataCollectionStreamReceiver(MyThread):
                 s = ""
                 #print "timeout"
                 pass #timeout
+            except httplib.IncompleteRead as e:            
+                print "incomplete read catched in datacollection stream receiver"
+                traceback.print_exc(file=sys.stdout)
+                pass
             except KeyboardInterrupt, e:
                 break
         return

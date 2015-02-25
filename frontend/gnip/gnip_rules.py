@@ -126,6 +126,7 @@ class GnipTwitterRules(object):
                 self.clean = True
             except urllib2.URLError:
                 self.setResponse("List rules failed, check url and credentials.", STATUS_ERR)
+                raise
         else:
             self.responseString = "OK"
         return self

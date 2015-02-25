@@ -8,6 +8,7 @@ import time
 from datetime import timedelta, datetime
 import re
 from classifiermanager import ClassifierManager
+import traceback
 
 
 
@@ -150,8 +151,14 @@ class RulesMonitor(MyThread):
     def run(self):
         print "Rules monitor running..."
         while not self.finish_flag:
-            self.gnipTwitterRulesManager.updateGnipRules()
-            self.gnipCollectionRulesManager.updateGnipRules()
+            try:
+                self.gnipTwitterRulesManager.updateGnipRules()
+            except:
+                traceback.print_exc(file=sys.stdout)
+            try:
+                self.gnipCollectionRulesManager.updateGnipRules()
+            except:
+                traceback.print_exc(file=sys.stdout)
             time.sleep(RulesMonitor.CHECK_PERIOD)
 
     
