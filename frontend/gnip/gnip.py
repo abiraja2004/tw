@@ -83,7 +83,9 @@ class GnipTwitterStreamReceiver(MyThread):
         try:
             conn.perform()    
         except pycurl.error, e:
-            pass
+            print "pycurl error"
+            traceback.print_exc(file=sys.stdout)
+
 
         
 class GnipTwitterManager(object):
