@@ -184,6 +184,7 @@ if __name__ == "__main__":
     rmon.start()    
     try:    
         while True:
+            MyThread.checkFinalization()    
             time.sleep(1)
     except KeyboardInterrupt, e:
         rmon.stopWorking()
