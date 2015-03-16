@@ -1222,14 +1222,13 @@ def search_feeds():
             if not '$elemMatch' in docfilter['x_extracted_info']: docfilter['x_extracted_info']['$elemMatch'] = {"confidence": {"$gt": 0}}
             docfilter['x_extracted_info']["$elemMatch"]["brand"] = {'$in': bti}
         #dbtweets = accountdb[collection_name].find(docfilter)
-        
         if source_twitter:
             collection_name = "tweets_%s" % campaign_id        
             if count_only:
                 res['count'] += MongoManager.countDocuments(collection_name, filters=docfilter)
             else:
                 skipfilter = None
-                if skip: filterfilter = skip
+                if skip: skipfilter = skip
                 dbtweets = MongoManager.findTweets(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
                 #dbtweets = MongoManager.findFeeds(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
                 res['feeds'].extend([t.getDictionary() for t in dbtweets])
@@ -1239,7 +1238,7 @@ def search_feeds():
                 res['count'] += MongoManager.countDocuments(collection_name, filters=docfilter)
             else:
                 skipfilter = None
-                if skip: filterfilter = skip
+                if skip: skipfilter = skip
                 dbtweets = MongoManager.findFeeds(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
                 res['feeds'].extend([t.getDictionary() for t in dbtweets])
         if source_facebook:
@@ -1248,7 +1247,7 @@ def search_feeds():
                 res['count'] += MongoManager.countDocuments(collection_name, filters=docfilter)
             else:
                 skipfilter = None
-                if skip: filterfilter = skip
+                if skip: skipfilter = skip
                 dbtweets = MongoManager.findFBPosts(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
                 res['feeds'].extend([t.getDictionary() for t in dbtweets])
             
