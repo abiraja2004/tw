@@ -8,7 +8,7 @@ function dateRangeChanged()
 function fetchFollowers(button)
 {
     deb_var = button;
-    row = $(button.closest(".row"))
+    row = $($(button).closest(".row"))
     account_id = $('[fn=a_id]').val();;
 
     params = {};
