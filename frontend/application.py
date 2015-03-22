@@ -1268,6 +1268,41 @@ def remove_feed():
 def test_alive():
     return flask.Response("ALIVE!", 200)
 
+@app.route('/persons')
+def persons():
+    account_id = request.args.get("account_id", "")
+    custom_css= request.args.get("css", None)
+    account = getAccount(account_id)
+    logo = "logo.jpg"
+    logo2 = None
+    if str(account['_id']) == "5410f47209109a09a2b5985b": #sivale
+        logo = "logoSivale.jpg"
+        logo2 = "logoPromored.png"
+    elif str(account['_id']) == "5476951e9babd3b93e31b9a9": #sony
+        logo = "logoSony.jpg"
+        logo2 = "logoLumia.jpg"
+    return render_template('app.html', custom_css = custom_css, content_template="persons.html", js="persons.js", account=account, user=getUser(account), logo=logo, logo2 = logo2, daterange=getDateRange(request))
+
+@app.route('/api/persons/fetch_followers')
+def persons_fetch_followers():
+    account_id = request.args.get("account_id", "")
+    twitter_accounts = request.args.get("twitter_accounts", "")
+    twitter = Twython("1qxRMuTzu2I7BP7ozekfRw", "whQFHN8rqR78L6su6U32G6TPT7e7W2vCouR4inMfM", "2305874377-TTmvLjLuP8aq8q2bT7GPJsOjG9n6uYLAA0tvsYU", "iy4SYpkHK26Zyfr9RhYSGOLVtd9eMNF6Ebl2p552gF4vL")
+    accs = [a.replace("@", "").strip() for a in twitter_accounts.split(",") if a.replace("@", "").strip()]
+    users = []
+    n = 0
+    for acc in accs:
+        nc = -1
+        while nc != 0:
+            followers = twitter.get_followers_list(screen_name = acc, count=200, cursor=nc)
+            users.extend(followers['users'])
+            nc = followers['next_cursor']
+            n += 1
+            if n >= 15: break
+        if n >= 15: break
+
+    res = {"ok": True, "users": users}
+    return flask.Response(dumps(res),  mimetype='application/json')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)

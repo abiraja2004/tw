@@ -222,7 +222,11 @@
                                     <li><a href="/feeds_explorer?account_id={{account['_id']}}&campaign_id={{campaign_id}}"><i class="fa fa-twitter"></i> {{campaign['name']}}</a></li>
                                     {% endfor %}
                                 </ul>                            
-                            </li> 
+                            </li>
+                            <!--li>
+                                <a href="/persons?account_id={{account['_id']}}"><i class="fa fa-users"></i> Base de Usuarios</a>
+                                </a>
+                            </li-->
                         {% if user and user['access'] == 'admin' %}
                             <li>
                                 <a href="/polls?account_id={{account['_id']}}"><i><img src="/img/hashtagicon.png"/></i> Encuestas x Hashtag</a>

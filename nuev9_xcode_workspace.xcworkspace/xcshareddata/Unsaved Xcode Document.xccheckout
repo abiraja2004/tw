@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>EB0CC727-2D67-4908-AAAC-3CA6D73CB6CA</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>5DC4452AEAF2C09B7EEE46FD61573D0F18CAC546</key>
+		<string>https://github.com/pablobesada/tw</string>
+	</dict>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>5DC4452AEAF2C09B7EEE46FD61573D0F18CAC546</key>
+		<string>tw/</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/pablobesada/tw</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>5DC4452AEAF2C09B7EEE46FD61573D0F18CAC546</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5DC4452AEAF2C09B7EEE46FD61573D0F18CAC546</string>
+			<key>IDESourceControlWCCName</key>
+			<string>tw</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,2666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:frontend"
+      name = "frontend">
+      <FileRef
+         location = "group:__init__.py">
+      </FileRef>
+      <Group
+         location = "group:ajax"
+         name = "ajax">
+         <FileRef
+            location = "group:dashboard-boxrefresh-demo.php">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:analytics.py">
+      </FileRef>
+      <FileRef
+         location = "group:analytics_api.py">
+      </FileRef>
+      <FileRef
+         location = "group:analytics_api.pyc">
+      </FileRef>
+      <FileRef
+         location = "group:analytics_example.py">
+      </FileRef>
+      <FileRef
+         location = "group:application.py">
+      </FileRef>
+      <FileRef
+         location = "group:brandclassifier.py">
+      </FileRef>
+      <FileRef
+         location = "group:brandclassifier.pyc">
+      </FileRef>
+      <FileRef
+         location = "group:client_secrets.json">
+      </FileRef>
+      <Group
+         location = "group:css"
+         name = "css">
+         <FileRef
+            location = "group:AdminLTE.css">
+         </FileRef>
+         <Group
+            location = "group:bootstrap-slider"
+            name = "bootstrap-slider">
+            <FileRef
+               location = "group:slider.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:bootstrap-wysihtml5"
+            name = "bootstrap-wysihtml5">
+            <FileRef
+               location = "group:bootstrap3-wysihtml5.css">
+            </FileRef>
+            <FileRef
+               location = "group:bootstrap3-wysihtml5.min.css">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:bootstrap.css">
+         </FileRef>
+         <FileRef
+            location = "group:bootstrap.min.css">
+         </FileRef>
+         <Group
+            location = "group:colorpicker"
+            name = "colorpicker">
+            <FileRef
+               location = "group:bootstrap-colorpicker.css">
+            </FileRef>
+            <FileRef
+               location = "group:bootstrap-colorpicker.min.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:datatables"
+            name = "datatables">
+            <FileRef
+               location = "group:dataTables.bootstrap.css">
+            </FileRef>
+            <Group
+               location = "group:images"
+               name = "images">
+               <FileRef
+                  location = "group:sort_asc.png">
+               </FileRef>
+               <FileRef
+                  location = "group:sort_asc_disabled.png">
+               </FileRef>
+               <FileRef
+                  location = "group:sort_both.png">
+               </FileRef>
+               <FileRef
+                  location = "group:sort_desc.png">
+               </FileRef>
+               <FileRef
+                  location = "group:sort_desc_disabled.png">
+               </FileRef>
+            </Group>
+         </Group>
+         <Group
+            location = "group:datepicker"
+            name = "datepicker">
+            <FileRef
+               location = "group:datepicker3.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:daterangepicker"
+            name = "daterangepicker">
+            <FileRef
+               location = "group:daterangepicker-bs3.css">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:font-awesome.css">
+         </FileRef>
+         <FileRef
+            location = "group:font-awesome.min.css">
+         </FileRef>
+         <Group
+            location = "group:fullcalendar"
+            name = "fullcalendar">
+            <FileRef
+               location = "group:fullcalendar.css">
+            </FileRef>
+            <FileRef
+               location = "group:fullcalendar.print.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:iCheck"
+            name = "iCheck">
+            <FileRef
+               location = "group:all.css">
+            </FileRef>
+            <Group
+               location = "group:flat"
+               name = "flat">
+               <FileRef
+                  location = "group:_all.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.png">
+               </FileRef>
+               <FileRef
+                  location = "group:aero@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.css">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:flat.css">
+               </FileRef>
+               <FileRef
+                  location = "group:flat.png">
+               </FileRef>
+               <FileRef
+                  location = "group:flat@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green.css">
+               </FileRef>
+               <FileRef
+                  location = "group:green.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.css">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.css">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.css">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.css">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red.css">
+               </FileRef>
+               <FileRef
+                  location = "group:red.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.css">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow@2x.png">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:futurico"
+               name = "futurico">
+               <FileRef
+                  location = "group:futurico.css">
+               </FileRef>
+               <FileRef
+                  location = "group:futurico.png">
+               </FileRef>
+               <FileRef
+                  location = "group:futurico@2x.png">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:line"
+               name = "line">
+               <FileRef
+                  location = "group:_all.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.css">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.css">
+               </FileRef>
+               <FileRef
+                  location = "group:green.css">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.css">
+               </FileRef>
+               <FileRef
+                  location = "group:line.css">
+               </FileRef>
+               <FileRef
+                  location = "group:line.png">
+               </FileRef>
+               <FileRef
+                  location = "group:line@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.css">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.css">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.css">
+               </FileRef>
+               <FileRef
+                  location = "group:red.css">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.css">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:minimal"
+               name = "minimal">
+               <FileRef
+                  location = "group:_all.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.png">
+               </FileRef>
+               <FileRef
+                  location = "group:aero@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.css">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green.css">
+               </FileRef>
+               <FileRef
+                  location = "group:green.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.css">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:minimal.css">
+               </FileRef>
+               <FileRef
+                  location = "group:minimal.png">
+               </FileRef>
+               <FileRef
+                  location = "group:minimal@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.css">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.css">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.css">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red.css">
+               </FileRef>
+               <FileRef
+                  location = "group:red.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.css">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow@2x.png">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:polaris"
+               name = "polaris">
+               <FileRef
+                  location = "group:polaris.css">
+               </FileRef>
+               <FileRef
+                  location = "group:polaris.png">
+               </FileRef>
+               <FileRef
+                  location = "group:polaris@2x.png">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:square"
+               name = "square">
+               <FileRef
+                  location = "group:_all.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.css">
+               </FileRef>
+               <FileRef
+                  location = "group:aero.png">
+               </FileRef>
+               <FileRef
+                  location = "group:aero@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.css">
+               </FileRef>
+               <FileRef
+                  location = "group:blue.png">
+               </FileRef>
+               <FileRef
+                  location = "group:blue@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green.css">
+               </FileRef>
+               <FileRef
+                  location = "group:green.png">
+               </FileRef>
+               <FileRef
+                  location = "group:green@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.css">
+               </FileRef>
+               <FileRef
+                  location = "group:grey.png">
+               </FileRef>
+               <FileRef
+                  location = "group:grey@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.css">
+               </FileRef>
+               <FileRef
+                  location = "group:orange.png">
+               </FileRef>
+               <FileRef
+                  location = "group:orange@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.css">
+               </FileRef>
+               <FileRef
+                  location = "group:pink.png">
+               </FileRef>
+               <FileRef
+                  location = "group:pink@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.css">
+               </FileRef>
+               <FileRef
+                  location = "group:purple.png">
+               </FileRef>
+               <FileRef
+                  location = "group:purple@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red.css">
+               </FileRef>
+               <FileRef
+                  location = "group:red.png">
+               </FileRef>
+               <FileRef
+                  location = "group:red@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:square.css">
+               </FileRef>
+               <FileRef
+                  location = "group:square.png">
+               </FileRef>
+               <FileRef
+                  location = "group:square@2x.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.css">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow.png">
+               </FileRef>
+               <FileRef
+                  location = "group:yellow@2x.png">
+               </FileRef>
+            </Group>
+         </Group>
+         <Group
+            location = "group:images"
+            name = "images">
+            <FileRef
+               location = "group:animated-overlay.gif">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_flat_0_aaaaaa_40x100.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_flat_55_fbec88_40x100.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_glass_75_d0e5f5_1x400.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_glass_85_dfeffc_1x400.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_glass_95_fef1ec_1x400.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_gloss-wave_55_5c9ccc_500x100.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_inset-hard_100_f5f8f9_1x100.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-bg_inset-hard_100_fcfdfd_1x100.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_217bc0_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_2e83ff_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_469bdd_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_6da8d5_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_cd0a0a_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_d8e7f3_256x240.png">
+            </FileRef>
+            <FileRef
+               location = "group:ui-icons_f9bd01_256x240.png">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:ionicons.css">
+         </FileRef>
+         <FileRef
+            location = "group:ionicons.min.css">
+         </FileRef>
+         <Group
+            location = "group:ionslider"
+            name = "ionslider">
+            <FileRef
+               location = "group:ion.rangeSlider.css">
+            </FileRef>
+            <FileRef
+               location = "group:ion.rangeSlider.skinFlat.css">
+            </FileRef>
+            <FileRef
+               location = "group:ion.rangeSlider.skinNice.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:jQueryUI"
+            name = "jQueryUI">
+            <Group
+               location = "group:images"
+               name = "images">
+               <FileRef
+                  location = "group:animated-overlay.gif">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_0_aaaaaa_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_100_e6e7e8_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_100_f56954_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_55_f39c12_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_65_ffffff_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_75_dadada_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_75_e6e6e6_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-bg_flat_75_ffffff_40x100.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-icons_222222_256x240.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-icons_454545_256x240.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-icons_888888_256x240.png">
+               </FileRef>
+               <FileRef
+                  location = "group:ui-icons_ffffff_256x240.png">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:jquery-ui-1.10.3.custom.css">
+            </FileRef>
+            <FileRef
+               location = "group:jquery-ui-1.10.3.custom.min.css">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:jvectormap"
+            name = "jvectormap">
+            <FileRef
+               location = "group:jquery-jvectormap-1.2.2.css">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:monitor.css">
+         </FileRef>
+         <Group
+            location = "group:morris"
+            name = "morris">
+            <FileRef
+               location = "group:morris.css">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:nuev9.css">
+         </FileRef>
+         <FileRef
+            location = "group:nueveIndex.css">
+         </FileRef>
+         <Group
+            location = "group:timepicker"
+            name = "timepicker">
+            <FileRef
+               location = "group:bootstrap-timepicker.css">
+            </FileRef>
+            <FileRef
+               location = "group:bootstrap-timepicker.min.css">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:typeahead-bs3.css">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:datacollection"
+         name = "datacollection">
+         <FileRef
+            location = "group:1500x500.png">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:fonts"
+         name = "fonts">
+         <FileRef
+            location = "group:fontawesome-webfont.eot">
+         </FileRef>
+         <FileRef
+            location = "group:fontawesome-webfont.svg">
+         </FileRef>
+         <FileRef
+            location = "group:fontawesome-webfont.ttf">
+         </FileRef>
+         <FileRef
+            location = "group:fontawesome-webfont.woff">
+         </FileRef>
+         <FileRef
+            location = "group:FontAwesome.otf">
+         </FileRef>
+         <FileRef
+            location = "group:glyphicons-halflings-regular.eot">
+         </FileRef>
+         <FileRef
+            location = "group:glyphicons-halflings-regular.svg">
+         </FileRef>
+         <FileRef
+            location = "group:glyphicons-halflings-regular.ttf">
+         </FileRef>
+         <FileRef
+            location = "group:glyphicons-halflings-regular.woff">
+         </FileRef>
+         <FileRef
+            location = "group:ionicons.eot">
+         </FileRef>
+         <FileRef
+            location = "group:ionicons.svg">
+         </FileRef>
+         <FileRef
+            location = "group:ionicons.ttf">
+         </FileRef>
+         <FileRef
+            location = "group:ionicons.woff">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:gnip"
+         name = "gnip">
+         <FileRef
+            location = "group:__init__.py">
+         </FileRef>
+         <FileRef
+            location = "group:__init__.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:brandclassifier.py">
+         </FileRef>
+         <FileRef
+            location = "group:brandclassifier.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:classifiermanager.py">
+         </FileRef>
+         <FileRef
+            location = "group:classifiermanager.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:facebook.py">
+         </FileRef>
+         <FileRef
+            location = "group:feed.py">
+         </FileRef>
+         <FileRef
+            location = "group:feed.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:gnip.py">
+         </FileRef>
+         <FileRef
+            location = "group:gnip_rules.py">
+         </FileRef>
+         <FileRef
+            location = "group:mongo.py">
+         </FileRef>
+         <FileRef
+            location = "group:mongo.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:pipeline.py">
+         </FileRef>
+         <FileRef
+            location = "group:pipeline.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:pipelinestages.py">
+         </FileRef>
+         <FileRef
+            location = "group:pipelinestages.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:rules_manager.py">
+         </FileRef>
+         <FileRef
+            location = "group:summarizer.py">
+         </FileRef>
+         <FileRef
+            location = "group:summarizer.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:test.py">
+         </FileRef>
+         <FileRef
+            location = "group:topicclassifier.py">
+         </FileRef>
+         <FileRef
+            location = "group:topicclassifier.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:tweet.py">
+         </FileRef>
+         <FileRef
+            location = "group:tweet.pyc">
+         </FileRef>
+         <FileRef
+            location = "group:utils.py">
+         </FileRef>
+         <FileRef
+            location = "group:utils.pyc">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:html"
+         name = "html">
+         <FileRef
+            location = "group:account_admin.html">
+         </FileRef>
+         <Group
+            location = "group:analytics"
+            name = "analytics">
+            <FileRef
+               location = "group:hello_analytics_api_v3.html">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:app.html">
+         </FileRef>
+         <FileRef
+            location = "group:campaign.html">
+         </FileRef>
+         <FileRef
+            location = "group:country_options.html">
+         </FileRef>
+         <FileRef
+            location = "group:dashboard.html">
+         </FileRef>
+         <FileRef
+            location = "group:dashboard_app.html">
+         </FileRef>
+         <FileRef
+            location = "group:datacollection_landing_page.html">
+         </FileRef>
+         <Group
+            location = "group:datacollection_landing_pages"
+            name = "datacollection_landing_pages">
+            <Group
+               location = "group:generic"
+               name = "generic">
+               <FileRef
+                  location = "group:datacollection_landing_page.css">
+               </FileRef>
+               <FileRef
+                  location = "group:datacollection_landing_page.html">
+               </FileRef>
+               <FileRef
+                  location = "group:header.jpg">
+               </FileRef>
+               <FileRef
+                  location = "group:sivale.jpg">
+               </FileRef>
+               <FileRef
+                  location = "group:small.jpg">
+               </FileRef>
+            </Group>
+         </Group>
+         <FileRef
+            location = "group:datacollections.html">
+         </FileRef>
+         <FileRef
+            location = "group:empty.html">
+         </FileRef>
+         <FileRef
+            location = "group:feeds_explorer.html">
+         </FileRef>
+         <FileRef
+            location = "group:persons.html">
+         </FileRef>
+         <FileRef
+            location = "group:fullpage.html">
+         </FileRef>
+         <FileRef
+            location = "group:index.html">
+         </FileRef>
+         <FileRef
+            location = "group:index2.html">
+         </FileRef>
+         <FileRef
+            location = "group:keywordsets.html">
+         </FileRef>
+         <FileRef
+            location = "group:LICENSE">
+         </FileRef>
+         <FileRef
+            location = "group:login.html">
+         </FileRef>
+         <Group
+            location = "group:pages"
+            name = "pages">
+            <FileRef
+               location = "group:calendar.html">
+            </FileRef>
+            <FileRef
+               location = "group:campaigns.html">
+            </FileRef>
+            <Group
+               location = "group:charts"
+               name = "charts">
+               <FileRef
+                  location = "group:empty.html">
+               </FileRef>
+               <FileRef
+                  location = "group:flot.html">
+               </FileRef>
+               <FileRef
+                  location = "group:inline.html">
+               </FileRef>
+               <FileRef
+                  location = "group:morris.html">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:empty.html">
+            </FileRef>
+            <Group
+               location = "group:examples"
+               name = "examples">
+               <FileRef
+                  location = "group:404.html">
+               </FileRef>
+               <FileRef
+                  location = "group:500.html">
+               </FileRef>
+               <FileRef
+                  location = "group:blank.html">
+               </FileRef>
+               <FileRef
+                  location = "group:invoice.html">
+               </FileRef>
+               <FileRef
+                  location = "group:lockscreen.html">
+               </FileRef>
+               <FileRef
+                  location = "group:login.html">
+               </FileRef>
+               <FileRef
+                  location = "group:register.html">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:forms"
+               name = "forms">
+               <FileRef
+                  location = "group:advanced.html">
+               </FileRef>
+               <FileRef
+                  location = "group:editors.html">
+               </FileRef>
+               <FileRef
+                  location = "group:empty.html">
+               </FileRef>
+               <FileRef
+                  location = "group:general.html">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:mailbox.html">
+            </FileRef>
+            <Group
+               location = "group:tables"
+               name = "tables">
+               <FileRef
+                  location = "group:data.html">
+               </FileRef>
+               <FileRef
+                  location = "group:empty.html">
+               </FileRef>
+               <FileRef
+                  location = "group:simple.html">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:UI"
+               name = "UI">
+               <FileRef
+                  location = "group:buttons.html">
+               </FileRef>
+               <FileRef
+                  location = "group:empty.html">
+               </FileRef>
+               <FileRef
+                  location = "group:general.html">
+               </FileRef>
+               <FileRef
+                  location = "group:icons.html">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery-ui.html">
+               </FileRef>
+               <FileRef
+                  location = "group:sliders.html">
+               </FileRef>
+               <FileRef
+                  location = "group:timeline.html">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:widgets.html">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:polls.html">
+         </FileRef>
+         <Group
+            location = "group:presupuestos"
+            name = "presupuestos">
+            <FileRef
+               location = "group:danone-xhfjddkcg12322.html">
+            </FileRef>
+            <FileRef
+               location = "group:encab.jpg">
+            </FileRef>
+            <FileRef
+               location = "group:pie.jpg">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:README.md">
+         </FileRef>
+         <FileRef
+            location = "group:sentiment.html">
+         </FileRef>
+         <FileRef
+            location = "group:server_status.html">
+         </FileRef>
+         <FileRef
+            location = "group:topics.html">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:img"
+         name = "img">
+         <FileRef
+            location = "group:ajax-loader.gif">
+         </FileRef>
+         <FileRef
+            location = "group:ajax-loader2.gif">
+         </FileRef>
+         <FileRef
+            location = "group:avatar.png">
+         </FileRef>
+         <FileRef
+            location = "group:avatar04.png">
+         </FileRef>
+         <FileRef
+            location = "group:avatar2.png">
+         </FileRef>
+         <FileRef
+            location = "group:avatar3.png">
+         </FileRef>
+         <FileRef
+            location = "group:avatar5.png">
+         </FileRef>
+         <FileRef
+            location = "group:bg.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:blur-background04.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:blur-background08.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:blur-background09.jpg">
+         </FileRef>
+         <Group
+            location = "group:bootstrap-colorpicker"
+            name = "bootstrap-colorpicker">
+            <FileRef
+               location = "group:alpha-horizontal.png">
+            </FileRef>
+            <FileRef
+               location = "group:alpha.png">
+            </FileRef>
+            <FileRef
+               location = "group:hue-horizontal.png">
+            </FileRef>
+            <FileRef
+               location = "group:hue.png">
+            </FileRef>
+            <FileRef
+               location = "group:saturation.png">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:credit"
+            name = "credit">
+            <FileRef
+               location = "group:american-express.png">
+            </FileRef>
+            <FileRef
+               location = "group:cirrus.png">
+            </FileRef>
+            <FileRef
+               location = "group:mastercard.png">
+            </FileRef>
+            <FileRef
+               location = "group:mestro.png">
+            </FileRef>
+            <FileRef
+               location = "group:paypal.png">
+            </FileRef>
+            <FileRef
+               location = "group:paypal2.png">
+            </FileRef>
+            <FileRef
+               location = "group:visa.png">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:datacollectionicon.png">
+         </FileRef>
+         <FileRef
+            location = "group:hashtagicon.png">
+         </FileRef>
+         <FileRef
+            location = "group:icons.png">
+         </FileRef>
+         <FileRef
+            location = "group:logo.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:logo_old.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:logoLumia.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:logoPromored.png">
+         </FileRef>
+         <FileRef
+            location = "group:logoSivale.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:logoSony.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:sprite-skin-flat.png">
+         </FileRef>
+         <FileRef
+            location = "group:sprite-skin-nice.png">
+         </FileRef>
+         <FileRef
+            location = "group:user-bg.png">
+         </FileRef>
+         <FileRef
+            location = "group:user.jpg">
+         </FileRef>
+         <FileRef
+            location = "group:user2.jpg">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:js"
+         name = "js">
+         <FileRef
+            location = "group:account_admin.js">
+         </FileRef>
+         <Group
+            location = "group:AdminLTE"
+            name = "AdminLTE">
+            <FileRef
+               location = "group:app.js">
+            </FileRef>
+            <FileRef
+               location = "group:dashboard.js">
+            </FileRef>
+            <FileRef
+               location = "group:demo.js">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:bootstrap.js">
+         </FileRef>
+         <FileRef
+            location = "group:bootstrap.min.js">
+         </FileRef>
+         <FileRef
+            location = "group:campaign.js">
+         </FileRef>
+         <FileRef
+            location = "group:dashboard.js">
+         </FileRef>
+         <FileRef
+            location = "group:datacollections.js">
+         </FileRef>
+         <FileRef
+            location = "group:feeds_explorer.js">
+         </FileRef>
+         <FileRef
+            location = "group:persons.js">
+         </FileRef>
+         <FileRef
+            location = "group:hello_analytics_api_v3.js">
+         </FileRef>
+         <FileRef
+            location = "group:hello_analytics_api_v3_auth.js">
+         </FileRef>
+         <FileRef
+            location = "group:jquery-ui-1.10.3.js">
+         </FileRef>
+         <FileRef
+            location = "group:jquery-ui-1.10.3.min.js">
+         </FileRef>
+         <FileRef
+            location = "group:keywordset.js">
+         </FileRef>
+         <FileRef
+            location = "group:monitor.js">
+         </FileRef>
+         <Group
+            location = "group:plugins"
+            name = "plugins">
+            <Group
+               location = "group:AdminLTE"
+               name = "AdminLTE">
+               <FileRef
+                  location = "group:app.js">
+               </FileRef>
+               <FileRef
+                  location = "group:dashboard.js">
+               </FileRef>
+               <FileRef
+                  location = "group:demo.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:bootstrap-slider"
+               name = "bootstrap-slider">
+               <FileRef
+                  location = "group:bootstrap-slider.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:bootstrap-wysihtml5"
+               name = "bootstrap-wysihtml5">
+               <FileRef
+                  location = "group:bootstrap3-wysihtml5.all.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:bootstrap3-wysihtml5.js">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:bootstrap.min.js">
+            </FileRef>
+            <Group
+               location = "group:ckeditor"
+               name = "ckeditor">
+               <Group
+                  location = "group:adapters"
+                  name = "adapters">
+                  <FileRef
+                     location = "group:jquery.js">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:build-config.js">
+               </FileRef>
+               <FileRef
+                  location = "group:CHANGES.md">
+               </FileRef>
+               <FileRef
+                  location = "group:ckeditor.js">
+               </FileRef>
+               <FileRef
+                  location = "group:config.js">
+               </FileRef>
+               <FileRef
+                  location = "group:contents.css">
+               </FileRef>
+               <Group
+                  location = "group:lang"
+                  name = "lang">
+                  <FileRef
+                     location = "group:af.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ar.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bg.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bn.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bs.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ca.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:cs.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:cy.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:da.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:de.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:el.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:en-au.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:en-ca.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:en-gb.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:en.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:eo.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:es.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:et.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:eu.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fa.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fi.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fo.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fr-ca.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:gl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:gu.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:he.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hi.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hu.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:id.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:is.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:it.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ja.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ka.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:km.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ko.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ku.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:lt.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:lv.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:mk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:mn.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ms.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:nb.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:nl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:no.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:pl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:pt-br.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:pt.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ro.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ru.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:si.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sq.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sr-latn.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sv.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:th.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:tr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ug.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:uk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:vi.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:zh-cn.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:zh.js">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:LICENSE.md">
+               </FileRef>
+               <Group
+                  location = "group:plugins"
+                  name = "plugins">
+                  <Group
+                     location = "group:a11yhelp"
+                     name = "a11yhelp">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:a11yhelp.js">
+                        </FileRef>
+                        <Group
+                           location = "group:lang"
+                           name = "lang">
+                           <FileRef
+                              location = "group:_translationstatus.txt">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ar.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:bg.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ca.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:cs.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:cy.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:da.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:de.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:el.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:en.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:eo.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:es.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:et.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fa.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fi.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fr-ca.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:gl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:gu.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:he.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:hi.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:hr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:hu.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:id.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:it.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ja.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:km.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ko.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ku.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:lt.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:lv.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:mk.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:mn.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:nb.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:nl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:no.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pt-br.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pt.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ro.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ru.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:si.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sk.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sq.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sr-latn.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sv.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:th.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:tr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ug.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:uk.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:vi.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:zh-cn.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:zh.js">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:about"
+                     name = "about">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:about.js">
+                        </FileRef>
+                        <Group
+                           location = "group:hidpi"
+                           name = "hidpi">
+                           <FileRef
+                              location = "group:logo_ckeditor.png">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:logo_ckeditor.png">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:clipboard"
+                     name = "clipboard">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:paste.js">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:dialog"
+                     name = "dialog">
+                     <FileRef
+                        location = "group:dialogDefinition.js">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:fakeobjects"
+                     name = "fakeobjects">
+                     <Group
+                        location = "group:images"
+                        name = "images">
+                        <FileRef
+                           location = "group:spacer.gif">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <FileRef
+                     location = "group:icons.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:icons_hidpi.png">
+                  </FileRef>
+                  <Group
+                     location = "group:image"
+                     name = "image">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:image.js">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:images"
+                        name = "images">
+                        <FileRef
+                           location = "group:noimage.png">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:link"
+                     name = "link">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:anchor.js">
+                        </FileRef>
+                        <FileRef
+                           location = "group:link.js">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:images"
+                        name = "images">
+                        <FileRef
+                           location = "group:anchor.png">
+                        </FileRef>
+                        <Group
+                           location = "group:hidpi"
+                           name = "hidpi">
+                           <FileRef
+                              location = "group:anchor.png">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:magicline"
+                     name = "magicline">
+                     <Group
+                        location = "group:images"
+                        name = "images">
+                        <Group
+                           location = "group:hidpi"
+                           name = "hidpi">
+                           <FileRef
+                              location = "group:icon.png">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:icon.png">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:pastefromword"
+                     name = "pastefromword">
+                     <Group
+                        location = "group:filter"
+                        name = "filter">
+                        <FileRef
+                           location = "group:default.js">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:scayt"
+                     name = "scayt">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:options.js">
+                        </FileRef>
+                        <FileRef
+                           location = "group:toolbar.css">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:LICENSE.md">
+                     </FileRef>
+                     <FileRef
+                        location = "group:README.md">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:specialchar"
+                     name = "specialchar">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <Group
+                           location = "group:lang"
+                           name = "lang">
+                           <FileRef
+                              location = "group:_translationstatus.txt">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ar.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:bg.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ca.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:cs.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:cy.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:de.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:el.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:en.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:eo.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:es.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:et.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fa.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fi.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fr-ca.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:fr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:gl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:he.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:hr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:hu.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:id.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:it.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ja.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:km.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ku.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:lv.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:nb.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:nl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:no.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pt-br.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:pt.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ru.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:si.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sk.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sl.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sq.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:sv.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:th.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:tr.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ug.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:uk.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:vi.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:zh-cn.js">
+                           </FileRef>
+                           <FileRef
+                              location = "group:zh.js">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:specialchar.js">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:table"
+                     name = "table">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:table.js">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:tabletools"
+                     name = "tabletools">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:tableCell.js">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:wsc"
+                     name = "wsc">
+                     <Group
+                        location = "group:dialogs"
+                        name = "dialogs">
+                        <FileRef
+                           location = "group:ciframe.html">
+                        </FileRef>
+                        <FileRef
+                           location = "group:tmp.html">
+                        </FileRef>
+                        <FileRef
+                           location = "group:tmpFrameset.html">
+                        </FileRef>
+                        <FileRef
+                           location = "group:wsc.css">
+                        </FileRef>
+                        <FileRef
+                           location = "group:wsc.js">
+                        </FileRef>
+                        <FileRef
+                           location = "group:wsc_ie.js">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:LICENSE.md">
+                     </FileRef>
+                     <FileRef
+                        location = "group:README.md">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:README.md">
+               </FileRef>
+               <Group
+                  location = "group:skins"
+                  name = "skins">
+                  <Group
+                     location = "group:moono"
+                     name = "moono">
+                     <FileRef
+                        location = "group:dialog.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:dialog_ie.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:dialog_ie7.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:dialog_ie8.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:dialog_iequirks.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:dialog_opera.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor_gecko.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor_ie.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor_ie7.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor_ie8.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:editor_iequirks.css">
+                     </FileRef>
+                     <FileRef
+                        location = "group:icons.png">
+                     </FileRef>
+                     <FileRef
+                        location = "group:icons_hidpi.png">
+                     </FileRef>
+                     <Group
+                        location = "group:images"
+                        name = "images">
+                        <FileRef
+                           location = "group:arrow.png">
+                        </FileRef>
+                        <FileRef
+                           location = "group:close.png">
+                        </FileRef>
+                        <Group
+                           location = "group:hidpi"
+                           name = "hidpi">
+                           <FileRef
+                              location = "group:close.png">
+                           </FileRef>
+                           <FileRef
+                              location = "group:lock-open.png">
+                           </FileRef>
+                           <FileRef
+                              location = "group:lock.png">
+                           </FileRef>
+                           <FileRef
+                              location = "group:refresh.png">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:lock-open.png">
+                        </FileRef>
+                        <FileRef
+                           location = "group:lock.png">
+                        </FileRef>
+                        <FileRef
+                           location = "group:refresh.png">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:readme.md">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:styles.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:colorpicker"
+               name = "colorpicker">
+               <FileRef
+                  location = "group:bootstrap-colorpicker.js">
+               </FileRef>
+               <FileRef
+                  location = "group:bootstrap-colorpicker.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:datatables"
+               name = "datatables">
+               <FileRef
+                  location = "group:dataTables.bootstrap.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.dataTables.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:datepicker"
+               name = "datepicker">
+               <FileRef
+                  location = "group:bootstrap-datepicker.js">
+               </FileRef>
+               <Group
+                  location = "group:locales"
+                  name = "locales">
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ar.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.az.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.bg.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ca.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.cs.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.cy.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.da.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.de.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.el.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.es.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.et.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.fa.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.fi.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.fr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.gl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.he.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.hr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.hu.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.id.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.is.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.it.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ja.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ka.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.kk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.kr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.lt.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.lv.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.mk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ms.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.nb.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.nl-BE.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.nl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.no.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.pl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.pt-BR.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.pt.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ro.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.rs-latin.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.rs.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ru.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.sk.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.sl.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.sq.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.sv.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.sw.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.th.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.tr.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.ua.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.vi.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.zh-CN.js">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bootstrap-datepicker.zh-TW.js">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
+               location = "group:daterangepicker"
+               name = "daterangepicker">
+               <FileRef
+                  location = "group:daterangepicker.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:flot"
+               name = "flot">
+               <FileRef
+                  location = "group:excanvas.js">
+               </FileRef>
+               <FileRef
+                  location = "group:excanvas.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.colorhelpers.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.colorhelpers.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.canvas.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.canvas.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.categories.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.categories.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.crosshair.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.crosshair.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.errorbars.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.errorbars.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.fillbetween.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.fillbetween.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.image.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.image.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.navigate.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.navigate.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.pie.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.pie.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.resize.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.resize.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.selection.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.selection.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.stack.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.stack.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.symbol.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.symbol.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.threshold.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.threshold.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.time.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.flot.time.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:fullcalendar"
+               name = "fullcalendar">
+               <FileRef
+                  location = "group:fullcalendar.js">
+               </FileRef>
+               <FileRef
+                  location = "group:fullcalendar.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:iCheck"
+               name = "iCheck">
+               <FileRef
+                  location = "group:icheck.js">
+               </FileRef>
+               <FileRef
+                  location = "group:icheck.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:input-mask"
+               name = "input-mask">
+               <FileRef
+                  location = "group:jquery.inputmask.date.extensions.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.inputmask.extensions.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.inputmask.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.inputmask.numeric.extensions.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.inputmask.phone.extensions.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.inputmask.regex.extensions.js">
+               </FileRef>
+               <Group
+                  location = "group:phone-codes"
+                  name = "phone-codes">
+                  <FileRef
+                     location = "group:phone-be.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:phone-codes.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:readme.txt">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
+               location = "group:ionslider"
+               name = "ionslider">
+               <FileRef
+                  location = "group:ion.rangeSlider.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:jqueryKnob"
+               name = "jqueryKnob">
+               <FileRef
+                  location = "group:jquery.knob.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:jvectormap"
+               name = "jvectormap">
+               <FileRef
+                  location = "group:jquery-jvectormap-1.2.2.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery-jvectormap-world-mill-en.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:misc"
+               name = "misc">
+               <FileRef
+                  location = "group:html5shiv.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.ba-resize.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.placeholder.js">
+               </FileRef>
+               <FileRef
+                  location = "group:modernizr.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:respond.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:morris"
+               name = "morris">
+               <FileRef
+                  location = "group:morris.js">
+               </FileRef>
+               <FileRef
+                  location = "group:morris.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:slimScroll"
+               name = "slimScroll">
+               <FileRef
+                  location = "group:jquery.slimscroll.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.slimscroll.min.js">
+               </FileRef>
+               <FileRef
+                  location = "group:slimScroll.jquery.json">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:sparkline"
+               name = "sparkline">
+               <FileRef
+                  location = "group:jquery.sparkline.js">
+               </FileRef>
+               <FileRef
+                  location = "group:jquery.sparkline.min.js">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:timepicker"
+               name = "timepicker">
+               <FileRef
+                  location = "group:bootstrap-timepicker.js">
+               </FileRef>
+               <FileRef
+                  location = "group:bootstrap-timepicker.min.js">
+               </FileRef>
+            </Group>
+         </Group>
+         <FileRef
+            location = "group:polls.js">
+         </FileRef>
+         <FileRef
+            location = "group:sentiment.js">
+         </FileRef>
+         <FileRef
+            location = "group:topic.js">
+         </FileRef>
+         <FileRef
+            location = "group:typeahead.bundle.js">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:less"
+         name = "less">
+         <FileRef
+            location = "group:404_500_errors.less">
+         </FileRef>
+         <FileRef
+            location = "group:AdminLTE.less">
+         </FileRef>
+         <FileRef
+            location = "group:alerts.less">
+         </FileRef>
+         <FileRef
+            location = "group:bootstrap-social.less">
+         </FileRef>
+         <FileRef
+            location = "group:boxes.less">
+         </FileRef>
+         <FileRef
+            location = "group:buttons.less">
+         </FileRef>
+         <FileRef
+            location = "group:callout.less">
+         </FileRef>
+         <FileRef
+            location = "group:core.less">
+         </FileRef>
+         <FileRef
+            location = "group:dropdown.less">
+         </FileRef>
+         <FileRef
+            location = "group:forms.less">
+         </FileRef>
+         <FileRef
+            location = "group:header.less">
+         </FileRef>
+         <FileRef
+            location = "group:iCheck.less">
+         </FileRef>
+         <FileRef
+            location = "group:invoice.less">
+         </FileRef>
+         <FileRef
+            location = "group:lockscreen.less">
+         </FileRef>
+         <FileRef
+            location = "group:login_and_register.less">
+         </FileRef>
+         <FileRef
+            location = "group:mailbox.less">
+         </FileRef>
+         <FileRef
+            location = "group:mixins.less">
+         </FileRef>
+         <FileRef
+            location = "group:navs.less">
+         </FileRef>
+         <FileRef
+            location = "group:pace.less">
+         </FileRef>
+         <FileRef
+            location = "group:progress-bars.less">
+         </FileRef>
+         <FileRef
+            location = "group:sidebar.less">
+         </FileRef>
+         <FileRef
+            location = "group:skins.less">
+         </FileRef>
+         <FileRef
+            location = "group:small-box.less">
+         </FileRef>
+         <FileRef
+            location = "group:timeline.less">
+         </FileRef>
+         <FileRef
+            location = "group:vars.less">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:mailutils.py">
+      </FileRef>
+      <FileRef
+         location = "group:Nuev9-d814ffdeed93.p12">
+      </FileRef>
+      <FileRef
+         location = "group:rulesmanager.py">
+      </FileRef>
+      <FileRef
+         location = "group:rulesmanager.pyc">
+      </FileRef>
+      <FileRef
+         location = "group:run_uwsgi.sh">
+      </FileRef>
+      <FileRef
+         location = "group:test-wsgi.ini">
+      </FileRef>
+      <FileRef
+         location = "group:test.py">
+      </FileRef>
+      <FileRef
+         location = "group:topicclassifier.py">
+      </FileRef>
+      <FileRef
+         location = "group:topicclassifier.pyc">
+      </FileRef>
+      <FileRef
+         location = "group:uwsgi.ini">
+      </FileRef>
+   </Group>
+</Workspace>
