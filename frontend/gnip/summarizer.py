@@ -183,7 +183,7 @@ class Summarizer(object):
         collection_name = 'summarized_tweets_%s' % campaign.getId()
         #print 41, datetime.now()
         res = MongoManager.find(collection_name, filters={'start': {"$gte": start, "$lte": end}, 'end': {"$lte": end}}, sort=('start',1))
-        pprint(res.explain())
+        #pprint(res.explain())
         #print 43, datetime.now()
         #timerange = [SumDict(r) for r in res]
         timerange = list(res)
