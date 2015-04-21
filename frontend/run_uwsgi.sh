@@ -1,1 +1,1 @@
-uwsgi uwsgi.ini &
+uwsgi uwsgi.ini &>null
