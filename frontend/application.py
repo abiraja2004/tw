@@ -1169,7 +1169,11 @@ def feeds_explorer():
     for bid, brand in account['campaigns'][campaign_id]['brands'].items():
         if brand['own_brand']: own_brands_list.append(brand['name'])
 
-    topics = accountdb.topic.find({})[:]
+    #topics = accountdb.topic.find({})[:]
+    if 'topics' in campaign:
+        topics = [y for x,y in campaign['topics'].items()]
+    else:
+        topics = []
     return render_template('app.html', custom_css = custom_css, content_template="feeds_explorer.html", js="feeds_explorer.js", account=account, user=getUser(account), campaign_id = campaign_id, campaign=campaign, logo=logo, logo2 = logo2, own_brands_list = '|'.join(own_brands_list), object_id=object_id, sentiment=sentiment, topics=topics, daterange=getDateRange(request))
 
 @app.route('/api/feeds/search')
