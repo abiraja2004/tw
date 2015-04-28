@@ -169,8 +169,12 @@ class GnipActivityTweet(Tweet):
         self.d['x_extracted_info'] = pms
     
     def getExtractedTopics(self):
-        return self.d.get('x_extracted_topics', [])    
-    
+        try:
+            self.d.get('x_extracted_topics')
+        except KeyError, e:
+            self.d.get('x_extrated_topics', []) #algunos tweets se grabaron sin la c!!!
+
+
     def setExtractedTopics(self, tms):
         self.d['x_extrated_topics'] = tms
         
