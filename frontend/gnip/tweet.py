@@ -161,18 +161,18 @@ class GnipActivityTweet(Tweet):
         
     def getExtractedInfo(self):
         try:
-            self.d.get('x_extracted_info')
+            return self.d.get('x_extracted_info')
         except KeyError, e:
-            self.d.get('x_extrated_info', []) #algunos tweets se grabaron sin la c!!!
+            return self.d.get('x_extrated_info', []) #algunos tweets se grabaron sin la c!!!
 
     def setExtractedInfo(self, pms):
         self.d['x_extracted_info'] = pms
     
     def getExtractedTopics(self):
         try:
-            self.d.get('x_extracted_topics')
+            return self.d.get('x_extracted_topics')
         except KeyError, e:
-            self.d.get('x_extrated_topics', []) #algunos tweets se grabaron sin la c!!!
+            return self.d.get('x_extrated_topics', []) #algunos tweets se grabaron sin la c!!!
 
     def setExtractedTopics(self, tms):
         self.d['x_extracted_topics'] = tms
