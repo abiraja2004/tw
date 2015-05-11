@@ -457,11 +457,14 @@ def reassign_brands():
     n = 0
     accountsToTrack, accountsToTrackIds= getAccountsToTrack()
     for t in dbtweets:
+        print "\rtweet %s      " % n
         pms = {}
         for bc in bcs:
             if not bc.campaign_id in pms: pms[bc.campaign_id] = []
             pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(t['text'])])
         x_mentions_count = {}
+        if not 'entities' in t: t['entities']={}
+        if not 'user_mentions' in t['entities']: t['entities']['user_mentions']=[]
         for m in t['entities']['user_mentions']:
             if ("@" + m["screen_name"]) in accountsToTrack: 
                 x_mentions_count["@" + m['screen_name']] = 1
