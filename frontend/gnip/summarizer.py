@@ -163,7 +163,9 @@ class Summarizer(object):
                             try:
                                 interv['product'][p] += 1
                             except KeyError, e:
-                                interv['product'][p] = 1                        
+                                interv['product'][p] = 1
+                    topics = t.getExtractedTopics()
+                    if topics is None: topics = []
                     for k in t.getExtractedTopics():
                         try:
                             interv['topic'][k['topic_name']]['total'] += 1
