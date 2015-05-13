@@ -870,8 +870,12 @@ def save_account():
     data = request.get_json()
     print data
     print data['account']['campaigns']
-    account = accountdb.accounts.find_one({"_id":ObjectId(data['account_id'])})
-    if not account: account = {'_id': ObjectId(data['account_id']), 'campaigns': {}, 'users': {}, 'name': data['account']['name']}
+    try:
+        cid = ObjectId(data['account_id'])
+    except bson.errors.InvalidId:
+        cid = data['account_id']
+    account = accountdb.accounts.find_one({"_id":cid})
+    if not account: account = {'_id': cid, 'campaigns': {}, 'users': {}, 'name': data['account']['name']}
     if not 'users' in account: account['users'] = {}
     for campaign_id, campaign in data['account']['campaigns'].items():
         if campaign_id not in account['campaigns']:
