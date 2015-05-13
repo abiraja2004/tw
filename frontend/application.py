@@ -142,6 +142,13 @@ def getDateRange(request):
         ed = datetime.today()
     return (sd, ed)
 
+
+def getID(s):
+    try:
+        return ObjectId(s)
+    except bson.errors.InvalidId:
+        return s
+
 @app.route('/app')
 @app.route('/gm')
 def home():
@@ -161,7 +168,7 @@ def home():
     elif account_id == "5476951e9babd3b93e31b9a9": #sony
         logo = "logoSony.jpg"
         logo2 = "logoLumia.jpg"
-    account = accountdb.accounts.find_one({"_id":ObjectId(account_id)})
+    account = accountdb.accounts.find_one({"_id":getID(account_id)})
     if account and not campaign_id: campaign_id = account['campaigns'].keys()[0]
     template = "index.html"
     dashtemplate = "dashboard.html"
