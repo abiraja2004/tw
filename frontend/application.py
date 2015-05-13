@@ -450,7 +450,7 @@ def reassign_topics():
     topics = tcs.get(campaign_id, {}).items()
     for t in dbtweets:
         oldtms = t.get('x_extracted_topics', [])
-        print "\rtweet %s, %s      " % (c,n)
+        if c % 10 == 0: print "\rtweet %s, %s      " % (c,n)
         tms = []
         for topic_id, topic_classiffier in topics:
             tm = topic_classiffier.extract(t['text'])
@@ -458,7 +458,7 @@ def reassign_topics():
         if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
         if oldtms != tms:
             t['x_extracted_topics'] = tms
-            accountdb[collection_name].save(t)
+            #accountdb[collection_name].save(t)
             n += 1
         c += 1
     print datetime.now() - now
