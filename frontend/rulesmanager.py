@@ -9,6 +9,8 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
+parser.add_argument('--listenport', default='')
+
 args = parser.parse_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"

@@ -29,9 +29,14 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
+parser.add_argument('--listenport', default='')
 args, known = parser.parse_known_args()
 dbuser = "monitor"
 dbpasswd = "monitor678"
+if args.listenport:
+    listenport = int(args.listenport)
+else:
+    listenport = 5001
 if args.host:
     mclient = MongoClient(args.host)
 else:
@@ -432,16 +437,24 @@ def reassign_topics():
     tcs = getTopicClassifiers()
     collection_name = "tweets_%s" % campaign_id
     dbtweets = accountdb[collection_name].find({})
+    now = datetime.now()
     n = 0
+    c = 0
+    topics = tcs.get(campaign_id, {}).items()
     for t in dbtweets:
+        oldtms = t.get('x_extracted_topics', [])
+        #print "\rtweet %s, %s      " % (c,n)
         tms = []
-        for topic_id, topic_classiffier in tcs.get(campaign_id, {}).items():
+        for topic_id, topic_classiffier in topics:
             tm = topic_classiffier.extract(t['text'])
             if tm: tms.append(tm.getDictionary())
         if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
-        t['x_extracted_topics'] = tms                            
-        accountdb[collection_name].save(t)
-        n += 1    
+        if oldtms != tms:
+            t['x_extracted_topics'] = tms
+            accountdb[collection_name].save(t)
+            n += 1
+        c += 1
+    print datetime.now() - now
     res = {"result": "OK", "tweets_updated": n}
     return flask.Response(dumps(res),  mimetype='application/json')
     
@@ -1312,4 +1325,5 @@ def persons_fetch_followers():
     return flask.Response(dumps(res),  mimetype='application/json')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+
+    app.run(host="0.0.0.0", port=listenport)
