@@ -875,7 +875,8 @@ def save_account():
     except bson.errors.InvalidId:
         cid = data['account_id']
     account = accountdb.accounts.find_one({"_id":cid})
-    if not account: account = {'_id': cid, 'campaigns': {}, 'users': {}, 'name': data['account']['name']}
+    if not account: account = {'_id': cid, 'campaigns': {}, 'users': {}}
+    account['name'] = data['account']['name']
     if not 'users' in account: account['users'] = {}
     for campaign_id, campaign in data['account']['campaigns'].items():
         if campaign_id not in account['campaigns']:
