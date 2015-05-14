@@ -78,6 +78,23 @@ function countResults()
     });
 }
 
+function downloadResults()
+{
+    filterdict = makeFilterDict();
+    filterdict['limit'] = 10;
+    filterdict['format'] = 'tsv'
+    window.location = "/api/feeds/search?" + $.param(filterdict);
+    /*
+    $.ajax({
+        url: "/api/feeds/search",
+        data: filterdict,
+        type: "GET",
+    }).done(function (response) {
+        alert("Cantidad de Feeds: " + response['count']);
+    });
+    */
+}
+
 function makeFilterDict()
 {
     account_id = $('[fn=a_id]').val();;

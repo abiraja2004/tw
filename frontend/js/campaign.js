@@ -315,21 +315,38 @@ function saveCampaign()
     
     return data;
 }
+var topics_progress_status = 0;
 
+function updateTopicsProgressStatus()
+{
+    $( "#topics_progressbar" ).html(topics_progress_status + "%");
+    topics_progress_status += 9;
+    if (topics_progress_status >= 100) topics_progress_status = 99
+    if (topics_progress_status < 100) setTimeout(updateTopicsProgressStatus, 5000);
+}
 
 function reassignTopics()
 {
     if (!confirm('Estás seguro de realizar esta acción? (Esta operación puede durar muchos minutos)')) return;
     campaign_id = $('[fn=c_id]').val();
     account_id = $('[fn=a_id]').val();
+    $( "#topics_progressbar" ).show();
+    topics_progress_status = 0;
+    updateTopicsProgressStatus();
+    $('html, body').css("cursor", "wait");
     $.ajax({
         url: "/api/account/campaign/topics/reassign", 
         data: {'campaign_id': campaign_id, 'account_id': account_id}, 
         type: "GET",
-    }).done(function (data) { 
+    }).done(function (data) {
+     $('html, body').css("cursor", "auto");
         console.log(data);
-        alert("Topicos reasignados")
-    })
+        $( "#topics_progressbar" ).hide();
+        alert("Topicos reasignados");
+    }).error(function() {
+        $('html, body').css("cursor", "auto");
+        alert("Los topicos no pudieron ser reasignados correctamente");
+    });
 }
 
 function reassignBrands()

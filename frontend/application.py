@@ -458,7 +458,7 @@ def reassign_topics():
         if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
         if oldtms != tms:
             t['x_extracted_topics'] = tms
-            accountdb[collection_name].save(t)
+            #accountdb[collection_name].save(t)
             n += 1
         c += 1
     print datetime.now() - now
@@ -1222,6 +1222,7 @@ def search_feeds():
     limit = int(request.args.get("limit", 80))
     object_id = request.args.get("object_id", "")
     count_only = bool(request.args.get("count_only", "false") == "true")
+    format = request.args.get("format", "json")
     include_sentiment_tagged_tweets = bool(request.args.get("include_sentiment_tagged_tweets", "true") == "true")
     res = {"feeds": [], "count": 0}
     if start and end and campaign_id:
@@ -1282,8 +1283,13 @@ def search_feeds():
                 if skip: skipfilter = skip
                 dbtweets = MongoManager.findFBPosts(collection_name, filters=docfilter ,sort = ("x_created_at", -1), skip=skipfilter, limit=limit)
                 res['feeds'].extend([t.getDictionary() for t in dbtweets])
-            
-    return flask.Response(dumps(res),  mimetype='application/json')
+    if format == "json":
+        return flask.Response(dumps(res),  mimetype='application/json')
+    elif format == "tsv":
+        tsv = []
+        for tweet in res['feeds']:
+            pass
+        return flask.Response('\n'.join(tsv),  mimetype='plain/text')
 
 @app.route('/api/feeds/remove')
 def remove_feed():
