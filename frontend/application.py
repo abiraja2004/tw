@@ -458,7 +458,7 @@ def reassign_topics():
         if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
         if oldtms != tms:
             t['x_extracted_topics'] = tms
-            #accountdb[collection_name].save(t)
+            accountdb[collection_name].save(t)
             n += 1
         c += 1
     print datetime.now() - now
