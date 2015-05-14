@@ -1286,31 +1286,20 @@ def search_feeds():
     if format == "json":
         return flask.Response(dumps(res),  mimetype='application/json')
     elif format == "tsv":
-        tsv = []
+        tsv = ["Fecha\tUsuario\tPais\tMarcas\tProductos\tTopicos\tTexto"]
         for tweet in res['feeds']:
-            """
-                    .replace("%%created_at%%", feed_date)
-                    .replace("%%user.name%%", feed['user']['screen_name'])
-                    .replace("%%text%%", feed['text'])
-                    .replace("%%sentiment%%", sent)
-                    .replace("%%sentiment_color%%", color)
-                    .replace("%%brand%%", brand)
-                    .replace("%%product%%", product)
-                    .replace("%%confidence%%", confidence)
-                    .replace("%%user.profile_image_url%%", profile_image_url)
-                    .replace("%%profile_image_style%%", profile_image_style)
-                    .replace("%%topics%%", topicshtml)
-                    .replace("%%feed_url%%", feed_url)
-                    .replace("%%user_profile_url%%", user_url)
-                    .replace("%%user_profile_url%%", user_url)
-                    .replace("%%country%%", country)
-                    .replace("%%title%%", title)
-                    .replace("%%display_title%%", display_title)
-                """
             country = ''
-            if ('x_coordinates' in tweet and tweet['x_coordinates'] != None) country = tweet['x_coordinates']['country']
-            tsv.append("%s\t%s\t%s" % (tweet["x_created_at"], tweet["user"]["screen_name"], country))
-        return flask.Response('\n'.join(tsv),  mimetype='text/plain')
+            if ('x_coordinates' in tweet and tweet['x_coordinates'] != None and 'country' in tweet['x_coordinates']): country = tweet['x_coordinates']['country']
+            brands = ''
+            products = ''
+            topics = ''
+            if 'x_extracted_info' in tweet:
+                brands = ','.join(["%s(%s)" % (ei["brand"], ei['confidence']) for ei in tweet['x_extracted_info'] if ei["brand"]])
+                products = ','.join(["%s(%s)" % (ei["product"], ei['confidence']) for ei in tweet['x_extracted_info'] if ei['product']])
+            if 'x_extracted_topics' in tweet:
+                brands = ','.join(["%s(%s)" % (ei["topic_name"], ei['confidence']) for ei in tweet['x_extracted_topics'] if ei["topic_name"]])
+            tsv.append("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (tweet["x_created_at"], tweet["user"]["screen_name"], country, brands, products, topics, tweet["text"]))
+        return flask.Response('\n'.join(tsv),  mimetype='text/plain', headers={"Content-Disposition": "attachment;filename=feeds.txt"})
 
 @app.route('/api/feeds/remove')
 def remove_feed():

@@ -81,7 +81,7 @@ function countResults()
 function downloadResults()
 {
     filterdict = makeFilterDict();
-    filterdict['limit'] = 10;
+    filterdict['limit'] = 9999999;
     filterdict['format'] = 'tsv'
     window.location = "/api/feeds/search?" + $.param(filterdict);
     /*
@@ -225,7 +225,7 @@ function updateFeedsContent(response, more)
         }                    
         feed_date = new Date(feed['x_created_at']['$date'])
         country = '';
-        if ('x_coordinates' in feed && feed['x_coordinates'] != null) country = feed['x_coordinates']['country'];
+        if ('x_coordinates' in feed && feed['x_coordinates'] != null && 'country' in feed['x_coordinates']) country = feed['x_coordinates']['country'];
 
         feedtag = $(html.replace("%%_id%%", feed['_id']['$oid'])
                     .replace("%%created_at%%", feed_date)
