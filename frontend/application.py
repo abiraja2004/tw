@@ -1288,8 +1288,29 @@ def search_feeds():
     elif format == "tsv":
         tsv = []
         for tweet in res['feeds']:
-            pass
-        return flask.Response('\n'.join(tsv),  mimetype='plain/text')
+            """
+                    .replace("%%created_at%%", feed_date)
+                    .replace("%%user.name%%", feed['user']['screen_name'])
+                    .replace("%%text%%", feed['text'])
+                    .replace("%%sentiment%%", sent)
+                    .replace("%%sentiment_color%%", color)
+                    .replace("%%brand%%", brand)
+                    .replace("%%product%%", product)
+                    .replace("%%confidence%%", confidence)
+                    .replace("%%user.profile_image_url%%", profile_image_url)
+                    .replace("%%profile_image_style%%", profile_image_style)
+                    .replace("%%topics%%", topicshtml)
+                    .replace("%%feed_url%%", feed_url)
+                    .replace("%%user_profile_url%%", user_url)
+                    .replace("%%user_profile_url%%", user_url)
+                    .replace("%%country%%", country)
+                    .replace("%%title%%", title)
+                    .replace("%%display_title%%", display_title)
+                """
+            country = ''
+            if ('x_coordinates' in tweet and tweet['x_coordinates'] != None) country = tweet['x_coordinates']['country']
+            tsv.append("%s\t%s\t%s" % (tweet["x_created_at"], tweet["user"]["screen_name"], country))
+        return flask.Response('\n'.join(tsv),  mimetype='text/plain')
 
 @app.route('/api/feeds/remove')
 def remove_feed():
