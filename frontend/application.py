@@ -446,7 +446,7 @@ def reassign_topics():
     #    pass
     collection_name = "tweets_%s" % campaign_id
     now = datetime.now()
-    accountdb[collection_name].update({},{"$set": {"x_extracted_topics":[]}}, multi=False)
+    accountdb[collection_name].update({},{"$set": {"x_extracted_topics":[]}}, multi=True)
 
     topics = tcs.get(campaign_id, {}).items()
     words = set()
