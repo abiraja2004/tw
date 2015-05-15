@@ -62,7 +62,7 @@ def genClassifierClues(keywords):
         d[v] = l
     res = []
     for k, v in d.items():
-        res.append((int(k),) + tuple(v))
+        res.append((float(k),) + tuple(v))
     return res
 
 def generateTopicClassifier(topicdoc):

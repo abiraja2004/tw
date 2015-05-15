@@ -475,6 +475,7 @@ def reassign_topics():
             accountdb[collection_name].save(t)
             n += 1
         c += 1
+    summarizer.clearAllSummarizedData(campaign_id)
     print datetime.now() - now
     res = {"result": "OK", "tweets_updated": n}
     return flask.Response(dumps(res),  mimetype='application/json')

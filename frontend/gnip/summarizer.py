@@ -72,8 +72,8 @@ class Summarizer(object):
                         while lsd < end:
                             self.summarize(campaign, lsd, min(end, lsd + timedelta(days=1)), timedelta(hours=1), None)
                             lsd = lsd + timedelta(days=1)
-            pprint("sleeping 30 minutes")        
-            time.sleep(1800)
+            pprint("sleeping 20 seconds")
+            time.sleep(20)
 
     
     def getLastSummarizedDate(self, campaign):
@@ -180,7 +180,13 @@ class Summarizer(object):
                         data['words'] = SumDict(sorted(data['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)[:100])
                         #hay que dejar solo 100 elementos
         return timerange
-    
+
+
+    def clearAllSummarizedData(self, campaign_id): #esto esta repetido!
+        collection_name = 'summarized_tweets_%s' % campaign_id
+        #print 41, datetime.now()
+        res = MongoManager.remove(collection_name, filters={})
+
     def getSummarizedData(self, campaign, start, end):
         collection_name = 'summarized_tweets_%s' % campaign.getId()
         #print 41, datetime.now()
@@ -204,7 +210,8 @@ class Summarizer(object):
         #print 45, datetime.now()
         return timerange
 
-            
+
+
     def aggregate(self, campaign, data, group_by):
         def toZero(d):
             for k,v in d.items():
