@@ -455,7 +455,7 @@ def reassign_topics():
         for w in ws:
             words.add(max(w.split(" "), key=len))
     docfilter = " ".join([w for w in words])
-    print "DOCFILTER: ", docfilter
+    #print "DOCFILTER: ", docfilter
     dbtweets = accountdb[collection_name].find({"$text": {"$search": docfilter}})
 
     n = 0
