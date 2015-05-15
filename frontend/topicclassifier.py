@@ -35,44 +35,61 @@ class TopicClassifier(object):
         self.topic_name = ""
         self.topic_id = ""
         self.topic_confidence_clues = []
-        
+        self.patterns = None
+        self.wdict = None
+
+    def getAllWords(self):
+        res = set()
+        for clue in self.topic_confidence_clues:
+            if isinstance(clue, tuple):
+                for w in clue[1:]:
+                    res.add(w.lower())
+            else:
+                raise Exception("invalid clue: %s" % clue)
+        return res
+
+    def getPatterns(self):
+        if self.patterns is None or self.wdict is None:
+            self.patterns = []
+            self.wdict = {}
+            for clue in self.topic_confidence_clues:
+                if isinstance(clue, tuple):
+                    for w in clue[1:]:
+                        self.wdict[w.lower()] = clue[0]
+                else:
+                    raise Exception("invalid clue: %s" % clue)
+            if self.wdict:
+                regexps = []
+                kc = len(self.wdict.keys())
+                kp = 0
+                while kp < kc:
+                    keys = self.wdict.keys()[kp:kp+25]
+                    kp += 25
+                    regexp = "(" + "|".join(["(?:(?<=\W)|^)(?P<CONFIDENCE_%s>%s)(?=\W|$)" % (c,k) for k,c in zip(keys, range(len(keys)))]) + ")"
+                        #"\\b(?P<CONFIDENCE_%s>%s)\\b" % (c,k) for k,c in zip(keys, range(len(keys)))]) + ")"
+                    #print regexp
+                    self.patterns.append(re.compile(regexp, re.I|re.U))
+        return self.patterns, self.wdict
+
     def __eq__(self, o):
         return self.topic_name == o.topic_name and self.topic_id == o.topic_id and self.topic_confidence_clues == o.topic_confidence_clues
     
     
     def calculateConfidence(self, text):
-        def processClues(cluelist):
-            res = 0
-            wdict = {}
-            for clue in cluelist:
-                if isinstance(clue, tuple):
-                    for w in clue[1:]:
-                        wdict[w.lower()] = clue[0]
-                else:
-                    raise Exception("invalid clue: %s" % clue)
-            if wdict:
-                regexps = []
-                kc = len(wdict.keys())
-                kp = 0
-                while kp < kc:                    
-                    keys = wdict.keys()[kp:kp+25]
-                    kp += 25
-                    regexp = "(" + "|".join(["(?:(?<=\W)|^)(?P<CONFIDENCE_%s>%s)(?=\W|$)" % (c,k) for k,c in zip(keys, range(len(keys)))]) + ")"
-                        #"\\b(?P<CONFIDENCE_%s>%s)\\b" % (c,k) for k,c in zip(keys, range(len(keys)))]) + ")"
-                    #print regexp
-                    pattern = re.compile(regexp, re.I|re.U)
-                    for mo in pattern.finditer(text):
-                        for k in mo.groupdict():
-                            if mo.group(k) and k.startswith("CONFIDENCE"):
-                                #print mo.group(k), wdict[mo.group(k).lower()]
-                                res += wdict[mo.group(k).lower()]
-            return res
-        confidence = processClues(self.topic_confidence_clues)
+        patterns, wdict = self.getPatterns()
+        confidence = 0
+        for pattern in patterns:
+            for mo in pattern.finditer(text):
+                for k in mo.groupdict():
+                    if mo.group(k) and k.startswith("CONFIDENCE"):
+                        #print mo.group(k), wdict[mo.group(k).lower()]
+                        confidence += self.wdict[mo.group(k).lower()]
         return confidence
     
     def extract(self, text):
         tm = None
         confidence = self.calculateConfidence(text)
+        #confidence = 0
         if confidence > 0: #se podria configurar para cada topic
             tm = TopicMatch()
             tm.topic_name = self.topic_name
@@ -81,6 +98,6 @@ class TopicClassifier(object):
         return tm
 
 
-    
+
 if __name__ == '__main__':
     pass

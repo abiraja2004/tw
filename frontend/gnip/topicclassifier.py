@@ -35,7 +35,7 @@ class TopicClassifier(object):
         self.topic_name = ""
         self.topic_id = ""
         self.topic_confidence_clues = []
-        
+
     def __eq__(self, o):
         return self.topic_name == o.topic_name and self.topic_id == o.topic_id and self.topic_confidence_clues == o.topic_confidence_clues
     
@@ -54,7 +54,7 @@ class TopicClassifier(object):
                 regexps = []
                 kc = len(wdict.keys())
                 kp = 0
-                while kp < kc:                    
+                while kp < kc:
                     keys = wdict.keys()[kp:kp+25]
                     kp += 25
                     regexp = "(" + "|".join(["(?:(?<=\W)|^)(?P<CONFIDENCE_%s>%s)(?=\W|$)" % (c,k) for k,c in zip(keys, range(len(keys)))]) + ")"

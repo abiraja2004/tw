@@ -442,12 +442,25 @@ def reassign_topics():
     account = getAccount(account_id)
     campaign = account['campaigns'][campaign_id]
     tcs = getTopicClassifiers()
+   #for topic_id, topic_classiffier in topics:
+    #    pass
     collection_name = "tweets_%s" % campaign_id
-    dbtweets = accountdb[collection_name].find({})
     now = datetime.now()
+    accountdb[collection_name].update({},{"$set": {"x_extracted_topics":[]}}, multi=False)
+
+    topics = tcs.get(campaign_id, {}).items()
+    words = set()
+    for topic_id, topic_classiffier in topics:
+        ws = topic_classiffier.getAllWords()
+        for w in ws:
+            words.add(max(w.split(" "), key=len))
+    docfilter = " ".join([w for w in words])
+    print "DOCFILTER: ", docfilter
+    dbtweets = accountdb[collection_name].find({"$text": {"$search": docfilter}})
+
     n = 0
     c = 0
-    topics = tcs.get(campaign_id, {}).items()
+    tm = None
     for t in dbtweets:
         oldtms = t.get('x_extracted_topics', [])
         if c % 2000 == 0: print "\rtweet %s, %s      " % (c,n)
@@ -455,6 +468,7 @@ def reassign_topics():
         for topic_id, topic_classiffier in topics:
             tm = topic_classiffier.extract(t['text'])
             if tm: tms.append(tm.getDictionary())
+            pass
         if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
         if oldtms != tms:
             t['x_extracted_topics'] = tms
