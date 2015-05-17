@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Nuev9 :: Social Marketing</title>
+		<meta charset="utf-8">
+		<link href="/css/nueveIndex.css" rel="stylesheet">
+		<link href='http://fonts.googleapis.com/css?family=Ubuntu:700' rel='stylesheet' type='text/css'>	
+	</head>
+	<body>
+		<div id="top">
+			<div id="izquierda"><img src="/img/logo.jpg"></div>
+			<div id="derecha">
+				<div id="login">
+                    <form action="/" method="post">
+                        <input class="input" type="text" placeholder="Usuario" name="user">
+                        <input class="input" type="password" placeholder="Password" name="password">
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+				</div>
+			</div>
+		</div>
+		<div id="cuerpo">
+            {% if msg %} <p class="message">{{msg}}</p> {% endif %}
+			<div id="contenido">
+				<div id="frase"><p class="texto">Hacemos que miles de conversaciones cuenten una historia, descubrí la tuya.</p></div>
+                        <form action="/contact_request" method="post">				
+				<div id="baseform">
+					<div id="contform">
+							<label for="nombre">Nombre:</label>
+							<input class="textbox" name="nombre" type="text" required><br>
+							<label for="apellido">Apellido: </label>
+							<input class="textbox"  type="text" name="apellido"><br>
+							<label for="email">Email: </label>
+							<input class="textbox" type="email" name="email" required title="Dirección de email"><br>
+							<label for="comentario">Comentario: </label>
+							<textarea class="textbox" name="comentario"></textarea><br>
+							<button type="submit" class="btnenviar">Enviar</button>
+					</div>
+					<div id="tweet"><p class="texto2">Dejanos tus datos o simplemente Tweetea <a class="textnueve"> #nuev9</a> y nosotros te contactamos</p></div>
+				</div>
+                        </form>				
+			</div>
+		</div>
+	</body>
+</html>

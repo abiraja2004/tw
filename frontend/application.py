@@ -113,8 +113,8 @@ def contact_request():
 def login():
     session['username'] = ''
     template = "index.html"
-    print request.host
-    if request.host.find("001") >= 0: template = "login.html"
+    #print request.host
+    #if request.host.find("001") >= 0: template = "login.html"
     if request.method == "GET":
         return render_template(template)
     elif request.method == "POST":
@@ -547,6 +547,10 @@ def js_folder(filename):
 @app.route('/img/<path:filename>')
 def img_folder(filename):
     return flask.send_from_directory(app.root_path + '/img/', filename)
+
+@app.route('/images/<path:filename>')
+def images_folder(filename):
+    return flask.send_from_directory(app.root_path + '/images/', filename)
 
 @app.route('/css/<path:filename>')
 def css_folder(filename):

@@ -11,7 +11,7 @@ import sys
 EMAIL_SUBJECT = "Email from Python script"
 EMAIL_RECEIVERS = ['pablobesada@gmail.com', 'santiagoappiani@gmail.com', 'fedegisbert@gmail.com']
 EMAIL_SENDER  =  'nuev9info@gmail.com'
-EMAIL_PASSWORD = 'monitor678'
+EMAIL_PASSWORD = 'nuev9social'
 GMAIL_SMTP = "smtp.gmail.com"
 GMAIL_SMTP_PORT = 587
 TEXT_SUBTYPE = "plain"
