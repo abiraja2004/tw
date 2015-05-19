@@ -73,6 +73,7 @@ class Summarizer(object):
                             self.summarize(campaign, lsd, min(end, lsd + timedelta(days=1)), timedelta(hours=1), None)
                             lsd = lsd + timedelta(days=1)
             pprint("sleeping 20 seconds")
+            regenerate_all = False
             time.sleep(20)
 
     

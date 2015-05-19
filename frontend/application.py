@@ -111,6 +111,8 @@ def contact_request():
 @app.route('/login', methods=["GET", "POST"])
 @app.route('/', methods=["GET", "POST"])
 def login():
+    print "EN LOGIN"
+    print request.form
     session['username'] = ''
     template = "index.html"
     #print request.host

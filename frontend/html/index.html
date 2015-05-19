@@ -68,11 +68,10 @@ border-radius: 5px;
        <!--///////////////////////////////////////////////////////
        // Menu section 
        //////////////////////////////////////////////////////////-->
-
+                 <form action="/" method="post" id="loginform">
 
           <div class="w-nav navbar" data-collapse="medium" data-animation="default" data-duration="400" data-contain="1">
             <div class="w-container nav">
-                 <form action="/" method="post" id="loginform">
               <nav class="w-nav-menu nav-menu" role="navigation">
 
                 <a class="w-nav-link menu-li" href="#home">01</a>
@@ -83,22 +82,24 @@ border-radius: 5px;
 				<a class="w-nav-link menu-li"href="#06">06</a>
                 <a class="w-nav-link menu-li" href="#contact">CONTACT</a>
 
-				<a class="w-nav-link menu-li"><input class="input" type="usuario" placeholder="Usuario" name="user"></a>
-				<a class="w-nav-link menu-li"><input class="input" type="password" placeholder="Password" name="password"></a>
+				<a class="w-nav-link menu-li"><input class="input" type="text" placeholder="Usuario" name="user"/></a>
+				<a class="w-nav-link menu-li"><input class="input" type="password" placeholder="Password" name="password"/></a>
                        <!--button class="w-nav-link menu-li2" type="submit" class="btn">Login</button-->
-				<a class="w-nav-link menu-li2" href="#" onclick="$('#loginform').submit();return false;" >LOGIN</a>
+				<a class="w-nav-link menu-li2" href="javascript:void(0)"><span onclick="document.getElementById('loginform').submit()">LOGIN</span></a>
               </nav>
 
-                                       </form>
               <div class="w-nav-button">
                 <div class="w-icon-nav-menu">
                 </div>
               </div>
 
             </div>
+
                                                                     {% if msg %} <p class="nuev9message">{{msg}}</p> {% endif %}
 
           </div>
+                                                                          </form>
+
 
 
           <!--///////////////////////////////////////////////////////
