@@ -7,6 +7,8 @@ from pprint import pprint
 from tweet import Tweet
 from classifiermanager import ClassifierManager
 from brandclassifier import ProductMatch
+from genderclassifier import GenderClassifier
+
 
 class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de polls
 
@@ -39,6 +41,7 @@ class TweetProcessCampaign(Pipeline.Stage):
             tms = self.getTopicClassifiers(tweet, cid, tcs)
             tweet.setExtractedTopics(tms)
             tweet.setExtractedInfo(pmlist)
+            tweet.setGender(GenderClassifier.extractGender(tweet.getDisplayName()))
             tweet.resetFollowAccountsMentionCount()
             user_mentions = tweet.getUserMentions()
             for fa in follow_accounts:

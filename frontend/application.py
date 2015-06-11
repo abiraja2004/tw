@@ -8,6 +8,7 @@ from bson import ObjectId
 from bson.json_util import dumps
 from flask import Flask, render_template, request, Blueprint, redirect, url_for, session
 from rulesmanager import getBrandClassifiers, getTopicClassifiers, getAccountsToTrack
+from gnip.genderclassifier import GenderClassifier
 from brandclassifier import ProductMatch
 import flask 
 from flask.ext.compress import Compress
@@ -536,7 +537,39 @@ def reassign_brands():
         
     res = {"result": "OK", "tweets_updated": n}
     return flask.Response(dumps(res),  mimetype='application/json')
-    
+
+@app.route('/api/account/campaign/gender/reassign')
+def reassign_gender():
+    account_id = request.args.get("account_id", "")
+    campaign_id = request.args.get('campaign_id')
+    account = getAccount(account_id)
+    campaign = account['campaigns'][campaign_id]
+   #for topic_id, topic_classiffier in topics:
+    #    pass
+    collection_name = "tweets_%s" % campaign_id
+    now = datetime.now()
+
+    dbtweets = MongoManager.findTweets(collection_name)
+
+    n = 0
+    c = 0
+    tm = None
+    genders_count = {"M": 0, "F": 0, "U": 0}
+    for t in dbtweets:
+        if c % 2000 == 0: print "\rtweet %s, %s      " % (c,n)
+        oldgender = t.d.get("x_gender", "XXX")
+        gender = GenderClassifier.extractGender(t.getDisplayName())
+        genders_count[gender] += 1
+        if oldgender != gender:
+            t.setGender(gender)
+            accountdb[collection_name].save(t.getDictionary())
+            n += 1
+        c += 1
+    print datetime.now() - now
+    pprint(genders_count)
+    res = {"result": "OK", "tweets_updated": n}
+    return flask.Response(dumps(res),  mimetype='application/json')
+
 @app.route('/<path:filename>')
 def send_js(filename):
     return flask.send_from_directory('html', filename)
@@ -698,6 +731,7 @@ def tweets_count():
         res['stats']['own_tweets']['favorites'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
         res['stats']['total_tweets'] = 0
         res['stats']['mentions'] = {'total': 0, 'accounts': dict([(a,0) for a in accs])}
+        res['gender'] = {}
         res['topic'] = {}
         res['words'] = {}
         #print 4, datetime.now()
@@ -712,6 +746,7 @@ def tweets_count():
             res['brand'] = rrr['brand']
             res['product'] = rrr['product']
             res['topic'] = rrr['topic']
+            res['gender'] = rrr.get('gender', {})
             res['words'] = rrr['words']
             if len(res['words']) > 100: res['words'] = res['words'][:100]
         #print 7, datetime.now()

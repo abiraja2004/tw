@@ -73,7 +73,11 @@ class Tweet(object):
             return self.d['x_coordinates']['country']
         except KeyError, e:
             return ""
-    
+
+
+    def getDisplayName(self):
+        pass
+
 class GnipActivityTweet(Tweet):
     
     def __init__(self, activity):
@@ -110,6 +114,21 @@ class GnipActivityTweet(Tweet):
             return '@'+self.d['actor']['preferredUsername']
         except KeyError, e:
             return '@'+self.d['user']['screen_name']
+
+    def getDisplayName(self):
+        try:
+            return self.d['actor']['displayName']
+        except KeyError, e:
+            return self.getUsername()
+
+    def getGender(self):
+        try:
+            return self.d["x_gender"] # "M" or "F"
+        except:
+            return "U"
+
+    def setGender(self, gender):
+        self.d["x_gender"] = gender
 
     def getText(self):
         try:

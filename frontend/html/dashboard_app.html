@@ -209,17 +209,10 @@
                 </div>                         
                 <div class="box-body chat" id="feed-box">                    
                 </div><!-- /.chat -->
-            </div><!-- /.box (chat box) --> 
-            
-            <div class="box box-info">
-                <div class="box-header">
-                    <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Tópico</h3>
-                </div>
-                <div class="box-body chart-responsive">
-                    <div class="chart" id="topic-chart" style="height: 300px;"></div>
-                </div><!-- /.box-body -->                
-            </div><!-- /.box -->
+            </div><!-- /.box (chat box) -->
+
+
+
 
             <div class="box box-info">
                 <div class="box-header">
@@ -288,7 +281,7 @@
                         </p>
                     </div>
                 </div>                  
-                
+
                 <div class="box-body chat" id="fb_posts-box">
                 </div><!-- /.chat -->
             </div><!-- /.box (chat box) -->                                                        
@@ -296,13 +289,31 @@
             <div class="box box-info" style="display: {{ {False: 'none', True: 'block'}[has_products] }};">
                 <div class="box-header">
                     <i class="fa fa-bar-chart-o"></i>
-                    <h3 class="box-title">Tweets por Producto</h3>              
+                    <h3 class="box-title">Tweets por Producto</h3>
                 </div>
                 <div class="box-body chart-responsive">
                     <div class="chart" id="product-chart" style="height: 300px;"></div>
-                </div><!-- /.box-body -->                
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+            <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Tweets por Género</h3>
+                </div>
+                <div class="box-body chart-responsive">
+                    <div class="chart" id="gender-chart" style="height: 300px;"></div>
+                </div><!-- /.box-body -->
             </div><!-- /.box -->
 
+                        <div class="box box-info">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">Tweets por Tópico</h3>
+                </div>
+                <div class="box-body chart-responsive">
+                    <div class="chart" id="topic-chart" style="height: 300px;"></div>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
         </section><!-- right col -->
     </div><!-- /.row (main row) -->
 

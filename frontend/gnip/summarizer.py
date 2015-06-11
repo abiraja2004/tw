@@ -130,6 +130,7 @@ class Summarizer(object):
             data['brand'] = SumDict()
             data['product'] = SumDict()
             data['topic'] = SumDict()
+            data['gender'] = SumDict()
             data['words'] = SumDict()
             timerange.append(data)
             d = d + interval
@@ -177,6 +178,13 @@ class Summarizer(object):
                         word = word.lower()
                         nword = synonyms.get(word, word)
                         data['words'][nword] = data['words'].get(nword, 0) + 1
+
+                    gender = t.getGender()
+                    try:
+                        interv['gender'][gender]['total'] += 1
+                    except KeyError, e:
+                        interv['gender'][gender] = {'total': 1}
+
                     if len(data['words']) > 100: 
                         data['words'] = SumDict(sorted(data['words'].items(), key=lambda x: (x[1], x[0]),reverse=True)[:100])
                         #hay que dejar solo 100 elementos
@@ -338,8 +346,8 @@ if __name__ == '__main__':
         print args
         start = datetime.strptime(args.start, "%Y-%m-%dT%H")
         end = datetime.strptime(args.end, "%Y-%m-%dT%H")
-        records = summarizer.getSummarizedData(campaign,start,end)    
+        records = summarizer.getSummarizedData(campaign,start,end)
         pprint(records)
-        res = summarizer.aggregate(campaign, records, 'day')
+        res = summarizer.aggregate(campaign, records, "hour")
         pprint(res)
     exit(0)

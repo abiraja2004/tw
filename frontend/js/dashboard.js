@@ -7,10 +7,11 @@ $(function () {
     $(".tweet_count_group_by").click(function (e) { 
         tweets_count_group_by = $(this).attr('group_by') 
     fetchTweetsCount([[updateTweetCountLineChart, ['brand']],
-                     [updateTweetCountLineChart, ['product']], 
-                     [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}, sentimentClick]], 
-                     [updateTweetCountPieChart, ['topic']]
-                     [updateIndicators]]);
+                      [updateTweetCountLineChart, ['product']],
+                      [updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', 'gray']}, sentimentClick]],
+                      [updateTweetCountPieChart, ['topic']],
+                      [updateTweetCountPieChart, ['gender', {'M': ['Masculino', 'skyblue'], 'F': ['Femenino','pink'], 'U': ['Indeterminado','gray']}]]
+                      [updateIndicators]]);
 
     });
     
@@ -45,6 +46,7 @@ function updateAggregatedInformation()
     params.push([updateTweetCountLineChart, ['product']]);
     params.push([updateTweetCountPieChart, ['sentiment', {'+': ['pos', 'green'], '-': ['neg','red'], '=': ['neu','yellow'], '?': ['irr', null]}, sentimentClick]]);
     params.push([updateTweetCountPieChart, ['topic']]);
+    params.push([updateTweetCountPieChart, ['gender', {'M': ['Masculino', 'skyblue'], 'F': ['Femenino','pink'], 'U': ['Indeterminado','gray']}]]);
     params.push([updateWordTrendChart, ['words']]);
     params.push([updateIndicators]);
     //params.push([updatePollsPieCharts, ['polls']]);
