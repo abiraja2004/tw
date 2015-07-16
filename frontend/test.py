@@ -11,4 +11,4 @@ for acc in accs:
         pprint(cmp.getName())
         print cmp.o['active']
         cmp.o['active'] = False
-        MongoManager.saveCampaign(acc, cmp)
+        #MongoManager.saveCampaign(acc, cmp)
