@@ -141,6 +141,7 @@
                                                                     <div class="form-group">
                                                                         <label>Nombre</label>
                                                                         <input type="text" fn="cname" class="form-control" placeholder="nombre de la campaña..." value="{{campaign['name']}}" onchange="$(this).closest('.campaign').find('.campaign_title').html($(this).val());" />
+                                                                        ACTIVE: {{campaign['active']}}
                                                                     </div>          
                                                                     {% if "tweets_"+campaign_id in collection_data %}
                                                                         <div class="form-group">

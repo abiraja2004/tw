@@ -18,6 +18,9 @@ from frontend.rulesmanager import getBrandClassifiers, getTopicClassifiers, getA
 import argparse
 from frontend.brandclassifier import ProductMatch
 import traceback
+from frontend.gnip.pipeline import Pipeline
+from frontend.gnip import pipelinestages
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
@@ -222,91 +225,17 @@ try:
     tcs = getTopicClassifiers()
     kwmonitor = KeywordMonitor()
     kwmonitor.start()
+    pipeline = Pipeline()
+    for plsc in pipelinestages.getPipelineTwitterStageClasses():
+        pipeline.appendStage(plsc())
+    pipeline.startWorking()
     while True:
         while not stream: 
             time.sleep(0.2)                     
         for t in stream:
-            t['x_process_version'] = 2
-            t['x_created_at'] = datetime.strptime(t['created_at'], "%a %b %d %H:%M:%S +0000 %Y")
-            pms = {}
-            for bc in bcs:
-                if not bc.campaign_id in pms: pms[bc.campaign_id] = []
-                pms[bc.campaign_id].extend([pm.getDictionary() for pm in bc.extract(t['text'])])
-            x_mentions_count = {}
-            #campaign_ids = set()                            
-            poll_ids = set()
-            for m in t['entities']['user_mentions']:
-                if ("@" + m["screen_name"]) in MyThread.accountsToTrack: 
-                    x_mentions_count["@" + m['screen_name']] = 1
-                    #campaign_ids.add(MyThread.accountsToTrack["@" + m['screen_name']]['cid'])
-                    pm = ProductMatch()
-                    pm.brand = MyThread.accountsToTrack["@" + m['screen_name']]['brand']
-                    pm.campaign_id = MyThread.accountsToTrack["@" + m['screen_name']]['cid']
-                    pm.confidence = 5
-                    pms[pm.campaign_id].append(pm.getDictionary())
-                    
-            for m in t['entities']['hashtags']:
-                if ("#" + m["text"]) in MyThread.hashtagsToTrack: 
-                    for d in MyThread.hashtagsToTrack["#" + m['text']]:
-                        poll_ids.add(d['pid'])
-                    
-            if 'user' in t and 'id_str' in t['user']:
-                if t['user']['id_str'] in MyThread.accountsToTrackIds:
-                    #campaign_ids.add(MyThread.accountsToTrackIds[t['user']['id_str']]['cid'])
-                    pm = ProductMatch()
-                    pm.brand = MyThread.accountsToTrackIds[t['user']['id_str']]['brand']
-                    pm.campaign_id = MyThread.accountsToTrackIds[t['user']['id_str']]['cid']
-                    pm.confidence = 5
-                    pms[pm.campaign_id].append(pm.getDictionary())
-                    if MyThread.accountsToTrackIds[t['user']['id_str']]['own_brand']:
-                        t['x_sentiment'] = '='
-                    
-            #if pms or x_mentions_count or campaign_ids or poll_ids:
-            if pms or x_mentions_count or poll_ids:
-                t['x_mentions_count'] = x_mentions_count
-                
-                """ por el momento topics globales desactivados
-                tms = []
-                for tc in tcs:
-                    tm = tc.extract(t['text'])
-                    if tm: tms.append(tm.getDictionary())
+            pipeline.getSourceQueue().put(t)
 
-                print "mentions count: " + str(x_mentions_count)
-                if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
-                t['x_extracted_topics'] = tms
-                """ #topics globales desactivados
-                
-                #for cids in pms:
-                #    campaign_ids.add(cids)
-                #for cid in campaign_ids:
-                for cid in pms.keys():
-                    extracted_infos = pms.get(cid, [])
-                    if extracted_infos:
-                        extracted_infos.sort(key=lambda x: x['confidence'], reverse=True)
-                        if extracted_infos[0]['confidence'] > 0:
-                            t['x_extracted_info'] = extracted_infos
-                            
-                            #una vez que ya se que voy a guardar el tweet en una campanna le aplico los x_extracted_topics
-                            tms = []
-                            for topic_id, topic_classiffier in tcs.get(cid, {}).items():
-                                tm = topic_classiffier.extract(t['text'])
-                                if tm: tms.append(tm.getDictionary())
-                            if tms: tms.sort(key=lambda x: x['confidence'], reverse=True)
-                            t['x_extracted_topics'] = tms                            
-                            
-                            collection_name = "tweets_%s" % cid                    
-                            print "INSERTING into %s" % collection_name
-                            print monitor[collection_name].insert(t)
-                for pid in poll_ids:
-                    collection_name = "polls_%s" % pid                    
-                    print "INSERTING into %s" % collection_name
-                    print monitor[collection_name].insert(t)                    
-            print            
-            
-            try:
-                print t["text"], t['x_created_at']
-            except:
-                pass
+
 
       
 except KeyboardInterrupt, e:
@@ -320,4 +249,5 @@ except Exception, e:
 
 if kwmonitor: kwmonitor.finish()    
 if stream: stream.finish()
+pipeline.stopWorking()
 

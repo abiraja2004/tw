@@ -1,9 +1,13 @@
+import pymongo
 
-from flask import Flask
-application = Flask(__name__)
-application.config['PROPAGATE_EXCEPTIONS'] = True
+from gnip.mongo import MongoManager
+from pprint import pprint
 
-@application.route('/')
-def hello_world():
-    aksjhdkjasdhjas
-    return 'Hello World!'
+MongoManager.connect()
+
+accs = MongoManager.getActiveAccounts()
+for acc in accs:
+    for cmp in acc.getActiveCampaigns():
+        print cmp.getName() + ": ",cmp.o['active']
+        cmp.o['active'] = False
+        #MongoManager.saveCampaign(acc, cmp)

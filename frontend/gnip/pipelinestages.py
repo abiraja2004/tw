@@ -14,8 +14,8 @@ class TweetSaveForPolls(Pipeline.Stage):  #aca se graba en las base de datos de 
 
     def processItem(self, item):
         polls_ht = MongoManager.getPollsByHashtag(max_age=timedelta(seconds=10))
-        tweet = Tweet.createFromRawGnipActivity(item)
-        pprint(tweet)
+        tweet = Tweet.createFromUnknownSource(item)
+        #pprint(tweet)
         for ht in tweet.getHashtags():
             if ht in polls_ht:
                 for poll in polls_ht[ht]:

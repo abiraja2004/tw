@@ -33,7 +33,24 @@ class Tweet(object):
         return res
 
     @classmethod
+    def createFromUnknownSource(cls, activity):
+        #pprint(activity)
+        if False: #si se reactiva gnip hay que cambiar esto para que identifique la fuente como gnip
+            res = GnipActivityTweet(activity)
+            res.normalize()
+        else:
+            res = TwitterApiTweet(activity)
+            res.normalize()
+        return res
+
+    @classmethod
     def createFromRawGnipActivity(cls, activity):
+        res = GnipActivityTweet(activity)
+        res.normalize()
+        return res
+
+    @classmethod
+    def createFromTwitterApi(cls, activity):
         res = GnipActivityTweet(activity)
         res.normalize()
         return res
@@ -214,4 +231,130 @@ class GnipActivityTweet(Tweet):
         return self.d.get('favoritesCount', 0)
     
     def getRetweetsCount(self):
-        return self.d.get('retweetCount', 0)    
+        return self.d.get('retweetCount', 0)
+
+
+class TwitterApiTweet(Tweet):
+
+    def __init__(self, activity):
+        Tweet.__init__(self)
+        self.d = activity
+
+    def normalize(self): #should only be called for activities that came directly from gnip, not from mongodb
+        self.d['x_created_at'] = datetime.strptime(self.d['created_at'], "%a %b %d %H:%M:%S +0000 %Y")
+        self.d['x_feed_type'] = 'twitter'
+        #self.d['user'] = {}
+        #self.d['user']['screen_name'] = self.getUsername()
+        #self.d['user']['profile_image_url_https'] = self.getUserProfileImageURL()
+        #self.d['text'] = self.getText()
+        #self.d['favorite_count'] = self.getFavoritesCount()
+        #self.d['retweet_count'] = self.getRetweetsCount()
+        self.d['x_coordinates'] = {}
+
+
+    def getUsername(self):
+        try:
+            return '@'+self.d['actor']['preferredUsername']
+        except KeyError, e:
+            return '@'+self.d['user']['screen_name']
+
+    def getDisplayName(self):
+        try:
+            return self.d['actor']['displayName']
+        except KeyError, e:
+            return self.getUsername()
+
+    def getGender(self):
+        try:
+            return self.d["x_gender"] # "M" or "F"
+        except:
+            return "U"
+
+    def setGender(self, gender):
+        self.d["x_gender"] = gender
+
+    def getText(self):
+        try:
+            return self.d['body']
+        except KeyError, e:
+            return self.d['text']
+
+    def getCreatedDate(self):
+        return self.d['x_created_at']
+
+    def applyBrandClassifiers(self, bc):
+        pass
+
+    def getLanguage(self):
+        return self.getTwitterLanguage()
+
+    def getGnipLanguage(self):
+        try:
+            return self.d['gnip']['language']['value']
+        except KeyError, e:
+            return ''
+
+    def getTwitterLanguage(self):
+        try:
+            return self.d['twitter_lang']
+        except KeyError, e:
+            return ''
+
+    def getSentiment(self):
+        return self.d.get("x_sentiment", '')
+
+    def setSentiment(self, s):
+        self.d['x_sentiment'] = s
+
+    def getMatchedCampaignIds(self):
+        return [self.d.get('x_extracted_info', []).keys()]
+
+    def resetFollowAccountsMentionCount(self):
+        self.d['x_mentions_count'] = {}
+
+    def getFollowAccountsMentionCount(self):
+        return self.d.get('x_mentions_count', {})
+
+    def setFollowAccountsMentionCount(self, username, cnt):
+        try:
+            self.d['x_mentions_count'][username] = cnt
+        except KeyError, e:
+            self.d['x_mentions_count'] = {username: cnt}
+
+    def getExtractedInfo(self):
+        try:
+            return self.d.get('x_extracted_info')
+        except KeyError, e:
+            return self.d.get('x_extrated_info', []) #algunos tweets se grabaron sin la c!!!
+
+    def setExtractedInfo(self, pms):
+        self.d['x_extracted_info'] = pms
+
+    def getExtractedTopics(self):
+        try:
+            return self.d.get('x_extracted_topics')
+        except KeyError, e:
+            return self.d.get('x_extrated_topics', []) #algunos tweets se grabaron sin la c!!!
+
+    def setExtractedTopics(self, tms):
+        self.d['x_extracted_topics'] = tms
+
+    def getUserProfileImageURL(self):
+        return self.d.get('actor', {}).get('image', '')
+
+    def getDictionary(self):
+        return self.d
+
+    def getHashtags(self):
+        hts = self.d.get('twitter_entities', {}).get('hashtags', [])
+        return set(["#"+x['text'] for x in hts])
+
+    def getUserMentions(self):
+        um = self.d.get('twitter_entities', {}).get('user_mentions', [])
+        return dict([('@' + x['screen_name'], x['name']) for x in um])
+
+    def getFavoritesCount(self):
+        return self.d.get('favoritesCount', 0)
+
+    def getRetweetsCount(self):
+        return self.d.get('retweetCount', 0)
