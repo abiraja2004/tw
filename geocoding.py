@@ -113,7 +113,7 @@ def geolocate(account, cid):
         country_code = None            
         if f.get('place', None) and f.get('place', {}).get('country', None):        
             country = f['place']['country']
-            country_code = f['place']['country_code']
+            country_code = f['place']['country_code'].lower()
             
         if calculated_location:
             coordinates = [calculated_location['longitude'], calculated_location['latitude']]
@@ -121,7 +121,7 @@ def geolocate(account, cid):
                 for ac in calculated_location['raw']['address_components']:
                     if 'country' in ac['types']:
                         country = ac['long_name']
-                        country_code = ac['short_name']
+                        country_code = ac['short_name'].lower()
                         break
 
         if coordinates:
