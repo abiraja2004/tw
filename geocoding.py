@@ -49,7 +49,7 @@ def geolocate(account, cid):
         pass
     collection_name = "tweets_%s" % cid
     collection = monitor[collection_name]
-    for f in collection.find({'x_coordinates': {"$exists": False}}):    
+    for f in collection.find({"$or": ({'x_coordinates': {"$exists": False}}, {'x_coordinates': {}})}):
         loc = None
         coordinates = f.get('coordinates', None)
         origin = "coordinates"
