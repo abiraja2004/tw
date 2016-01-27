@@ -42,7 +42,7 @@ if args.host:
     mclient = MongoClient(args.host)
 else:
     mclient = MongoClient()
-tweetdb = mclient['unilever']
+#tweetdb = mclient['unilever']
 
 PASSWORD_SALT = "relatos salvajes"
 
@@ -51,7 +51,7 @@ SERVER_REMOTE=1
 server_mode = SERVER_LOCAL
 server_domain = "localhost"
 if args.auth:
-    tweetdb.authenticate(dbuser, dbpasswd)
+    #tweetdb.authenticate(dbuser, dbpasswd)
     server_mode = SERVER_REMOTE
     server_domain = "www.nuev9.com"
     
