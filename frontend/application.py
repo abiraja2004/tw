@@ -25,8 +25,9 @@ from base64 import b64encode, b64decode
 from gnip.mongo import MongoManager
 from pprint import pprint
 from gnip.summarizer import Summarizer
-
 import argparse
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--auth', action="store_true", default=False)
 parser.add_argument('--host', default='')
