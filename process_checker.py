@@ -48,6 +48,6 @@ def start_process(p):
 
 
 if __name__ == "__main__":
-    os.chdir("/home/pablobesada/tw")
+    os.chdir("/home/pablobesada/nuev9/tw")
     check_processes()
     
